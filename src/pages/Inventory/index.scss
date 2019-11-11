@@ -1,0 +1,54 @@
+.inventory-container {
+  color: #000;
+  .no-content-screen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+  }
+  .date-picker-container {
+    .dp-cnt {
+      margin-right: 0.5rem;
+    }
+    .date-picker-text {
+      margin-right: 0.5rem;
+      font-size: 0.8rem;
+    }
+  }
+  .graph-view-container {
+    float: right;
+    .active {
+      background-color: aquamarine;
+    }
+  }
+
+  .inv-flex-container {
+    .inv-flex-item-1 {
+      width: 80%;
+      height: 100vh;
+    }
+    .inv-flex-item-2 {
+      width: 20%;
+    }
+  }
+  .toggle-btns {
+    padding: 0.5rem;
+    margin: 1rem 1rem 0 1rem;
+    outline: none;
+  }
+  .inventory-toggler-container {
+    position: absolute;
+    bottom: 12%;
+    left: 50%;
+    .active {
+      background-color: aquamarine;
+    }
+  }
+  .view-toggler {
+    position: absolute;
+    bottom: 5%;
+    left: 45%;
+    .active {
+      background-color: aquamarine;
+    }
+  }
+}

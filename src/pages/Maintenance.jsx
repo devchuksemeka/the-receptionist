@@ -306,9 +306,9 @@ export default class Maintenance extends Component {
               </div>
             </div>
           }
-          legend={
-            <div className="legend">{this.createLegend(legendSales)}</div>
-          }
+          // legend={
+          //   <div className="legend">{this.createLegend(legendSales)}</div>
+          // }
         />
       </Col>
     </Row>

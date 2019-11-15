@@ -25,8 +25,9 @@ class Footer extends Component {
           <p className="copyright pull-right">
             &copy; {new Date().getFullYear()}{" "}
             <a href="#">
-              Releaf Team
+              Releaf FOT
             </a>
+            &nbsp; All Right Reserved.
           </p>
         </Grid>
       </footer>

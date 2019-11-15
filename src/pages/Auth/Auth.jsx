@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import axios from 'axios';
 
 import AuthContext from '../../context/AuthContext'
+import Loader from "../../common/Loader";
 
 import './Auth.scss'
 
@@ -126,6 +127,10 @@ export default class Auth extends Component{
     }
 
     render(){
+        const submitBtnText = () =>{
+            if(this.state.isLogin) return "Login";
+            return "Sign Up";
+        }
         return (
             <div className="App">
                 <div className="flex-container">
@@ -179,13 +184,15 @@ export default class Auth extends Component{
                         {this.state.error.message &&  (<div className="form-group col-md-8 col-xs-10">
                             <small 
                                 id="emailHelp" 
-                                className="form-text text-muted">
+                                className="form-text text-muted"
+                                style={{color:"red"}}>
                                    {this.state.error.message}
                             </small>
                         </div>
                         )}
+                        
                             <div className="form-group col-md-8 col-xs-10">
-                                <button type="submit" className="btn btn-secondary">{this.state.isLogin ? "Login" : "Sign Up"}</button>
+                                <button type="submit" className="btn btn-secondary" >{this.state.isLogin ? "Login" : "Sign Up"} {this.state.loading ? "..." : ""}</button>
                             </div>
                         </div>
                             

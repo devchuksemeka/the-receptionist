@@ -1,19 +1,38 @@
-import React from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import SetAuth from "./pages/SetAuth";
-import Home from "./pages/Home";
-import PrivateRoute from "./PrivateRoute";
+import Overview from "pages/Overview";
+import Inventory from "pages/Inventory";
+import Sales from "pages/Sales";
+import Maintenance from "pages/Maintenance";
+import Auth from "pages/Auth/Auth";
 
-const Routes = () => (
-  <Router>
-    <Switch>
-      <PrivateRoute exact path="/inventory" component={Home} />
-      <PrivateRoute exact path="/maintenance" component={Home} />
-      <PrivateRoute exact path="/overview" component={Home} />
-      <PrivateRoute exact path="/sales" component={Home} />
-      <Route path="*" component={SetAuth} />
-    </Switch>
-  </Router>
-);
+const dashboardRoutes = [
+  {
+    path: "/overview",
+    name: "Overview",
+    icon: "pe-7s-graph",
+    component: Overview,
+    layout: "/admin"
+  },
+  {
+    path: "/inventory",
+    name: "Inventory",
+    icon: "pe-7s-note2",
+    component: Inventory,
+    layout: "/admin"
+  },
+  {
+    path: "/sales",
+    name: "Sales",
+    icon: "pe-7s-cash",
+    component: Sales,
+    layout: "/admin"
+  },
+  {
+    path: "/maintenance",
+    name: "Maintenance",
+    icon: "pe-7s-settings",
+    component: Maintenance,
+    layout: "/admin"
+  },
+];
 
-export default Routes;
+export default dashboardRoutes;

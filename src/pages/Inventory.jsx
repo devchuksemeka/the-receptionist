@@ -197,6 +197,21 @@ export default class Inventory extends Component {
     } = this.state;
 
     const options = { maintainAspectRatio: true, responsive: true };
+    options.tooltips = {
+        mode: "label",
+        callbacks: {
+          label: function(tooltipItem, data) {
+            // console.log(`datasets`,data.datasets);
+            const key = data.datasets[tooltipItem.datasetIndex].label;
+            const yAxis = data.datasets[tooltipItem.datasetIndex].yAxisID;
+            const val =
+              data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+            if (val && yAxis === "A") return key + ": " +val.toLocaleString() +" tons";
+            if (val && yAxis === "B") return key + " : ₦" + val.toLocaleString();
+          }
+        }
+    
+    }
     options.scales = {};
     options.scales.xAxes = [
       {
@@ -393,7 +408,7 @@ export default class Inventory extends Component {
           // }
         />
       </Col>
-      <Col md={12} lg={12}>
+      {/* <Col md={12} lg={12}>
         <Card
           statsIcon="fa fa-history"
           id="chartHours"
@@ -413,7 +428,7 @@ export default class Inventory extends Component {
           //   <div className="legend">{this.createLegend(legendSales)}</div>
           // }
         />
-      </Col>
+      </Col> */}
     </Row>
   </Grid>
 </div>

@@ -201,36 +201,53 @@ export default class Sales extends Component {
       }
     };
 
-    const options = { maintainAspectRatio: false, responsive: true };
-    options.scales = {};
-    options.scales.yAxes = [
-      {
-        type: "linear",
-        display: true,
-        position: "left",
-        id: "A",
-        scaleLabel: {
-          display: true,
-          labelString: ""
-        },
-        ticks: {
-          callback: value => value + " tons"
+    const options = { maintainAspectRatio: false, responsive: true,
+      tooltips : {
+        mode: "label",
+        callbacks: {
+          label: function(tooltipItem, data) {
+            // console.log(`datasets`,data.datasets);
+            const key = data.datasets[tooltipItem.datasetIndex].label;
+            const yAxis = data.datasets[tooltipItem.datasetIndex].yAxisID;
+            const val =
+              data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+            if (val && yAxis === "A") return key + ": " +val.toLocaleString() +" tons";
+            if (val && yAxis === "B") return key + " : ₦" + val.toLocaleString();
+          }
         }
       },
-      {
-        type: "linear",
-        display: true,
-        position: "right",
-        id: "B",
-        scaleLabel: {
-          display: true,
-          labelString: ""
-        },
-        ticks: {
-          callback: value => "₦" + value.toLocaleString()
-        }
+      scales:{
+        yAxes :[
+          {
+            type: "linear",
+            display: true,
+            position: "left",
+            id: "A",
+            scaleLabel: {
+              display: true,
+              labelString: ""
+            },
+            ticks: {
+              callback: value => value + " tons"
+            }
+          },
+          {
+            type: "linear",
+            display: true,
+            position: "right",
+            id: "B",
+            scaleLabel: {
+              display: true,
+              labelString: ""
+            },
+            ticks: {
+              callback: value => "₦" + value.toLocaleString()
+            }
+          }
+        ]
       }
-    ];
+    };
+    
 
     if (loading) {
       return <Loader />;

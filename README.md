@@ -1,1 +1,2 @@
-## RELEAF FOT FRONTEND
+# FOTFrontend
+Visualization for FOT

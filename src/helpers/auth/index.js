@@ -4,7 +4,6 @@ import axios from "axios";
 export const isAuthenticated = () => {
   let isAuthenticated = false;
   const token = localStorage.getItem("authToken");
-  console.log(`token is ${token}`)
   if (token) {
     isAuthenticated =  true;
     // const decoded = jwtDecode(token);
@@ -27,7 +26,8 @@ export const setAuthHeaderToken = () => {
 };
 
 export const logOut = history => {
+  
   localStorage.removeItem("authToken");
-  // history.location.push("/");
+  // return history.location.push("/");
   // return window.location.replace("/");
 };

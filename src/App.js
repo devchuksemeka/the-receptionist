@@ -6,7 +6,7 @@ import AdminLayout from "layouts/Admin.jsx";
 import AuthContext from './context/AuthContext'
 import AuthPage from './pages/Auth/Auth'
 
-import { setAuthHeaderToken,isAuthenticated,logOut } from "./helpers/auth";
+import { setAuthHeaderToken,isAuthenticated } from "./helpers/auth";
 
 class App extends Component {
   state={
@@ -24,13 +24,14 @@ class App extends Component {
      })
   }
 
-  logout = () => {
+  logout = (props) => {
+    console.log(props)
     this.setState({
       token:null,
       role:null,
       isAuth:false
     })
-    logOut();
+    localStorage.removeItem("authToken");
   }
   render(){
     return (

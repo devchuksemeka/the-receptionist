@@ -1,19 +1,22 @@
 import React, { Component } from "react";
-import { NavItem, Nav, NavDropdown, MenuItem } from "react-bootstrap";
+import { NavItem, Nav, 
+  // NavDropdown, 
+  // MenuItem 
+} from "react-bootstrap";
 import AuthContext from '../../context/AuthContext';
 
 class AdminNavbarLinks extends Component {
   static contextType = AuthContext;
 
   render() {
-    const notification = (
-      <div>
-        <i className="fa fa-globe" />
-        <b className="caret" />
-        <span className="notification">5</span>
-        <p className="hidden-lg hidden-md">Notification</p>
-      </div>
-    );
+    // const notification = (
+    //   <div>
+    //     <i className="fa fa-globe" />
+    //     <b className="caret" />
+    //     <span className="notification">5</span>
+    //     <p className="hidden-lg hidden-md">Notification</p>
+    //   </div>
+    // );
     return (
       <div>
         <Nav>

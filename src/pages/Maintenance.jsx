@@ -1,47 +1,95 @@
 import React, { Component } from "react";
 import { Grid, Row, Col } from "react-bootstrap";
 import { Card } from "components/Card/Card.jsx";
-import { Line, Bar } from "react-chartjs-2";
+import { 
+  // Line, 
+  Bar } from "react-chartjs-2";
 import Loader from "../common/Loader";
 import DatePicker from "react-datepicker";
 import { getDateFilter } from "../common";
-import { getChartData } from "../helpers/SalesHelper";
-import {
-  getP2Inventory,
-  getPkoInventory,
-  getPkcInventory
-} from "../actions/sheetActions";
-import {
-  legendSales
-} from "variables/Variables.jsx";
 
 export default class Maintenance extends Component {
-  createLegend(json) {
-    var legend = [];
-    for (var i = 0; i < json["names"].length; i++) {
-      var type = "fa fa-circle text-" + json["types"][i];
-      legend.push(<i className={type} key={i} />);
-      legend.push(" ");
-      legend.push(json["names"][i]);
-    }
-    return legend;
-  }
+
   state = {
     maintenance_level_text:"Factory Level",
     maintenance_level:"factory_level",
+    maintenance_levels:[
+      {key:"factory_level",value:"Factory Level"},
+      {key:"machine_level",value:"Machine Level"},
+      {key:"maintenance_action_level",value:"Maintenance Action Level"}
+    ],
+    machine:"all",
+    machines:[
+      {key:"all",value:"All Machines"},
+      {key:"machine_1",value:"Machine 1"},
+      {key:"machine_2",value:"Machine 2"},
+      {key:"machine_3",value:"Machine 3"},
+      {key:"machine_4",value:"Machine 4"},
+    ],
+    maintenance_action:"all",
+    maintenance_actions:[
+      {key:"all",value:"All Maintenance Actions"},
+      {key:"welded_worms",value:"Welded Worms"},
+      {key:"welded_baskets",value:"Welded Baskets"}
+    ],
+    
     loading: true,
-    currentScreen: "pko",
-    currentView: "dailySales",
     PkoData: {},
     PkcData: {},
     P2ApiData: {},
-    pkcAccumulated: {},
-    accumulatedData: {},
     startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
     endDate: new Date(),
     currentDateFilter: "currentWeek",
     graphView: "day",
-    salesCyclesAvg: "N/A"
+    accumulatedData: {
+      labels: ["Oct 29","Oct 30"],
+      datasets: [
+        {
+          label: "Machine 1",
+          stack: "Stack 0",
+          fill: false,
+          lineTension: 0.1,
+          backgroundColor: "#de6866",
+          borderColor: "#de6866",
+          borderCapStyle: "butt",
+          borderDash: [],
+          borderDashOffset: 0.0,
+          borderJoinStyle: "miter",
+          pointBorderColor: "#de6866",
+          pointBackgroundColor: "#fff",
+          pointBorderWidth: 1,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: "#de6866",
+          pointHoverBorderColor: "#fe6866",
+          pointHoverBorderWidth: 2,
+          pointRadius: 1,
+          pointHitRadius: 10,
+          data: [3,4]
+        },
+        {
+          label: "Machine 2",
+          stack: "Stack 0",
+          fill: false,
+          lineTension: 0.1,
+          backgroundColor: "rgba(75,192,192,0.4)",
+          borderColor: "rgba(75,192,192,1)",
+          borderCapStyle: "butt",
+          borderDash: [],
+          borderDashOffset: 0.0,
+          borderJoinStyle: "miter",
+          pointBorderColor: "rgba(75,192,192,1)",
+          pointBackgroundColor: "#fff",
+          pointBorderWidth: 1,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: "rgba(75,192,192,1)",
+          pointHoverBorderColor: "rgba(220,220,220,1)",
+          pointHoverBorderWidth: 2,
+          pointRadius: 1,
+          pointHitRadius: 10,
+          data: [5,7]
+        },
+      ]
+    }
   };
 
   async componentDidMount() {
@@ -62,60 +110,14 @@ export default class Maintenance extends Component {
     return "";
   }
 
-  maintenanceLevel = e => {
-    const maintenance_level = e.target.value;
-    this.setState({
-      maintenance_level,
-      maintenance_level_text:this.getText(maintenance_level)
-    });
-  }
-
   handleSubmit = async () => {
-    const { startDate, endDate, graphView } = this.state;
-    const PkoApiData = (await getPkoInventory(
-      startDate.toISOString(),
-      endDate.toISOString(),
-      graphView
-    )).pkoData;
-
-    const PkcApiData = (await getPkcInventory(
-      startDate.toISOString(),
-      endDate.toISOString(),
-      graphView
-    )).pkcData;
-
-    const P2ApiData = (await getP2Inventory(
-      startDate.toISOString(),
-      endDate.toISOString(),
-      graphView
-    )).p2Data;
-
-    this.setState(
-      {
-        PkoApiData,
-        PkcApiData,
-        P2ApiData
-      },
-      () => this.setGraphValues()
-    );
+    this.setGraphValues()
   };
 
   setGraphValues = () => {
-    const { PkoApiData, PkcApiData, P2ApiData } = this.state;
-    const { PkoData, PkcData, accumulatedData, salesCyclesAvg } = getChartData(
-      PkoApiData,
-      PkcApiData,
-      P2ApiData
-    );
+
     this.setState({
-      PkoData,
-      PkcData,
-      loading: false,
-      PkoApiData,
-      PkcApiData,
-      accumulatedData,
-      P2ApiData,
-      salesCyclesAvg
+      loading: false
     });
   };
 
@@ -147,6 +149,32 @@ export default class Maintenance extends Component {
     );
   };
 
+  handleMaintenanceLevelViewChange = e => {
+    const maintenance_level = e.target.value;
+    this.setState({
+      maintenance_level,
+      maintenance_level_text:this.getText(maintenance_level)
+    });
+  };
+  
+  handleMachineViewChange = e => {
+    const machine = e.target.value;
+    this.setState(
+      {
+        machine
+      }
+    );
+  };
+
+  handleMaintenanceViewChange = e => {
+    const maintenance_action = e.target.value;
+    this.setState(
+      {
+        maintenance_action
+      }
+    );
+  };
+
   handleDateFilter = e => {
     const currentDateFilter = e.target.value;
     if (currentDateFilter === "custom") {
@@ -166,21 +194,20 @@ export default class Maintenance extends Component {
   };
 
   render() {
-    const {
-      PkoData,
-      currentScreen,
-      PkcData,
-      loading,
-      currentView,
-      startDate,
-      endDate,
-      accumulatedData,
-      PkoApiData,
-      PkcApiData,
-      currentDateFilter,
-      graphView,
-      salesCyclesAvg
-    } = this.state;
+
+    const maintenance_levels_options = this.state.maintenance_levels.map((maintenance_level,index)=>{
+      return  <option key={index} value={maintenance_level.key}>{maintenance_level.value}</option>
+    });
+    
+    const machines_options = this.state.machines.map((equipment,index)=>{
+      return  <option key={index} value={equipment.key}>{equipment.value}</option>
+    });
+    
+
+    const maintenance_options = this.state.maintenance_actions.map((maintenance,index)=>{
+      return  <option key={index} value={maintenance.key}>{maintenance.value}</option>
+    });
+
 
     const stackedBarOptions = {
       tooltips: {
@@ -190,7 +217,7 @@ export default class Maintenance extends Component {
             const key = data.datasets[tooltipItem.datasetIndex].label;
             const val =
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-            if (val) return key + " : ₦" + val.toLocaleString();
+            if (val) return `${key}: ${val.toLocaleString()} ${val > 1 ? "Hours":"Hour"}`;
           }
         }
       },
@@ -217,9 +244,11 @@ export default class Maintenance extends Component {
       }
     };
 
-    if (loading) {
+    if (this.state.loading) {
       return <Loader />;
     }
+
+
 
 
     return (
@@ -231,7 +260,7 @@ export default class Maintenance extends Component {
       <div className="col-md-3 block">
         <select 
           className="form-control form-control-lg"
-          value={currentDateFilter}
+          value={this.state.currentDateFilter}
           onChange={this.handleDateFilter}>
             <option value="currentWeek">Current Week</option>
             <option value="lastWeek">Last Week</option>
@@ -239,19 +268,19 @@ export default class Maintenance extends Component {
             <option value="lastMonth">Last Month</option>
             <option value="custom">Custom</option>
         </select>
-        {currentDateFilter === "custom" && (
+        {this.state.currentDateFilter === "custom" && (
             <span className="custom-date-container">
               <span className="dp-cnt">
                 <span className="date-picker-text">From</span>
                 <DatePicker
-                  selected={startDate}
+                  selected={this.state.startDate}
                   onChange={this.handleStartDateChange}
                 />
               </span>
               <span>
                 <span className="date-picker-text">To</span>
                 <DatePicker
-                  selected={endDate}
+                  selected={this.state.endDate}
                   onChange={this.handleEndDateChange}
                 />
               </span>
@@ -266,7 +295,7 @@ export default class Maintenance extends Component {
       <div className="col-md-2 block">
         <select 
           className="form-control form-control-lg"
-          value={graphView}
+          value={this.state.graphView}
           onChange={this.handleGraphView}>
          <option value="day">Day</option>
           <option value="week">Week</option>
@@ -277,12 +306,22 @@ export default class Maintenance extends Component {
         <select 
           className="form-control form-control-lg"
           value={this.maintenance_level}
-          onChange={this.maintenanceLevel}>
-         <option value="factory_level">Factory Level</option>
-          <option value="machine_level">Machine Level</option>
-          <option value="maintenance_action_level">Maintenance Action Level</option>
-        </select>
+          onChange={this.handleMaintenanceLevelViewChange}>{maintenance_levels_options}</select>
       </div>
+      {this.state.maintenance_level === "maintenance_action_level"  && (<div className="col-md-3 block">
+        <select 
+          className="form-control form-control-lg"
+          value={this.state.maintenance_action}
+          onChange={this.handleMaintenanceViewChange}>{maintenance_options}</select>
+      </div>
+      )}
+      {this.state.maintenance_level === "machine_level"  && (<div className="col-md-3 block">
+        <select 
+          className="form-control form-control-lg"
+          value={this.state.machine}
+          onChange={this.handleMachineViewChange}>{machines_options}</select>
+      </div>
+      )}
 
     </div>
 
@@ -291,14 +330,14 @@ export default class Maintenance extends Component {
         <Card
           statsIcon="fa fa-history"
           id="chartHours"
-          title={`${this.state.maintenance_level_text} Metrics`}
-          category={`System Downtime ${this.state.maintenance_level_text} Metrics`}
-          stats="Sales Metrics"
+          title={`${this.state.maintenance_level_text}`}
+          category={`System Downtime ${this.state.maintenance_level_text}`}
+          stats={`${this.state.maintenance_level_text}`}
           content={
             <div className="ct-chart" style={{height:"100%",width:"100%"}}>
               <div>
                 <Bar
-                    data={accumulatedData}
+                    data={this.state.accumulatedData}
                     options={stackedBarOptions}
                     height={400}
                     width={800}
@@ -306,9 +345,6 @@ export default class Maintenance extends Component {
               </div>
             </div>
           }
-          // legend={
-          //   <div className="legend">{this.createLegend(legendSales)}</div>
-          // }
         />
       </Col>
     </Row>

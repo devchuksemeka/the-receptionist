@@ -39,20 +39,20 @@ class Sidebar extends Component {
             null
           )}
         <div className="logo">
-          <a
-            href="#"
+          <NavLink
+            to="#"
             className="simple-text logo-mini"
           >
             <div className="logo-img">
               <img src={logo} alt="logo_image" />
             </div>
-          </a>
-          <a
-            href="#"
+          </NavLink>
+          <NavLink
+            to="#"
             className="simple-text logo-normal"
           >
             Releaf FOT
-          </a>
+          </NavLink>
         </div>
         <div className="sidebar-wrapper">
           <ul className="nav">

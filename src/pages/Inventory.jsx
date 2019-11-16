@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import ChartistGraph from "react-chartist";
 import { Grid, Row, Col } from "react-bootstrap";
 import { Card } from "components/Card/Card.jsx";
-import { Line, Bar } from "react-chartjs-2";
+import { Line, 
+  // Bar 
+} from "react-chartjs-2";
 import Loader from "../common/Loader";
 import DatePicker from "react-datepicker";
 import { getDateFilter } from "../common";
@@ -13,10 +14,10 @@ import {
   getPkcInventory
 } from "../actions/sheetActions";
 import {
-  dataSales,
-  optionsSales,
-  responsiveSales,
-  legendSales
+  // dataSales,
+  // optionsSales,
+  // responsiveSales,
+  // legendSales
 } from "variables/Variables.jsx";
 
 export default class Inventory extends Component {
@@ -184,14 +185,14 @@ export default class Inventory extends Component {
       P2Accumulated,
       PkoAccumulated,
       PkcAccumulated,
-      P2AvgProduction,
-      PkcAvgProduction,
-      PkoAvgProduction,
+      // P2AvgProduction,
+      // PkcAvgProduction,
+      // PkoAvgProduction,
       startDate,
       endDate,
-      P2ApiData,
-      PkoApiData,
-      PkcApiData,
+      // P2ApiData,
+      // PkoApiData,
+      // PkcApiData,
       currentDateFilter,
       graphView
     } = this.state;

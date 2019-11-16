@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Grid } from "react-bootstrap";
+import { NavLink } from "react-router-dom";
 
 class Footer extends Component {
   render() {
@@ -24,9 +25,10 @@ class Footer extends Component {
           </nav> */}
           <p className="copyright pull-right">
             &copy; {new Date().getFullYear()}{" "}
-            <a href="#">
+            <NavLink
+              to="#">
               Releaf FOT
-            </a>
+            </NavLink>
             &nbsp; All Right Reserved.
           </p>
         </Grid>

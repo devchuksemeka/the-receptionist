@@ -2,7 +2,6 @@ import Overview from "pages/Overview";
 import Inventory from "pages/Inventory";
 import Sales from "pages/Sales";
 import Maintenance from "pages/Maintenance";
-import Auth from "pages/Auth/Auth";
 
 const dashboardRoutes = [
   {

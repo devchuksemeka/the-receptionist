@@ -12,7 +12,7 @@ import {
   getPkcInventory
 } from "../actions/sheetActions";
 import {
-  legendSales
+  // legendSales
 } from "variables/Variables.jsx";
 
 export default class Sales extends Component {
@@ -165,8 +165,8 @@ export default class Sales extends Component {
       startDate,
       endDate,
       accumulatedData,
-      PkoApiData,
-      PkcApiData,
+      // PkoApiData,
+      // PkcApiData,
       currentDateFilter,
       graphView,
       salesCyclesAvg
@@ -343,6 +343,8 @@ export default class Sales extends Component {
           title="Sales Metrics"
           category="All Products Sales Metrics Breakdown"
           stats="Sales Metrics"
+          avg_sale_cycle={salesCyclesAvg}
+
           content={
             <div className="ct-chart" style={{height:"100%",width:"100%"}}>
                {currentView === "dailySales" && (

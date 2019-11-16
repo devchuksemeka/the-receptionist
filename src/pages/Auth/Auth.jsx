@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import axios from 'axios';
 
 import AuthContext from '../../context/AuthContext'
-import Loader from "../../common/Loader";
 
 import './Auth.scss'
 
@@ -127,10 +126,10 @@ export default class Auth extends Component{
     }
 
     render(){
-        const submitBtnText = () =>{
-            if(this.state.isLogin) return "Login";
-            return "Sign Up";
-        }
+        // const submitBtnText = () =>{
+        //     if(this.state.isLogin) return "Login";
+        //     return "Sign Up";
+        // }
         return (
             <div className="App">
                 <div className="flex-container">

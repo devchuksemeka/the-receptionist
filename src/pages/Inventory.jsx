@@ -97,23 +97,20 @@ export default class Inventory extends Component {
     });
   }
 
-  handleStartDateChange = date => {
-    if (date > Date.now()) {
-      return;
-    }
+  handleStartDateChange = e => {
+    const date = e.target.value;
     this.setState({
-      startDate: date
+      startDate: new Date(date)
     });
   };
 
-  handleEndDateChange = date => {
-    if (date > Date.now()) {
-      return;
-    }
+  handleEndDateChange = e => {
+    const date = e.target.value;
     this.setState({
-      endDate: date
+      endDate: new Date(date)
     });
   };
+
 
   handleDateFilter = e => {
     const currentDateFilter = e.target.value;
@@ -270,29 +267,6 @@ export default class Inventory extends Component {
             <option value="lastMonth">Last Month</option>
             <option value="custom">Custom</option>
         </select>
-        {currentDateFilter === "custom" && (
-            <span className="custom-date-container">
-              <span className="dp-cnt">
-                <span className="date-picker-text">From</span>
-                <DatePicker
-                  selected={startDate}
-                  onChange={this.handleStartDateChange}
-                />
-              </span>
-              <span>
-                <span className="date-picker-text">To</span>
-                <DatePicker
-                  selected={endDate}
-                  onChange={this.handleEndDateChange}
-                />
-              </span>
-              <span>
-                <button className="date-picker-btn" onClick={this.handleSubmit}>
-                  Go
-                </button>
-              </span>
-            </span>
-          )}
       </div>
 
       <div className="col-md-2 block">
@@ -333,6 +307,30 @@ export default class Inventory extends Component {
         </select>
       </div>
 
+    </div>
+    <div className="row" style={{marginBottom:"0.5rem"}}>
+      {currentDateFilter === "custom"  && (<React.Fragment>
+        <div className="col-md-3 block">
+          <div className="form-group row">
+            <label htmlFor="custom_date_from" className="col-sm-2 col-form-label">From</label>
+            <div className="col-sm-10">
+              <input type="date" onChange={this.handleStartDateChange} className="form-control" id="custom_date_from"></input>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-3 block">
+          <div className="form-group row">
+            <label htmlFor="custom_date_to" className="col-sm-2 col-form-label">To</label>
+            <div className="col-sm-10">
+              <input type="date" onChange={this.handleEndDateChange} className="form-control" id="custom_date_to"></input>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-2">
+          <button className="btn btn-primary" onClick={this.handleSubmit}>Go</button>
+        </div>
+      </React.Fragment> 
+      )}
     </div>
 
     <Row>

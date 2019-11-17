@@ -8,9 +8,12 @@ import Loader from "../common/Loader";
 import DatePicker from "react-datepicker";
 import { getDateFilter } from "../common";
 
+import axios from 'axios'
+
 export default class Maintenance extends Component {
 
   state = {
+    baseURL:process.env.REACT_APP_SERVER_ENDPOINT,
     maintenance_level_text:"Factory Level",
     maintenance_level:"factory_level",
     maintenance_levels:[
@@ -41,60 +44,14 @@ export default class Maintenance extends Component {
     endDate: new Date(),
     currentDateFilter: "currentWeek",
     graphView: "day",
-    accumulatedData: {
-      labels: ["Oct 29","Oct 30"],
-      datasets: [
-        {
-          label: "Machine 1",
-          stack: "Stack 0",
-          fill: false,
-          lineTension: 0.1,
-          backgroundColor: "#de6866",
-          borderColor: "#de6866",
-          borderCapStyle: "butt",
-          borderDash: [],
-          borderDashOffset: 0.0,
-          borderJoinStyle: "miter",
-          pointBorderColor: "#de6866",
-          pointBackgroundColor: "#fff",
-          pointBorderWidth: 1,
-          pointHoverRadius: 5,
-          pointHoverBackgroundColor: "#de6866",
-          pointHoverBorderColor: "#fe6866",
-          pointHoverBorderWidth: 2,
-          pointRadius: 1,
-          pointHitRadius: 10,
-          data: [3,4]
-        },
-        {
-          label: "Machine 2",
-          stack: "Stack 0",
-          fill: false,
-          lineTension: 0.1,
-          backgroundColor: "rgba(75,192,192,0.4)",
-          borderColor: "rgba(75,192,192,1)",
-          borderCapStyle: "butt",
-          borderDash: [],
-          borderDashOffset: 0.0,
-          borderJoinStyle: "miter",
-          pointBorderColor: "rgba(75,192,192,1)",
-          pointBackgroundColor: "#fff",
-          pointBorderWidth: 1,
-          pointHoverRadius: 5,
-          pointHoverBackgroundColor: "rgba(75,192,192,1)",
-          pointHoverBorderColor: "rgba(220,220,220,1)",
-          pointHoverBorderWidth: 2,
-          pointRadius: 1,
-          pointHitRadius: 10,
-          data: [5,7]
-        },
-      ]
-    }
+    accumulatedData: {}
   };
 
   async componentDidMount() {
     await this.handleSubmit();
   }
+
+
 
   setCurrentScreen = e => {
     const currentScreen = e.target.value;
@@ -110,8 +67,100 @@ export default class Maintenance extends Component {
     return "";
   }
 
+  getRandomColor = () =>{
+   
+      var letters = '0123456789ABCDEF';
+      var color = '#';
+      for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+  }
+
+  getStartDate = () =>{
+    const start_date = this.state.startDate.toISOString();
+    // const start_date = '2019-05-05 11:20:12';
+    // console.log('state startdate',this.state.startDate)
+    return start_date;
+  }
+
+  getEndDate = () =>{
+    const end_date = this.state.endDate.toISOString();
+    // const end_date = '2019-05-10 12:20:12';
+    // console.log('state enddate',this.state.endDate)
+    return end_date;
+  }
+
+  getGraphView = () => {
+    let view = this.state.graphView;
+    return view
+  }
+
+  getRequestQueryParams = () =>{
+    let query = `graphView=${this.getGraphView()}&start_date=${this.getStartDate()}&end_date=${this.getEndDate()}`;
+    if(this.state.maintenance_level === "machine_level"){
+      query = `${query}&machine=${this.state.machine}`
+    }
+    if(this.state.maintenance_level === "maintenance_action_level"){
+      query = `${query}&maintenance_action=${this.state.maintenance_action}`
+    }
+    return query;
+  }
+
   handleSubmit = async () => {
-    this.setGraphValues()
+    try{
+      const accumulatedDataResponse = await axios.get(`
+        ${this.state.baseURL}/v1/maintenance/filter-query/${this.state.maintenance_level}?${this.getRequestQueryParams()}`)
+      const {datasets,machines} = accumulatedDataResponse.data.data
+
+      const result_keys = Object.keys(datasets);
+      const datasetAccumulated = [];
+
+      for(let j=0;j<machines.length;j++){
+        const dataScore = [];
+        for(let i=0;i<result_keys.length;i++){
+          dataScore.push(datasets[result_keys[i]][machines[j]])
+        }
+        const color = this.getRandomColor()
+        datasetAccumulated.push({
+          label: machines[j],
+          stack: "Stack 0",
+          fill: false,
+          lineTension: 0.1,
+          backgroundColor: color,
+          borderColor: color,
+          borderCapStyle: "butt",
+          borderDash: [],
+          borderDashOffset: 0.0,
+          borderJoinStyle: "miter",
+          pointBorderColor: color,
+          pointBackgroundColor: "#fff",
+          pointBorderWidth: 1,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: color,
+          pointHoverBorderColor: color,
+          pointHoverBorderWidth: 2,
+          pointRadius: 1,
+          pointHitRadius: 10,
+          data: dataScore
+        })
+
+      }
+      
+      this.setState(
+        {
+          accumulatedData:{
+            labels:result_keys,
+            datasets:datasetAccumulated
+          }
+        },
+        ()=>this.setGraphValues()
+      )
+
+    }catch(err){
+      console.log(err.response)
+    }
+    
   };
 
   setGraphValues = () => {
@@ -151,10 +200,13 @@ export default class Maintenance extends Component {
 
   handleMaintenanceLevelViewChange = e => {
     const maintenance_level = e.target.value;
+
     this.setState({
       maintenance_level,
       maintenance_level_text:this.getText(maintenance_level)
-    });
+    },
+    ()=> this.handleSubmit()
+    );
   };
   
   handleMachineViewChange = e => {
@@ -162,7 +214,8 @@ export default class Maintenance extends Component {
     this.setState(
       {
         machine
-      }
+      },
+      ()=> this.handleSubmit()
     );
   };
 
@@ -171,7 +224,8 @@ export default class Maintenance extends Component {
     this.setState(
       {
         maintenance_action
-      }
+      },
+      ()=> this.handleSubmit()
     );
   };
 
@@ -217,7 +271,8 @@ export default class Maintenance extends Component {
             const key = data.datasets[tooltipItem.datasetIndex].label;
             const val =
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-            if (val) return `${key}: ${val.toLocaleString()} ${val > 1 ? "Hours":"Hour"}`;
+             
+              return `${key}: ${val.toLocaleString()} ${val > 1 ? "Hours":"Hour"}`;
           }
         }
       },
@@ -237,7 +292,9 @@ export default class Maintenance extends Component {
               callback: value => {
                 if(value <= 1) return `${value.toLocaleString()} hour`
                 return `${value.toLocaleString()} hours `
-              }
+              },
+              beginAtZero: true,
+              stepSize: 1
             }
           }
         ]

@@ -23,9 +23,9 @@ class Sidebar extends Component {
     window.addEventListener("resize", this.updateDimensions.bind(this));
   }
   render() {
-    const sidebarBackground = {
-      backgroundImage: "url(" + this.props.image + ")"
-    };
+    // const sidebarBackground = {
+    //   backgroundImage: "url(" + this.props.image + ")"
+    // };
     return (
       <div
         id="sidebar"
@@ -34,7 +34,10 @@ class Sidebar extends Component {
         data-image={this.props.image}
       >
           {this.props.hasImage ? (
-            <div className="sidebar-background" style={sidebarBackground} />
+            <div className="sidebar-background" style={{
+              backgroundImage: "url(" + this.props.image + ")"
+            }} />
+            // <div className="sidebar-background" style={sidebarBackground} />
           ) : (
             null
           )}

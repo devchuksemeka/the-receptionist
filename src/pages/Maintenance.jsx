@@ -48,6 +48,8 @@ export default class Maintenance extends Component {
   };
 
   async componentDidMount() {
+    this.getMachines();
+    this.getMaintenanceActions();
     await this.handleSubmit();
   }
 
@@ -79,15 +81,11 @@ export default class Maintenance extends Component {
 
   getStartDate = () =>{
     const start_date = this.state.startDate.toISOString();
-    // const start_date = '2019-05-05 11:20:12';
-    // console.log('state startdate',this.state.startDate)
     return start_date;
   }
 
   getEndDate = () =>{
     const end_date = this.state.endDate.toISOString();
-    // const end_date = '2019-05-10 12:20:12';
-    // console.log('state enddate',this.state.endDate)
     return end_date;
   }
 
@@ -105,6 +103,34 @@ export default class Maintenance extends Component {
       query = `${query}&maintenance_action=${this.state.maintenance_action}`
     }
     return query;
+  }
+
+  getMaintenanceActions = async ()=>{
+    try{
+      const maintenance_action_response = await axios.get(`${this.state.baseURL}/v1/maintenance-actions`)
+      
+      let {data} = maintenance_action_response.data
+      data = data.filter(element => element.key);
+
+      this.setState({
+        maintenance_actions:data
+      })
+    }catch(err){
+      console.log(err.response)
+    }
+  }
+
+  getMachines = async () =>{
+    try{
+      const machinesResponse = await axios.get(`${this.state.baseURL}/v1/machines`)
+      let {data} = machinesResponse.data
+      data = data.filter(element => element.key);
+      this.setState({
+        machines:data
+      })
+    }catch(err){
+      console.log(err.response)
+    }
   }
 
   handleSubmit = async () => {

@@ -3,7 +3,6 @@ import { Grid, Row, Col } from "react-bootstrap";
 import { Card } from "components/Card/Card.jsx";
 import { Line, Bar } from "react-chartjs-2";
 import Loader from "../common/Loader";
-import DatePicker from "react-datepicker";
 import { getDateFilter } from "../common";
 import { getChartData } from "../helpers/SalesHelper";
 import {
@@ -158,11 +157,7 @@ export default class Sales extends Component {
       PkcData,
       loading,
       currentView,
-      startDate,
-      endDate,
       accumulatedData,
-      // PkoApiData,
-      // PkcApiData,
       currentDateFilter,
       graphView,
       salesCyclesAvg
@@ -202,7 +197,6 @@ export default class Sales extends Component {
         mode: "label",
         callbacks: {
           label: function(tooltipItem, data) {
-            // console.log(`datasets`,data.datasets);
             const key = data.datasets[tooltipItem.datasetIndex].label;
             const yAxis = data.datasets[tooltipItem.datasetIndex].yAxisID;
             const val =

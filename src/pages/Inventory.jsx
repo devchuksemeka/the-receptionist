@@ -5,7 +5,6 @@ import { Line,
   // Bar 
 } from "react-chartjs-2";
 import Loader from "../common/Loader";
-import DatePicker from "react-datepicker";
 import { getDateFilter } from "../common";
 import { getGraphValues } from "../helpers/InventoryHelper";
 import {
@@ -13,12 +12,6 @@ import {
   getPkoInventory,
   getPkcInventory
 } from "../actions/sheetActions";
-import {
-  // dataSales,
-  // optionsSales,
-  // responsiveSales,
-  // legendSales
-} from "variables/Variables.jsx";
 
 export default class Inventory extends Component {
   createLegend(json) {
@@ -182,14 +175,6 @@ export default class Inventory extends Component {
       P2Accumulated,
       PkoAccumulated,
       PkcAccumulated,
-      // P2AvgProduction,
-      // PkcAvgProduction,
-      // PkoAvgProduction,
-      startDate,
-      endDate,
-      // P2ApiData,
-      // PkoApiData,
-      // PkcApiData,
       currentDateFilter,
       graphView
     } = this.state;

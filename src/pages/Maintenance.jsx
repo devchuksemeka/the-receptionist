@@ -5,7 +5,6 @@ import {
   // Line, 
   Bar } from "react-chartjs-2";
 import Loader from "../common/Loader";
-import DatePicker from "react-datepicker";
 import { getDateFilter } from "../common";
 
 import axios from 'axios'
@@ -129,19 +128,19 @@ export default class Maintenance extends Component {
     try{
       const accumulatedDataResponse = await axios.get(`
         ${this.state.baseURL}/v1/maintenance/filter-query/${this.state.maintenance_level}?${this.getRequestQueryParams()}`)
-      const {datasets,machines} = accumulatedDataResponse.data.data
+      const {datasets,labels} = accumulatedDataResponse.data.data
 
       const result_keys = Object.keys(datasets);
       const datasetAccumulated = [];
 
-      for(let j=0;j<machines.length;j++){
+      for(let j=0;j<labels.length;j++){
         const dataScore = [];
         for(let i=0;i<result_keys.length;i++){
-          dataScore.push(datasets[result_keys[i]][machines[j]])
+          dataScore.push(datasets[result_keys[i]][labels[j]])
         }
         const color = this.getRandomColor()
         datasetAccumulated.push({
-          label: machines[j],
+          label: labels[j],
           stack: "Stack 0",
           fill: false,
           lineTension: 0.1,

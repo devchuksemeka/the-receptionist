@@ -114,7 +114,8 @@ export default class Maintenance extends Component {
     try{
       const machinesResponse = await axios.get(`${this.state.baseURL}/v1/machines`)
       let {data} = machinesResponse.data
-      data = data.filter(element => element.key);
+      data = data.filter(element => element.key)
+      
       data.unshift({key:"all",value:"All Machines"})
       this.setState({
         machines:data
@@ -123,6 +124,9 @@ export default class Maintenance extends Component {
       console.log(err.response)
     }
   }
+
+  toTitleCase = (str) => str.split(" ").map(item=>item.substring(0,1).toUpperCase()+item.substring(1)).join(" ")
+
 
   handleSubmit = async () => {
     try{
@@ -140,7 +144,7 @@ export default class Maintenance extends Component {
         }
         const color = this.getRandomColor()
         datasetAccumulated.push({
-          label: labels[j],
+          label: this.toTitleCase(labels[j].replace(/_/g," ")),
           stack: "Stack 0",
           fill: false,
           lineTension: 0.1,

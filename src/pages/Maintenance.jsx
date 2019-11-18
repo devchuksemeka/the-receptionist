@@ -288,7 +288,7 @@ export default class Maintenance extends Component {
             const val =
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
              
-              return `${key}: ${val.toLocaleString()} ${val > 1 ? "Hours":"Hour"}`;
+              if(val) return `${key}: ${val.toLocaleString()} ${val > 1 ? "Hours":"Hour"}`;
           }
         }
       },

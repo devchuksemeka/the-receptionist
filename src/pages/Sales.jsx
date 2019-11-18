@@ -15,16 +15,7 @@ import {
 } from "variables/Variables.jsx";
 
 export default class Sales extends Component {
-  createLegend(json) {
-    var legend = [];
-    for (var i = 0; i < json["names"].length; i++) {
-      var type = "fa fa-circle text-" + json["types"][i];
-      legend.push(<i className={type} key={i} />);
-      legend.push(" ");
-      legend.push(json["names"][i]);
-    }
-    return legend;
-  }
+  
   state = {
     loading: true,
     currentScreen: "pko",
@@ -38,7 +29,8 @@ export default class Sales extends Component {
     endDate: new Date(),
     currentDateFilter: "currentWeek",
     graphView: "day",
-    salesCyclesAvg: "N/A"
+    salesCyclesAvg: "N/A",
+    currency: "naira",
   };
 
   async componentDidMount() {
@@ -64,19 +56,22 @@ export default class Sales extends Component {
     const PkoApiData = (await getPkoInventory(
       startDate.toISOString(),
       endDate.toISOString(),
-      graphView
+      graphView,
+      this.state.currency
     )).pkoData;
 
     const PkcApiData = (await getPkcInventory(
       startDate.toISOString(),
       endDate.toISOString(),
-      graphView
+      graphView,
+      this.state.currency
     )).pkcData;
 
     const P2ApiData = (await getP2Inventory(
       startDate.toISOString(),
       endDate.toISOString(),
-      graphView
+      graphView,
+      this.state.currency
     )).p2Data;
 
     this.setState(
@@ -148,6 +143,15 @@ export default class Sales extends Component {
       },
       () => this.handleSubmit()
     );
+  };  
+  handleCurrencyChange = e => {
+    const currency = e.target.value;
+    this.setState(
+      {
+        currency
+      },
+      () => this.handleSubmit()
+    );
   };
 
   render() {
@@ -160,7 +164,8 @@ export default class Sales extends Component {
       accumulatedData,
       currentDateFilter,
       graphView,
-      salesCyclesAvg
+      salesCyclesAvg,
+      currency
     } = this.state;
 
     const stackedBarOptions = {
@@ -171,7 +176,7 @@ export default class Sales extends Component {
             const key = data.datasets[tooltipItem.datasetIndex].label;
             const val =
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-            if (val) return key + " : ₦" + val.toLocaleString();
+            if (val) return key + ` : ${currency === "naira" ? "₦":"$"}` + val.toLocaleString();
           }
         }
       },
@@ -185,7 +190,7 @@ export default class Sales extends Component {
           {
             stacked: true,
             ticks: {
-              callback: value => "₦" + value.toLocaleString()
+              callback: value => `${currency === "naira" ? "₦":"$"}` + value.toLocaleString()
             }
           }
         ]
@@ -202,7 +207,7 @@ export default class Sales extends Component {
             const val =
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
             if (val && yAxis === "A") return key + ": " +val.toLocaleString() +" tons";
-            if (val && yAxis === "B") return key + " : ₦" + val.toLocaleString();
+            if (val && yAxis === "B") return key + ` : ${currency === "naira" ? "₦":"$"}` + val.toLocaleString();
           }
         }
       },
@@ -231,7 +236,7 @@ export default class Sales extends Component {
               labelString: ""
             },
             ticks: {
-              callback: value => "₦" + value.toLocaleString()
+              callback: value => ` ${currency === "naira" ? "₦":"$"} ` + value.toLocaleString()
             }
           }
         ]
@@ -285,6 +290,8 @@ export default class Sales extends Component {
       </div>
       <div className="col-md-2 block">
         <select 
+          value={this.currency}
+          onChange={this.handleCurrencyChange}
           className="form-control form-control-lg">
          <option value="naira">Naira</option>
           <option value="usd">US Dollar</option>

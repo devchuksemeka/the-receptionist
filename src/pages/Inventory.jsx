@@ -42,7 +42,8 @@ export default class Inventory extends Component {
     PkoApiData: [],
     PkcApiData: [],
     currentDateFilter: "currentWeek",
-    graphView: "day"
+    graphView: "day",
+    currency: "naira",
   };
 
   async componentDidMount() {
@@ -133,6 +134,16 @@ export default class Inventory extends Component {
     );
   };
 
+  handleCurrencyChange = e => {
+    const currency = e.target.value;
+    this.setState(
+      {
+        currency
+      },
+      () => this.handleSubmit()
+    );
+  };
+
   handleSubmit = async () => {
     const { startDate, endDate, graphView } = this.state;
     this.setState({
@@ -141,17 +152,20 @@ export default class Inventory extends Component {
     const P2ApiData = (await getP2Inventory(
       startDate.toISOString(),
       endDate.toISOString(),
-      graphView
+      graphView,
+      this.state.currency
     )).p2Data;
     const PkoApiData = (await getPkoInventory(
       startDate.toISOString(),
       endDate.toISOString(),
-      graphView
+      graphView,
+      this.state.currency
     )).pkoData;
     const PkcApiData = (await getPkcInventory(
       startDate.toISOString(),
       endDate.toISOString(),
-      graphView
+      graphView,
+      this.state.currency
     )).pkcData;
     this.setState(
       {
@@ -176,7 +190,8 @@ export default class Inventory extends Component {
       PkoAccumulated,
       PkcAccumulated,
       currentDateFilter,
-      graphView
+      graphView,
+      currency
     } = this.state;
 
     const options = { maintainAspectRatio: true, responsive: true };
@@ -190,7 +205,7 @@ export default class Inventory extends Component {
             const val =
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
             if (val && yAxis === "A") return key + ": " +val.toLocaleString() +" tons";
-            if (val && yAxis === "B") return key + " : ₦" + val.toLocaleString();
+            if (val && yAxis === "B") return key + ` : ${currency === "naira" ? "₦":"$"}`+ val.toLocaleString();
           }
         }
     
@@ -227,7 +242,7 @@ export default class Inventory extends Component {
           display: true
         },
         ticks: {
-          callback: value => "₦" + value.toLocaleString()
+          callback: value => `${currency === "naira" ? "₦":"$"}` + value.toLocaleString()
         }
       }
     ];
@@ -277,6 +292,8 @@ export default class Inventory extends Component {
       </div>
       <div className="col-md-2 block">
         <select 
+          value={currency}
+          onChange={this.handleCurrencyChange}
           className="form-control form-control-lg">
          <option value="naira">Naira</option>
           <option value="usd">US Dollar</option>

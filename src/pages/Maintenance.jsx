@@ -22,19 +22,9 @@ export default class Maintenance extends Component {
       {key:"maintenance_action_level",value:"Maintenance Action Level"}
     ],
     machine:"all",
-    machines:[
-      {key:"all",value:"All Machines"},
-      {key:"machine_1",value:"Machine 1"},
-      {key:"machine_2",value:"Machine 2"},
-      {key:"machine_3",value:"Machine 3"},
-      {key:"machine_4",value:"Machine 4"},
-    ],
+    machines:[],
     maintenance_action:"all",
-    maintenance_actions:[
-      {key:"all",value:"All Maintenance Actions"},
-      {key:"welded_worms",value:"Welded Worms"},
-      {key:"welded_baskets",value:"Welded Baskets"}
-    ],
+    maintenance_actions:[],
     
     loading: true,
     PkoData: {},
@@ -111,6 +101,7 @@ export default class Maintenance extends Component {
       
       let {data} = maintenance_action_response.data
       data = data.filter(element => element.key);
+      data.unshift( {key:"all",value:"All Maintenance Actions"})
 
       this.setState({
         maintenance_actions:data
@@ -125,6 +116,7 @@ export default class Maintenance extends Component {
       const machinesResponse = await axios.get(`${this.state.baseURL}/v1/machines`)
       let {data} = machinesResponse.data
       data = data.filter(element => element.key);
+      data.unshift({key:"all",value:"All Machines"})
       this.setState({
         machines:data
       })

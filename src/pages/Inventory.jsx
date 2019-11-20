@@ -342,7 +342,8 @@ export default class Inventory extends Component {
         <Card
           statsIcon="fa fa-history"
           id="chartHours"
-          title={`Inventory Metrics ${Date()}`}
+          title="Inventory Metrics"
+          // title={`Inventory Metrics ${Date()}`}
           category="All Products Inventory Metrics Breakdown"
           stats="Inventory Metrics"
           content={

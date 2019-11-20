@@ -145,6 +145,8 @@ export default class Inventory extends Component {
   };
 
   handleSubmit = async () => {
+
+    console.log(Date());
     const { startDate, endDate, graphView } = this.state;
     this.setState({
       loading: true

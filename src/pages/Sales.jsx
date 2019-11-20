@@ -91,6 +91,7 @@ export default class Sales extends Component {
       PkcApiData,
       P2ApiData
     );
+    
     this.setState({
       PkoData,
       PkcData,

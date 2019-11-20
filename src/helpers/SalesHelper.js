@@ -159,20 +159,18 @@ export const getChartData = (PkoApiData, PkcApiData, P2ApiData) => {
       }
     ]
   };
-
+  console.log("accumulatedSalesObject",accumulatedSalesObject);
   const accumulatedLabels = Object.keys(accumulatedSalesObject).sort();
   const pkoAccumulated = [];
   const pkcAccumulated = [];
   const p2Accumulated = [];
   let p2CrushedTillDate = 0;
   accumulatedLabels.forEach(date => {
-    if (
-      !accumulatedSalesObject[date].pko ||
-      accumulatedSalesObject[date].pko === 0
-    ) {
+    if (!accumulatedSalesObject[date].pko || accumulatedSalesObject[date].pko === 0) {
       p2Accumulated.push(void 0);
       p2CrushedTillDate += accumulatedSalesObject[date].p2;
-    } else {
+    } 
+    else {
       p2CrushedTillDate += accumulatedSalesObject[date].p2;
       p2Accumulated.push(convertTo2Dp(p2CrushedTillDate));
       p2CrushedTillDate = 0;

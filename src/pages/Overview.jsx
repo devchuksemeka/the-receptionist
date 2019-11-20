@@ -127,7 +127,7 @@ class Overview extends Component {
             </Col>
           </Row>
           <Row>
-            <Col md={12}>
+            <Col md={9}>
               <Card
                 statsIcon="fa fa-history"
                 id="chartHours"
@@ -146,25 +146,37 @@ class Overview extends Component {
                 }
               />
             </Col>
-            {/* <Col md={4}>
-              <Card
-                statsIcon="fa fa-clock-o"
-                title="Email Statistics"
-                category="Last Campaign Performance"
-                stats="Campaign sent 2 days ago"
-                content={
-                  <div
-                    id="chartPreferences"
-                    className="ct-chart ct-perfect-fourth"
-                  >
-                    <ChartistGraph data={dataPie} type="Pie" />
-                  </div>
-                }
-                legend={
-                  <div className="legend">{this.createLegend(legendPie)}</div>
-                }
-              />
-            </Col> */}
+            <Col md={3}>
+            <Row>
+              <Col lg={12} sm={12}>
+                <StatsCard
+                  bigIcon={<i className="pe-7s-attention text-warning" />}
+                  statsText="P2 (Tons)"
+                  statsValue="2199"
+                  statsIcon={<i className="pe-7s-server" />}
+                  statsIconText="P2 All time purchase (ATP)"
+                />
+              </Col>
+              <Col lg={12} sm={12}>
+                <StatsCard
+                  bigIcon={<i className="pe-7s-star text-danger" />}
+                  statsText="PKC (Tons)"
+                  statsValue="8%"
+                  statsIcon={<i className="fa fa-clock-o" />}
+                  statsIconText="PKC All time Sale (ATS)"
+                />
+              </Col>
+              <Col lg={12} sm={12}>
+                <StatsCard
+                  bigIcon={<i className="pe-7s-paper-plane text-info" />}
+                  statsText="PKO (Tons)"
+                  statsValue="53%"
+                  statsIcon={<i className="fa fa-refresh" />}
+                  statsIconText="PKO All time sale (ATS)"
+                />
+              </Col>
+            </Row>
+            </Col>
           </Row>
 
           {/* <Row>

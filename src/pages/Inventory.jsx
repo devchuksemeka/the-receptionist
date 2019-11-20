@@ -146,7 +146,7 @@ export default class Inventory extends Component {
 
   handleSubmit = async () => {
 
-    console.log(Date());
+    
     const { startDate, endDate, graphView } = this.state;
     this.setState({
       loading: true
@@ -342,7 +342,7 @@ export default class Inventory extends Component {
         <Card
           statsIcon="fa fa-history"
           id="chartHours"
-          title="Inventory Metrics"
+          title={`Inventory Metrics ${Date()}`}
           category="All Products Inventory Metrics Breakdown"
           stats="Inventory Metrics"
           content={

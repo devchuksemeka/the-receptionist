@@ -161,7 +161,7 @@ class Overview extends Component {
                 <StatsCard
                   bigIcon={<i className="pe-7s-star text-danger" />}
                   statsText="PKC (Tons)"
-                  statsValue="8%"
+                  statsValue="1200"
                   statsIcon={<i className="fa fa-clock-o" />}
                   statsIconText="PKC All time Sale (ATS)"
                 />
@@ -170,7 +170,7 @@ class Overview extends Component {
                 <StatsCard
                   bigIcon={<i className="pe-7s-paper-plane text-info" />}
                   statsText="PKO (Tons)"
-                  statsValue="53%"
+                  statsValue="999"
                   statsIcon={<i className="fa fa-refresh" />}
                   statsIconText="PKO All time sale (ATS)"
                 />

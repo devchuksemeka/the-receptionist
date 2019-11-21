@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from 'axios'
 import { Line } from "react-chartjs-2";
 import { Grid, 
   Row, 
@@ -10,9 +11,14 @@ import { StatsCard } from "components/StatsCard/StatsCard.jsx";
 
 class Overview extends Component {
   state = {
+    baseURL:process.env.REACT_APP_SERVER_ENDPOINT,
     loading: true,
     currentScreen: "pko",
     currentView: "dailySales",
+    pko_all_time_sale:0,
+    pkc_all_time_sale:0,
+    pksl_all_time_sale:0,
+    p2_all_time_purchase:0,
     revenue_data: {
       labels: ["Nov 1st","Nov 2nd","Nov 3rd","Nov 4th","Nov 5th","Nov 6th"],
       datasets: [
@@ -48,6 +54,39 @@ class Overview extends Component {
     salesCyclesAvg: "N/A",
     currency: "naira",
   };
+
+  async componentDidMount(){
+    this.getAllTimePurchases();
+    this.getAllTimeSales();
+  }
+
+  getAllTimeSales = async ()=>{
+    try{
+      const all_time_sales_response = await axios.get(`${this.state.baseURL}/v1/overview/all-time-sales`)
+      const {PKSL,PKO,PKC} = all_time_sales_response.data.data
+
+      this.setState({
+        pksl_all_time_sale:PKSL || 0,
+        pko_all_time_sale:PKO || 0,
+        pkc_all_time_sale:PKC || 0,
+      })
+    }catch(err){
+      console.log(err.response)
+    }
+  }
+
+  getAllTimePurchases = async ()=>{
+    try{
+      const all_time_purchases_response = await axios.get(`${this.state.baseURL}/v1/overview/all-time-purchases`)
+      const {P2} = all_time_purchases_response.data.data
+
+      this.setState({
+        p2_all_time_purchase:P2 || 0,
+      })
+    }catch(err){
+      console.log(err.response)
+    }
+  }
 
   render() {
 
@@ -152,7 +191,7 @@ class Overview extends Component {
                 <StatsCard
                   bigIcon={<i className="pe-7s-attention text-warning" />}
                   statsText="P2 (Tons)"
-                  statsValue="2199"
+                  statsValue={this.state.p2_all_time_purchase}
                   statsIcon={<i className="pe-7s-server" />}
                   statsIconText="P2 All time purchase (ATP)"
                 />
@@ -161,7 +200,7 @@ class Overview extends Component {
                 <StatsCard
                   bigIcon={<i className="pe-7s-star text-danger" />}
                   statsText="PKC (Tons)"
-                  statsValue="1200"
+                  statsValue={this.state.pkc_all_time_sale}
                   statsIcon={<i className="fa fa-clock-o" />}
                   statsIconText="PKC All time Sale (ATS)"
                 />
@@ -170,7 +209,16 @@ class Overview extends Component {
                 <StatsCard
                   bigIcon={<i className="pe-7s-paper-plane text-info" />}
                   statsText="PKO (Tons)"
-                  statsValue="999"
+                  statsValue={this.state.pko_all_time_sale}
+                  statsIcon={<i className="fa fa-refresh" />}
+                  statsIconText="PKO All time sale (ATS)"
+                />
+              </Col>
+              <Col lg={12} sm={12}>
+                <StatsCard
+                  bigIcon={<i className="pe-7s-refresh-cloud text-warning" />}
+                  statsText="PKSL (Tons)"
+                  statsValue={this.state.pksl_all_time_sale}
                   statsIcon={<i className="fa fa-refresh" />}
                   statsIconText="PKO All time sale (ATS)"
                 />

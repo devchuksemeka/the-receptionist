@@ -10,9 +10,7 @@ import {
   getPkoInventory,
   getPkcInventory
 } from "../actions/sheetActions";
-import {
-  // legendSales
-} from "variables/Variables.jsx";
+
 
 export default class Sales extends Component {
   
@@ -169,94 +167,61 @@ export default class Sales extends Component {
       currency
     } = this.state;
 
-    const stackedBarOptions = {
-      tooltips: {
+    const options = { maintainAspectRatio: true, responsive: true };
+    options.tooltips = {
         mode: "label",
         callbacks: {
           label: function(tooltipItem, data) {
-            const key = data.datasets[tooltipItem.datasetIndex].label;
-            const val =
-              data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-            if (val) return key + ` : ${currency === "naira" ? "₦":"$"}` + val.toLocaleString();
-          }
-        }
-      },
-      scales: {
-        xAxes: [
-          {
-            stacked: true
-          }
-        ],
-        yAxes: [
-          {
-            stacked: true,
-            ticks: {
-              callback: value => `${currency === "naira" ? "₦":"$"}` + value.toLocaleString()
-            }
-          }
-        ]
-      }
-    };
-
-    const options = { maintainAspectRatio: true, responsive: true,
-      tooltips : {
-        mode: "label",
-        callbacks: {
-          label: function(tooltipItem, data) {
+            // console.log(`datasets`,data.datasets);
             const key = data.datasets[tooltipItem.datasetIndex].label;
             const yAxis = data.datasets[tooltipItem.datasetIndex].yAxisID;
             const val =
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
             if (val && yAxis === "A") return key + ": " +val.toLocaleString() +" tons";
-            if (val && yAxis === "B") return key + ` : ${currency === "naira" ? "₦":"$"}` + val.toLocaleString();
+            if (val && yAxis === "B") return key + ` : ${currency === "naira" ? "₦":"$"}`+ val.toLocaleString();
           }
         }
-      },
-      scales:{
-        xAxes:[
-          {
-            scaleLabel: {
-              display: true,
-              labelString: ""
-            }
-          }
-        ],
-        yAxes :[
-          {
-            type: "linear",
-            display: true,
-            position: "left",
-            id: "A",
-            scaleLabel: {
-              display: true,
-              labelString: ""
-            },
-            ticks: {
-              callback: value => value + " tons"
-            }
-          },
-          {
-            type: "linear",
-            display: true,
-            position: "right",
-            id: "B",
-            scaleLabel: {
-              display: true,
-              labelString: ""
-            },
-            ticks: {
-              callback: value => ` ${currency === "naira" ? "₦":"$"} ` + value.toLocaleString()
-            }
-          }
-        ]
-      }
-    };
     
-
+    }
+    options.scales = {};
+    options.scales.xAxes = [
+      {
+        scaleLabel: {
+          display: true,
+          labelString: ""
+        }
+      }
+    ];
+    options.scales.yAxes = [
+      {
+        type: "linear",
+        display: true,
+        position: "left",
+        id: "A",
+        scaleLabel: {
+          display: true,
+          labelString: ""
+        },
+        ticks: {
+          callback: value => value + " tons"
+        }
+      },
+      {
+        type: "linear",
+        display: true,
+        position: "right",
+        id: "B",
+        scaleLabel: {
+          display: true
+        },
+        ticks: {
+          callback: value => `${currency === "naira" ? "₦":"$"}` + value.toLocaleString()
+        }
+      }
+    ];
     if (loading) {
       return <Loader />;
     }
-
 
     return (
       <React.Fragment>
@@ -283,6 +248,7 @@ export default class Sales extends Component {
           value={currentScreen}
           onChange={this.setCurrentScreen}
         >
+         <option value="p2">P2</option>
           <option value="pko">PKO</option>
           <option value="pkc">PKC</option>
         </select>
@@ -299,7 +265,7 @@ export default class Sales extends Component {
       </div>
       <div className="col-md-2 block">
         <select 
-          value={this.currency}
+          value={currency}
           onChange={this.handleCurrencyChange}
           className="form-control form-control-lg">
          <option value="naira">Naira</option>
@@ -311,7 +277,7 @@ export default class Sales extends Component {
           className="form-control form-control-lg"
           value={currentView}
           onChange={this.setCurrentView}>
-         <option value="dailySales">Daily Sales</option>
+         <option value="dailyPurchase">Daily Purchase/Production</option>
           <option value="accumulated">Accumulated</option>
         </select>
       </div>
@@ -347,20 +313,26 @@ export default class Sales extends Component {
         <Card
           statsIcon="fa fa-history"
           id="chartHours"
-          title="Sales Metrics"
-          category="All Products Sales Metrics Breakdown"
-          stats="Sales Metrics"
-          avg_sale_cycle={salesCyclesAvg}
-
+          title="Inventory Metrics"
+          category="All Products Inventory Metrics Breakdown"
+          stats="Inventory Metrics"
           content={
             <div className="ct-chart" style={{height:"100%",width:"100%"}}>
-               {currentView === "dailySales" && (
+               {currentView === "dailyPurchase" && (
               <div>
                 {currentScreen === "pko" && (
                   <Line
                     height={400}
                     width={800}
                     data={PkoData}
+                    options={options}
+                  />
+                )}
+                {currentScreen === "p2" && (
+                  <Line
+                    height={400}
+                    width={800}
+                    data={P2Data}
                     options={options}
                   />
                 )}
@@ -377,21 +349,57 @@ export default class Sales extends Component {
             )}
             {currentView === "accumulated" && (
               <div>
-                <Bar
-                    data={accumulatedData}
-                    options={stackedBarOptions}
+                {currentScreen === "pko" &&(
+                  <Line
+                    data={PkoAccumulated}
+                    options={options}
                     height={400}
                     width={800}
                   />
+                )}
+                {currentScreen === "p2" && (
+                  <Line
+                    data={P2Accumulated}
+                    options={options}
+                    height={400}
+                    width={800}
+                  />
+                )}
+                {currentScreen === "pkc" && (
+                  <Line
+                    data={PkcAccumulated}
+                    options={options}
+                    height={400}
+                    width={800}
+                  />
+                )}
               </div>
             )}
+            </div>
+          }
+        />
+      </Col>
+      {/* <Col md={12} lg={12}>
+        <Card
+          statsIcon="fa fa-history"
+          id="chartHours"
+          title="Average Crushed Per Hour"
+          category="Average Crushed Per Hour Inventory Metrics Breakdown"
+          stats="Averaged Crushed Inventory Metrics"
+          content={
+            <div className="ct-chart" style={{height:"100%",width:"100%"}}>
+               {currentScreen === "p2" && <Bar data={P2AvgProduction} />
+                }
+                {currentScreen === "pko" && <Bar data={PkoAvgProduction} />
+                }
+                {currentScreen === "pkc" && <Bar data={PkcAvgProduction} />}
             </div>
           }
           // legend={
           //   <div className="legend">{this.createLegend(legendSales)}</div>
           // }
         />
-      </Col>
+      </Col> */}
     </Row>
   </Grid>
 </div>

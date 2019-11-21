@@ -343,7 +343,6 @@ export default class Inventory extends Component {
           statsIcon="fa fa-history"
           id="chartHours"
           title="Inventory Metrics"
-          // title={`Inventory Metrics ${Date()}`}
           category="All Products Inventory Metrics Breakdown"
           stats="Inventory Metrics"
           content={
@@ -407,9 +406,6 @@ export default class Inventory extends Component {
             )}
             </div>
           }
-          // legend={
-          //   <div className="legend">{this.createLegend(legendSales)}</div>
-          // }
         />
       </Col>
       {/* <Col md={12} lg={12}>

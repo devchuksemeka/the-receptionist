@@ -280,6 +280,7 @@ export default class Maintenance extends Component {
 
 
     const stackedBarOptions = {
+      maintainAspectRatio: true, responsive: true,
       tooltips: {
         mode: "label",
         callbacks: {

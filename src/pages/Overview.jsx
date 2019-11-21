@@ -51,7 +51,7 @@ class Overview extends Component {
 
   render() {
 
-    const options = { maintainAspectRatio: false, responsive: true,
+    const options = { maintainAspectRatio: true, responsive: true,
       tooltips : {
         mode: "label",
         callbacks: {
@@ -135,7 +135,7 @@ class Overview extends Component {
                 category="Accumulated Revenue"
                 stats="Revenue Chart"
                 content={
-                  <div className="ct-chart">
+                  <div className="ct-chart" style={{height:"100%",width:"100%"}}>
                     <Line
                       height={400}
                       width={800}
@@ -148,7 +148,7 @@ class Overview extends Component {
             </Col>
             <Col md={3}>
             <Row>
-              <Col lg={12} sm={12}>
+              <Col lg={12} sm={12} >
                 <StatsCard
                   bigIcon={<i className="pe-7s-attention text-warning" />}
                   statsText="P2 (Tons)"

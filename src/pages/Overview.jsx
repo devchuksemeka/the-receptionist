@@ -220,7 +220,7 @@ class Overview extends Component {
                   statsText="PKSL (Tons)"
                   statsValue={this.state.pksl_all_time_sale}
                   statsIcon={<i className="fa fa-refresh" />}
-                  statsIconText="PKO All time sale (ATS)"
+                  statsIconText="PKSL All time sale (ATS)"
                 />
               </Col>
             </Row>

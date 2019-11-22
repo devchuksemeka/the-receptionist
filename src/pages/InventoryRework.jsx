@@ -1,39 +1,72 @@
 import React, { Component } from "react";
 import { Grid, Row, Col } from "react-bootstrap";
 import { Card } from "components/Card/Card.jsx";
-import { Line, Bar } from "react-chartjs-2";
+import { Line, 
+  // Bar 
+} from "react-chartjs-2";
 import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
-import { getChartData } from "../helpers/SalesHelper";
+import { getGraphValues } from "../helpers/InventoryHelper";
 import {
   getP2Inventory,
   getPkoInventory,
   getPkcInventory
 } from "../actions/sheetActions";
 
+export default class InventoryRework extends Component {
 
-export default class Sales extends Component {
-  
   state = {
     loading: true,
-    currentScreen: "pko",
-    currentView: "dailySales",
+    currentScreen: "p2",
+    currentView: "dailyPurchase",
+    P2Data: {},
     PkoData: {},
     PkcData: {},
-    P2ApiData: {},
+    P2Accumulated: {},
     pkcAccumulated: {},
-    accumulatedData: {},
+    P2AvgProduction: {},
+    PkoAvgProduction: {},
+    PkcAvgProduction: {},
     startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
     endDate: new Date(),
+    P2ApiData: [],
+    PkoApiData: [],
+    PkcApiData: [],
     currentDateFilter: "currentWeek",
     graphView: "day",
-    salesCyclesAvg: "N/A",
     currency: "naira",
   };
 
   async componentDidMount() {
     await this.handleSubmit();
   }
+
+  setGraphValues = () => {
+    const { P2ApiData, PkoApiData, PkcApiData } = this.state;
+    const {
+      P2Data,
+      P2Accumulated,
+      PkoData,
+      PkoAccumulated,
+      PkcData,
+      PkcAccumulated,
+      P2AvgProduction,
+      PkoAvgProduction,
+      PkcAvgProduction
+    } = getGraphValues(P2ApiData, PkoApiData, PkcApiData);
+    this.setState({
+      P2Data,
+      P2Accumulated,
+      PkoData,
+      PkoAccumulated,
+      PkcData,
+      PkcAccumulated,
+      P2AvgProduction,
+      PkoAvgProduction,
+      PkcAvgProduction,
+      loading: false
+    });
+  };
 
   setCurrentScreen = e => {
     const currentScreen = e.target.value;
@@ -42,65 +75,12 @@ export default class Sales extends Component {
     });
   }
 
-  setCurrentView = e => {
+  setCurrentView =  e=> {
     const currentView = e.target.value;
     this.setState({
       currentView
     });
   }
-
-  handleSubmit = async () => {
-    const { startDate, endDate, graphView } = this.state;
-    const PkoApiData = (await getPkoInventory(
-      startDate.toISOString(),
-      endDate.toISOString(),
-      graphView,
-      this.state.currency
-    )).pkoData;
-
-    const PkcApiData = (await getPkcInventory(
-      startDate.toISOString(),
-      endDate.toISOString(),
-      graphView,
-      this.state.currency
-    )).pkcData;
-
-    const P2ApiData = (await getP2Inventory(
-      startDate.toISOString(),
-      endDate.toISOString(),
-      graphView,
-      this.state.currency
-    )).p2Data;
-
-    this.setState(
-      {
-        PkoApiData,
-        PkcApiData,
-        P2ApiData
-      },
-      () => this.setGraphValues()
-    );
-  };
-
-  setGraphValues = () => {
-    const { PkoApiData, PkcApiData, P2ApiData } = this.state;
-    const { PkoData, PkcData, accumulatedData, salesCyclesAvg } = getChartData(
-      PkoApiData,
-      PkcApiData,
-      P2ApiData
-    );
-    
-    this.setState({
-      PkoData,
-      PkcData,
-      loading: false,
-      PkoApiData,
-      PkcApiData,
-      accumulatedData,
-      P2ApiData,
-      salesCyclesAvg
-    });
-  };
 
   handleStartDateChange = e => {
     const date = e.target.value;
@@ -116,15 +96,6 @@ export default class Sales extends Component {
     });
   };
 
-  handleGraphView = e => {
-    const graphView = e.target.value;
-    this.setState(
-      {
-        graphView
-      },
-      () => this.handleSubmit()
-    );
-  };
 
   handleDateFilter = e => {
     const currentDateFilter = e.target.value;
@@ -142,7 +113,18 @@ export default class Sales extends Component {
       },
       () => this.handleSubmit()
     );
-  };  
+  };
+
+  handleGraphView = e => {
+    const graphView = e.target.value;
+    this.setState(
+      {
+        graphView
+      },
+      () => this.handleSubmit()
+    );
+  };
+
   handleCurrencyChange = e => {
     const currency = e.target.value;
     this.setState(
@@ -153,17 +135,55 @@ export default class Sales extends Component {
     );
   };
 
+  handleSubmit = async () => {
+
+    
+    const { startDate, endDate, graphView } = this.state;
+    this.setState({
+      loading: true
+    });
+    const P2ApiData = (await getP2Inventory(
+      startDate.toISOString(),
+      endDate.toISOString(),
+      graphView,
+      this.state.currency
+    )).p2Data;
+    const PkoApiData = (await getPkoInventory(
+      startDate.toISOString(),
+      endDate.toISOString(),
+      graphView,
+      this.state.currency
+    )).pkoData;
+    const PkcApiData = (await getPkcInventory(
+      startDate.toISOString(),
+      endDate.toISOString(),
+      graphView,
+      this.state.currency
+    )).pkcData;
+    this.setState(
+      {
+        P2ApiData,
+        PkoApiData,
+        PkcApiData,
+        loading: false
+      },
+      () => this.setGraphValues()
+    );
+  };
+
   render() {
     const {
+      P2Data,
       PkoData,
       currentScreen,
       PkcData,
       loading,
       currentView,
-      accumulatedData,
+      P2Accumulated,
+      PkoAccumulated,
+      PkcAccumulated,
       currentDateFilter,
       graphView,
-      salesCyclesAvg,
       currency
     } = this.state;
 
@@ -203,8 +223,10 @@ export default class Sales extends Component {
           labelString: ""
         },
         ticks: {
-          callback: value => value + " tons"
-        }
+          callback: value => value + " tons",
+          beginAtZero: true,
+          stepSize: 1
+        },
       },
       {
         type: "linear",
@@ -215,8 +237,10 @@ export default class Sales extends Component {
           display: true
         },
         ticks: {
-          callback: value => `${currency === "naira" ? "₦":"$"}` + value.toLocaleString()
-        }
+          callback: value => `${currency === "naira" ? "₦":"$"}` + value.toLocaleString(),
+          beginAtZero: true,
+          stepSize: 100
+        },
       }
     ];
     if (loading) {

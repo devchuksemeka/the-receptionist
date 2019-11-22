@@ -232,8 +232,10 @@ export default class Inventory extends Component {
           labelString: ""
         },
         ticks: {
-          callback: value => value + " tons"
-        }
+          callback: value => value + " tons",
+          beginAtZero: true,
+          stepSize: 1
+        },
       },
       {
         type: "linear",
@@ -244,8 +246,10 @@ export default class Inventory extends Component {
           display: true
         },
         ticks: {
-          callback: value => `${currency === "naira" ? "₦":"$"}` + value.toLocaleString()
-        }
+          callback: value => `${currency === "naira" ? "₦":"$"}` + value.toLocaleString(),
+          beginAtZero: true,
+          stepSize: 100
+        },
       }
     ];
     if (loading) {

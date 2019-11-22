@@ -4,29 +4,33 @@ import { Card } from "components/Card/Card.jsx";
 import { Line, Bar } from "react-chartjs-2";
 import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
-import { getChartData } from "../helpers/SalesHelper";
 import axios from 'axios'
 import {
-  getP2Inventory,
-  getPkoInventory,
-  getPkcInventory
-} from "../actions/sheetActions";
+  getMonth,
+  numberOfDays,
+  numberOfWeeks,
+  numberOfMonths,
+  dateAddDays,
+  dateAddMonths,
+  dateAddWeeks,
+  getDate,
+  getWeek,
+  getWeekInMonth, 
+  toTitleCase,
+  CONSTANT
+} from "../helpers"
 import {
   // legendSales
 } from "variables/Variables.jsx";
 
-export default class Sales extends Component {
+export default class SalesRework extends Component {
   
   state = {
     baseURL:process.env.REACT_APP_SERVER_ENDPOINT,
     loading: true,
     currentScreen: "pko",
     currentView: "dailySales",
-    PkoData: {},
-    PkcData: {},
-    P2ApiData: {},
     pkcAccumulated: {},
-    accumulatedData: {},
     startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
     endDate: new Date(),
     currentDateFilter: "currentWeek",
@@ -34,12 +38,15 @@ export default class Sales extends Component {
     salesCyclesAvg: "N/A",
     currency: "naira",
     sales:[],
-    
+    chart_object:{
+      labels: [],
+      datasets: []
+    },
+    accumulatedData:{}
   };
 
   async componentDidMount() {
     await this.handleSubmit();
-    await this.handleSubmitNew();
   }
 
 
@@ -47,7 +54,7 @@ export default class Sales extends Component {
     const currentScreen = e.target.value;
     this.setState({
       currentScreen
-    });
+    },()=>this.handleSubmit());
   }
 
   setCurrentView = e => {
@@ -76,77 +83,207 @@ export default class Sales extends Component {
     let query = `graphView=${this.getGraphView()}&startDate=${this.getStartDate()}&endDate=${this.getEndDate()}&product=${this.state.currentScreen}`;
     return query;
   }
+  processViewLogics = async () => {
+    let data = this.state.sales;
+    let rangeSpan = 0;
+    const accumulated = {}
+    const resData = {};
+    let set_date = this.state.startDate;
+    
+
+    if(this.state.graphView === "day"){
+      rangeSpan = numberOfDays(this.state.startDate,this.state.endDate);
+      
+      
+      for(let i=0; i<=rangeSpan;i++){
+          const date = dateAddDays(set_date,i>0 ? 1:0);
+          const show_date = getDate(date);
+          set_date = date;
+          
+          const new_array = data.map(record => {
+              if(getDate(record.date) === show_date) {
+                  return {
+                      total_quantity_sales:record.quantity_in_ton,
+                      // total_price_sales:this.state.currency === "naira" ? record.price_total : record.price_total/CONSTANT.USD_TO_NAIRA_CONV_RATE,
+                      total_price_sales:this.state.currency === "naira" ? record.price_per_ton : record.price_per_ton/CONSTANT.USD_TO_NAIRA_CONV_RATE,
+                      product:record.product
+                  }
+              }
+              return {}
+          })
+          accumulated[`${show_date}`] = new_array;
+        
+      }
+    }
+
+    if(this.state.graphView === "week"){
+      rangeSpan = numberOfWeeks(this.state.startDate,this.state.endDate);
+      
+      for(let i=0; i<=rangeSpan;i++){
+        const date = dateAddWeeks(set_date,i>0 ? 1:0);
+
+        set_date = date;
+
+        const new_array = data.map(record => {
+          if(getWeek(record.date) === getWeek(date)) {
+              return {
+                  total_quantity_sales:record.quantity_in_ton,
+                  total_price_sales:this.state.currency === "naira" ? record.price_per_ton : record.price_per_ton/CONSTANT.USD_TO_NAIRA_CONV_RATE,
+                  // total_price_sales:this.state.currency === "naira" ? record.price_total : record.price_total/CONSTANT.USD_TO_NAIRA_CONV_RATE,
+                  product:record.product
+              }
+          }
+          return {}
+        })
+        accumulated[`${getWeekInMonth(date)}`] = new_array;
+      }
+    }
+
+    if(this.state.graphView === "month"){
+      rangeSpan = numberOfMonths(this.state.startDate,this.state.endDate);
+      for(let i=0; i<=rangeSpan;i++){
+        const date = dateAddMonths(set_date,i>0 ? 1:0);
+        let get_month = getMonth(date)
+        set_date = date;
+
+        const new_array = data.map(record => {
+          if(getMonth(record.date) === get_month) {
+              return {
+                  total_quantity_sales:record.quantity_in_ton,
+                  total_price_sales:this.state.currency === "naira" ? record.price_per_ton : record.price_per_ton/CONSTANT.USD_TO_NAIRA_CONV_RATE,
+                  // total_price_sales:this.state.currency === "naira" ? record.price_total : record.price_total/CONSTANT.USD_TO_NAIRA_CONV_RATE,
+                  product:record.product
+              }
+          }
+          return {}
+        })
+        accumulated[`${get_month}`] = new_array;
+      }
+    }
+
+  console.log("accumulated",accumulated)
+
+    const accumulated_keys  = Object.keys(accumulated);
+    const accumulated_keys_length = accumulated_keys.length;
+
+    for(let i=0;i<accumulated_keys_length;i++){
+      const all_accu = accumulated[accumulated_keys[i]];
+      const all_accu_length = all_accu.length;
+      const every = {};
+
+      for(let j=0;j<all_accu_length; j++){
+          const size = Object.keys(all_accu[j]).length;
+          
+          if(size > 0){
+              const key = this.state.currentScreen;
+              // const key = all_accu[j].product;
+              if(every[key] !== undefined){
+                  every[key] = {
+                    total_quantity_sales: every[key].total_quantity_sales + all_accu[j].total_quantity_sales,
+                    total_price_sales: every[key].total_price_sales + all_accu[j].total_price_sales,
+                  }
+
+              }else{
+                  every[key] = {
+                    total_quantity_sales: all_accu[j].total_quantity_sales,
+                    total_price_sales: all_accu[j].total_price_sales,
+                  }
+              }
+              
+          }
+      }
+      if(every[this.state.currentScreen] === undefined){
+          every[this.state.currentScreen] = {
+            total_quantity_sales: 0,
+            total_price_sales: 0,
+          }
+      }
+
+      resData[accumulated_keys[i]] = every
+
+
+  }
+
+
+  const datasetAccumulated = [];
+
+  for(let j=0;j<1;j++){
+    const saleQuantity = [];
+    const salePrice = [];
+    for(let i=0;i<accumulated_keys_length;i++){
+      saleQuantity.push(resData[accumulated_keys[i]][this.state.currentScreen].total_quantity_sales)
+      salePrice.push(resData[accumulated_keys[i]][this.state.currentScreen].total_price_sales)
+    }
+    datasetAccumulated.push(
+      {
+        yAxisID: "A",
+        label: `${toTitleCase(this.state.currentScreen)} Quantity Sold`,
+        fill: false,
+        lineTension: 0.1,
+        backgroundColor: "rgba(75,192,192,0.4)",
+        borderColor: "rgba(75,192,192,1)",
+        borderCapStyle: "butt",
+        borderDash: [],
+        borderDashOffset: 0.0,
+        borderJoinStyle: "miter",
+        pointBorderColor: "rgba(75,192,192,1)",
+        pointBackgroundColor: "#fff",
+        pointBorderWidth: 1,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: "rgba(75,192,192,1)",
+        pointHoverBorderColor: "rgba(220,220,220,1)",
+        pointHoverBorderWidth: 2,
+        pointRadius: 1,
+        pointHitRadius: 10,
+        data: saleQuantity
+      },
+      {
+        yAxisID: "B",
+        label: `${toTitleCase(this.state.currentScreen)} Average Unit Selling Price`,
+        fill: false,
+        lineTension: 0.1,
+        backgroundColor: "#de6866",
+        borderColor: "#de6866",
+        borderCapStyle: "butt",
+        borderDash: [],
+        borderDashOffset: 0.0,
+        borderJoinStyle: "miter",
+        pointBorderColor: "#de6866",
+        pointBackgroundColor: "#fff",
+        pointBorderWidth: 1,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: "#de6866",
+        pointHoverBorderColor: "#fe6866",
+        pointHoverBorderWidth: 2,
+        pointRadius: 1,
+        pointHitRadius: 10,
+        data: salePrice
+      }
+    )
+
+  }
 
 
 
-  handleSubmitNew = async () => {
-
-    const result = await axios.get(`${this.state.baseURL}/v1/sales/filter?${this.getRequestQueryParams()}`)
-    console.log("new_submit_request",result.data.data)
-
-    // this.setState(
-    //   {
-    //     PkoApiData,
-    //     PkcApiData,
-    //     P2ApiData
-    //   },
-    //   () => this.setGraphValues()
-    // );
-  };
-  
-  handleSubmit = async () => {
-    const { startDate, endDate, graphView } = this.state;
-    const PkoApiData = (await getPkoInventory(
-      startDate.toISOString(),
-      endDate.toISOString(),
-      graphView,
-      this.state.currency
-    )).pkoData;
-
-    const PkcApiData = (await getPkcInventory(
-      startDate.toISOString(),
-      endDate.toISOString(),
-      graphView,
-      this.state.currency
-    )).pkcData;
-
-    const P2ApiData = (await getP2Inventory(
-      startDate.toISOString(),
-      endDate.toISOString(),
-      graphView,
-      this.state.currency
-    )).p2Data;
 
     this.setState(
       {
-        PkoApiData,
-        PkcApiData,
-        P2ApiData
+        loading: false,
+        chart_object:{
+          labels:accumulated_keys,
+          datasets:datasetAccumulated
+        }
       },
-      () => this.setGraphValues()
     );
-  };
-
-  setGraphValues = () => {
-    const { PkoApiData, PkcApiData, P2ApiData } = this.state;
-    const { PkoData, PkcData, accumulatedData, salesCyclesAvg } = getChartData(
-      PkoApiData,
-      PkcApiData,
-      P2ApiData
-    );
-    console.log("PkoData",PkoData)
-    console.log("PkcData",PkcData)
-    
+  }
+  
+  handleSubmit = async () => {
+   
+    const result = await axios.get(`${this.state.baseURL}/v1/sales/filter?${this.getRequestQueryParams()}`)
     this.setState({
-      PkoData,
-      PkcData,
-      loading: false,
-      PkoApiData,
-      PkcApiData,
-      accumulatedData,
-      P2ApiData,
-      salesCyclesAvg
-    });
+      sales:result.data.data
+    },()=>this.processViewLogics())
+    
   };
 
   handleStartDateChange = e => {
@@ -163,14 +300,15 @@ export default class Sales extends Component {
     });
   };
 
-  handleGraphView = e => {
+  handleGraphView = async e => {
     const graphView = e.target.value;
-    this.setState(
+    await this.setState(
       {
         graphView
-      },
-      () => this.handleSubmit()
+      }
     );
+
+    await this.processViewLogics();
   };
 
   handleDateFilter = e => {
@@ -196,18 +334,15 @@ export default class Sales extends Component {
       {
         currency
       },
-      () => this.handleSubmit()
+      () => this.processViewLogics()
     );
   };
 
   render() {
     const {
-      PkoData,
       currentScreen,
-      PkcData,
       loading,
       currentView,
-      accumulatedData,
       currentDateFilter,
       graphView,
       salesCyclesAvg,
@@ -229,7 +364,12 @@ export default class Sales extends Component {
       scales: {
         xAxes: [
           {
-            stacked: true
+            stacked: true,
+            ticks:{
+              beginAtZero: true,
+              stepSize: 1
+            }
+            
           }
         ],
         yAxes: [
@@ -237,6 +377,8 @@ export default class Sales extends Component {
             stacked: true,
             ticks: {
               callback: value => `${currency === "naira" ? "₦":"$"}` + value.toLocaleString(),
+              beginAtZero: true,
+              stepSize: 1
             }
           }
         ]
@@ -277,7 +419,9 @@ export default class Sales extends Component {
               labelString: ""
             },
             ticks: {
-              callback: value => value + " tons"
+              callback: value => value + " tons",
+              beginAtZero: true,
+              stepSize: 1
             }
           },
           {
@@ -290,7 +434,9 @@ export default class Sales extends Component {
               labelString: ""
             },
             ticks: {
-              callback: value => ` ${currency === "naira" ? "₦":"$"} ` + value.toLocaleString()
+              callback: value => ` ${currency === "naira" ? "₦":"$"} ` + value.toLocaleString(),
+              beginAtZero: true,
+              stepSize: 100
             }
           }
         ]
@@ -401,29 +547,18 @@ export default class Sales extends Component {
             <div className="ct-chart" style={{height:"100%",width:"100%"}}>
                {currentView === "dailySales" && (
               <div>
-                {currentScreen === "pko" && (
                   <Line
                     height={400}
                     width={800}
-                    data={PkoData}
+                    data={this.state.chart_object}
                     options={options}
                   />
-                )}
-                {currentScreen === "pkc" && (
-                  <Line
-                    height={400}
-                    width={800}
-                    data={PkcData}
-                    options={options}
-                  />
-                )}
-                
               </div>
             )}
             {currentView === "accumulated" && (
               <div>
                 <Bar
-                    data={accumulatedData}
+                    data={this.state.chart_object}
                     options={stackedBarOptions}
                     height={400}
                     width={800}

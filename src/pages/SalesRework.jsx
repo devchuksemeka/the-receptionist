@@ -55,11 +55,12 @@ export default class SalesRework extends Component {
     },()=>this.handleSubmit());
   }
 
-  setCurrentView = e => {
+  setCurrentView = async e => {
     const currentView = e.target.value;
     this.setState({
-      currentView
-    });
+      currentView,
+      chart_object:{}
+    },() => this.processViewLogics());
   }
 
   getStartDate = () =>{
@@ -81,6 +82,7 @@ export default class SalesRework extends Component {
     let query = `graphView=${this.getGraphView()}&startDate=${this.getStartDate()}&endDate=${this.getEndDate()}&product=${this.state.currentScreen}`;
     return query;
   }
+
   processViewLogics = async () => {
     let data = this.state.sales;
     let rangeSpan = 0;
@@ -102,8 +104,8 @@ export default class SalesRework extends Component {
               if(getDate(record.date) === show_date) {
                   return {
                       total_quantity_sales:record.quantity_in_ton,
-                      // total_price_sales:this.state.currency === "naira" ? record.price_total : record.price_total/CONSTANT.USD_TO_NAIRA_CONV_RATE,
-                      total_price_sales:this.state.currency === "naira" ? record.price_per_ton : record.price_per_ton/CONSTANT.USD_TO_NAIRA_CONV_RATE,
+                      total_price_sales:this.state.currency === "naira" ? record.price_total : record.price_total/CONSTANT.USD_TO_NAIRA_CONV_RATE,
+                      avg_price_per_ton:this.state.currency === "naira" ? record.price_per_ton : record.price_per_ton/CONSTANT.USD_TO_NAIRA_CONV_RATE,
                       product:record.product
                   }
               }
@@ -126,8 +128,8 @@ export default class SalesRework extends Component {
           if(getWeek(record.date) === getWeek(date)) {
               return {
                   total_quantity_sales:record.quantity_in_ton,
-                  total_price_sales:this.state.currency === "naira" ? record.price_per_ton : record.price_per_ton/CONSTANT.USD_TO_NAIRA_CONV_RATE,
-                  // total_price_sales:this.state.currency === "naira" ? record.price_total : record.price_total/CONSTANT.USD_TO_NAIRA_CONV_RATE,
+                  total_price_sales:this.state.currency === "naira" ? record.price_total : record.price_total/CONSTANT.USD_TO_NAIRA_CONV_RATE,
+                  avg_price_per_ton:this.state.currency === "naira" ? record.price_per_ton : record.price_per_ton/CONSTANT.USD_TO_NAIRA_CONV_RATE,
                   product:record.product
               }
           }
@@ -148,8 +150,8 @@ export default class SalesRework extends Component {
           if(getMonth(record.date) === get_month) {
               return {
                   total_quantity_sales:record.quantity_in_ton,
-                  total_price_sales:this.state.currency === "naira" ? record.price_per_ton : record.price_per_ton/CONSTANT.USD_TO_NAIRA_CONV_RATE,
-                  // total_price_sales:this.state.currency === "naira" ? record.price_total : record.price_total/CONSTANT.USD_TO_NAIRA_CONV_RATE,
+                  avg_price_per_ton:this.state.currency === "naira" ? record.price_per_ton : record.price_per_ton/CONSTANT.USD_TO_NAIRA_CONV_RATE,
+                  total_price_sales:this.state.currency === "naira" ? record.price_total : record.price_total/CONSTANT.USD_TO_NAIRA_CONV_RATE,
                   product:record.product
               }
           }
@@ -159,110 +161,218 @@ export default class SalesRework extends Component {
       }
     }
 
-  console.log("accumulated",accumulated)
+    // check if current view is accumulated or dailySales
 
     const accumulated_keys  = Object.keys(accumulated);
     const accumulated_keys_length = accumulated_keys.length;
 
-    for(let i=0;i<accumulated_keys_length;i++){
-      const all_accu = accumulated[accumulated_keys[i]];
-      const all_accu_length = all_accu.length;
-      const every = {};
+    const datasetAccumulated = [];
+  
 
-      for(let j=0;j<all_accu_length; j++){
-          const size = Object.keys(all_accu[j]).length;
-          
-          if(size > 0){
-              const key = this.state.currentScreen;
-              // const key = all_accu[j].product;
-              if(every[key] !== undefined){
-                  every[key] = {
-                    total_quantity_sales: every[key].total_quantity_sales + all_accu[j].total_quantity_sales,
-                    total_price_sales: every[key].total_price_sales + all_accu[j].total_price_sales,
-                  }
-
-              }else{
-                  every[key] = {
-                    total_quantity_sales: all_accu[j].total_quantity_sales,
-                    total_price_sales: all_accu[j].total_price_sales,
-                  }
-              }
-              
-          }
+    if(this.state.currentView === "dailySales"){
+      for(let i=0;i<accumulated_keys_length;i++){
+        const all_accu = accumulated[accumulated_keys[i]];
+        const all_accu_length = all_accu.length;
+        const every = {};
+  
+        for(let j=0;j<all_accu_length; j++){
+            const size = Object.keys(all_accu[j]).length;
+            
+            if(size > 0){
+                const key = this.state.currentScreen;
+                // const key = all_accu[j].product;
+                if(every[key] !== undefined){
+                    every[key] = {
+                      total_quantity_sales: every[key].total_quantity_sales + all_accu[j].total_quantity_sales,
+                      total_price_sales: every[key].total_price_sales + all_accu[j].total_price_sales,
+                      avg_price_per_ton: every[key].avg_price_per_ton + all_accu[j].avg_price_per_ton,
+                    }
+  
+                }else{
+                    every[key] = {
+                      total_quantity_sales: all_accu[j].total_quantity_sales,
+                      total_price_sales: all_accu[j].total_price_sales,
+                      avg_price_per_ton: all_accu[j].avg_price_per_ton,
+                    }
+                }
+                
+            }
+        }
+        if(every[this.state.currentScreen] === undefined){
+            every[this.state.currentScreen] = {
+              total_quantity_sales: 0,
+              total_price_sales: 0,
+              avg_price_per_ton: 0,
+            }
+        }
+  
+        resData[accumulated_keys[i]] = every
       }
-      if(every[this.state.currentScreen] === undefined){
-          every[this.state.currentScreen] = {
-            total_quantity_sales: 0,
-            total_price_sales: 0,
+  
+      for(let j=0;j<1;j++){
+  
+        const saleQuantity = [];
+        const salePrice = [];
+        const avgUnitPrice = [];
+        for(let i=0;i<accumulated_keys_length;i++){
+          saleQuantity.push(resData[accumulated_keys[i]][this.state.currentScreen].total_quantity_sales)
+          salePrice.push(resData[accumulated_keys[i]][this.state.currentScreen].total_price_sales)
+          avgUnitPrice.push(resData[accumulated_keys[i]][this.state.currentScreen].avg_price_per_ton)
+        }
+        // if(this.state.currentView === "accumulated")
+        datasetAccumulated.push(
+          {
+            yAxisID: "A",
+            label: `${toTitleCase(this.state.currentScreen)} Quantity Sold`,
+            fill: false,
+            lineTension: 0.1,
+            backgroundColor: "rgba(75,192,192,0.4)",
+            borderColor: "rgba(75,192,192,1)",
+            borderCapStyle: "butt",
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: "miter",
+            pointBorderColor: "rgba(75,192,192,1)",
+            pointBackgroundColor: "#fff",
+            pointBorderWidth: 1,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: "rgba(75,192,192,1)",
+            pointHoverBorderColor: "rgba(220,220,220,1)",
+            pointHoverBorderWidth: 2,
+            pointRadius: 1,
+            pointHitRadius: 10,
+            data: saleQuantity
+          },
+          {
+            yAxisID: "B",
+            label: `${toTitleCase(this.state.currentScreen)} Average Unit Selling Price`,
+            fill: false,
+            lineTension: 0.1,
+            backgroundColor: "#de6866",
+            borderColor: "#de6866",
+            borderCapStyle: "butt",
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: "miter",
+            pointBorderColor: "#de6866",
+            pointBackgroundColor: "#fff",
+            pointBorderWidth: 1,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: "#de6866",
+            pointHoverBorderColor: "#fe6866",
+            pointHoverBorderWidth: 2,
+            pointRadius: 1,
+            pointHitRadius: 10,
+            data: avgUnitPrice
           }
+        )
+  
       }
-
-      resData[accumulated_keys[i]] = every
-
-
-  }
-
-
-  const datasetAccumulated = [];
-
-  for(let j=0;j<1;j++){
-    const saleQuantity = [];
-    const salePrice = [];
-    for(let i=0;i<accumulated_keys_length;i++){
-      saleQuantity.push(resData[accumulated_keys[i]][this.state.currentScreen].total_quantity_sales)
-      salePrice.push(resData[accumulated_keys[i]][this.state.currentScreen].total_price_sales)
     }
-    datasetAccumulated.push(
-      {
-        yAxisID: "A",
-        label: `${toTitleCase(this.state.currentScreen)} Quantity Sold`,
-        fill: false,
-        lineTension: 0.1,
-        backgroundColor: "rgba(75,192,192,0.4)",
-        borderColor: "rgba(75,192,192,1)",
-        borderCapStyle: "butt",
-        borderDash: [],
-        borderDashOffset: 0.0,
-        borderJoinStyle: "miter",
-        pointBorderColor: "rgba(75,192,192,1)",
-        pointBackgroundColor: "#fff",
-        pointBorderWidth: 1,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: "rgba(75,192,192,1)",
-        pointHoverBorderColor: "rgba(220,220,220,1)",
-        pointHoverBorderWidth: 2,
-        pointRadius: 1,
-        pointHitRadius: 10,
-        data: saleQuantity
-      },
-      {
-        yAxisID: "B",
-        label: `${toTitleCase(this.state.currentScreen)} Average Unit Selling Price`,
-        fill: false,
-        lineTension: 0.1,
-        backgroundColor: "#de6866",
-        borderColor: "#de6866",
-        borderCapStyle: "butt",
-        borderDash: [],
-        borderDashOffset: 0.0,
-        borderJoinStyle: "miter",
-        pointBorderColor: "#de6866",
-        pointBackgroundColor: "#fff",
-        pointBorderWidth: 1,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: "#de6866",
-        pointHoverBorderColor: "#fe6866",
-        pointHoverBorderWidth: 2,
-        pointRadius: 1,
-        pointHitRadius: 10,
-        data: salePrice
+
+    if(this.state.currentView === "accumulated"){
+      // const product_colors = {PKO:"#de6866",PKC:"rgba(75,192,192,1)"}
+
+      let accumulated_total_sale_price = 0;
+      for(let i=0;i<accumulated_keys_length;i++){
+        const all_accu = accumulated[accumulated_keys[i]];
+        const all_accu_length = all_accu.length;
+        const every = {};
+  
+        for(let j=0;j<all_accu_length; j++){
+            const size = Object.keys(all_accu[j]).length;
+
+            let total_price_sales = 0;
+            
+            if(size > 0){
+                const key = this.state.currentScreen;
+                let summer = 0;
+                if(every[key] !== undefined){
+                  summer = every[key].total_price_sales + all_accu[j].total_price_sales;
+                  total_price_sales = summer + accumulated_total_sale_price;
+                  accumulated_total_sale_price += summer
+                  every[key] = {total_price_sales}
+                }else{
+                  summer = all_accu[j].total_price_sales;
+                  total_price_sales = summer + accumulated_total_sale_price;
+                  accumulated_total_sale_price += summer
+
+                  every[key] = {total_price_sales}
+                }
+            }
+            
+            
+        }
+
+        // console.log("accumulated_total_sale_price",accumulated_total_sale_price)
+        if(every[this.state.currentScreen] === undefined){
+            every[this.state.currentScreen] = {
+              total_price_sales: accumulated_total_sale_price,
+            }
+        }
+  
+        resData[accumulated_keys[i]] = every
+        
       }
-    )
+      for(let j=0;j<1;j++){
+  
+        const saleQuantity = [];
+        const salePrice = [];
+        for(let i=0;i<accumulated_keys_length;i++){
+          saleQuantity.push(resData[accumulated_keys[i]][this.state.currentScreen].total_quantity_sales)
+          salePrice.push(resData[accumulated_keys[i]][this.state.currentScreen].total_price_sales)
+        }
+        datasetAccumulated.push(
+          {
+            label: `${toTitleCase(this.state.currentScreen)} Sales`,
+            stack: "Stack 0",
+            fill: false,
+            lineTension: 0.1,
+            backgroundColor: "rgba(75,192,192,0.4)",
+            borderColor: "rgba(75,192,192,1)",
+            borderCapStyle: "butt",
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: "miter",
+            pointBorderColor: "rgba(75,192,192,1)",
+            pointBackgroundColor: "#fff",
+            pointBorderWidth: 1,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: "rgba(75,192,192,1)",
+            pointHoverBorderColor: "rgba(220,220,220,1)",
+            pointHoverBorderWidth: 2,
+            pointRadius: 1,
+            pointHitRadius: 10,
+            data: salePrice,
+          },
+          // {
+          //   label: "P2 crushed till date value",
+          //   stack: "Stack 1",
+          //   fill: false,
+          //   lineTension: 0.1,
+          //   backgroundColor: "#ffaa1d",
+          //   borderColor: "#ffaa1d",
+          //   borderCapStyle: "butt",
+          //   borderDash: [],
+          //   borderDashOffset: 0.0,
+          //   borderJoinStyle: "miter",
+          //   pointBorderColor: "#ffaa1d",
+          //   pointBackgroundColor: "#fff",
+          //   pointBorderWidth: 1,
+          //   pointHoverRadius: 5,
+          //   pointHoverBackgroundColor: "#ffaa1d",
+          //   pointHoverBorderColor: "#ffaa1d",
+          //   pointHoverBorderWidth: 2,
+          //   pointRadius: 1,
+          //   pointHitRadius: 10,
+          //   data: p2Accumulated
+          // }
+        )
+  
+      }
+    }
 
-  }
-
-
-
+   
 
     this.setState(
       {
@@ -277,7 +387,7 @@ export default class SalesRework extends Component {
   
   handleSubmit = async () => {
    
-    const result = await axios.get(`${this.state.baseURL}/v1/sales/filter?${this.getRequestQueryParams()}`)
+    const result = await axios.get(`${this.state.baseURL}/v1/sales/filter?${this.getRequestQueryParams()}`);
     this.setState({
       sales:result.data.data
     },()=>this.processViewLogics())
@@ -363,12 +473,7 @@ export default class SalesRework extends Component {
       scales: {
         xAxes: [
           {
-            stacked: true,
-            ticks:{
-              beginAtZero: true,
-              stepSize: 1
-            }
-            
+            stacked: true
           }
         ],
         yAxes: [
@@ -376,8 +481,6 @@ export default class SalesRework extends Component {
             stacked: true,
             ticks: {
               callback: value => `${currency === "naira" ? "₦":"$"}` + value.toLocaleString(),
-              beginAtZero: true,
-              stepSize: 1
             }
           }
         ]
@@ -544,26 +647,24 @@ export default class SalesRework extends Component {
 
           content={
             <div className="ct-chart" style={{height:"100%",width:"100%"}}>
-               {currentView === "dailySales" && (
               <div>
+              {currentView === "dailySales" && (
                   <Line
-                    height={400}
+                    height={450}
                     width={800}
                     data={this.state.chart_object}
                     options={options}
                   />
-              </div>
-            )}
-            {currentView === "accumulated" && (
-              <div>
+              )}
+              {currentView === "accumulated" && (
                 <Bar
                     data={this.state.chart_object}
                     options={stackedBarOptions}
-                    height={400}
+                    height={450}
                     width={800}
                   />
+              )}
               </div>
-            )}
             </div>
           }
           // legend={

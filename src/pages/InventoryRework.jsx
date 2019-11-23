@@ -28,7 +28,7 @@ export default class InventoryRework extends Component {
     loading: true,
     currentScreen: "p2",
     view_category: "purchases",// purchases and productions
-    currentView: "dailySales",
+    currentView: "dailyPurchase",
     pkcAccumulated: {},
     startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
     endDate: new Date(),
@@ -36,11 +36,12 @@ export default class InventoryRework extends Component {
     graphView: "day",
     currency: "naira",
     server_data:[],
+    purchase_data:[],
+    production_data:[],
     chart_object:{
       labels: [],
       datasets: []
     },
-    accumulatedData:{}
   };
 
   async componentDidMount() {
@@ -60,11 +61,12 @@ export default class InventoryRework extends Component {
     },()=>this.handleSubmit());
   }
 
-  setCurrentView = e => {
+  setCurrentView = async e => {
     const currentView = e.target.value;
     this.setState({
       currentView
     });
+    await this.processViewLogics()
   }
 
   getStartDate = () =>{
@@ -94,7 +96,11 @@ export default class InventoryRework extends Component {
   }
 
   processViewLogics = async () => {
-    let data = this.state.server_data;
+    this.state.view_category === "purchases" ? (await this.processPurchaseViewLogics()) : (await this.processProductionViewLogics())
+  }
+
+  processPurchaseViewLogics = async () => {
+    let data = this.state.purchase_data;
     let rangeSpan = 0;
     const accumulated = {}
     const resData = {};
@@ -165,8 +171,6 @@ export default class InventoryRework extends Component {
         accumulated[`${get_month}`] = new_array;
       }
     }
-
-  console.log("accumulated",accumulated)
 
     const accumulated_keys  = Object.keys(accumulated);
     const accumulated_keys_length = accumulated_keys.length;
@@ -283,8 +287,9 @@ export default class InventoryRework extends Component {
   }
 
   processProductionViewLogics = async () => {
-    let data = this.state.server_data.productions;
-    let market_prices = this.state.server_data.market_prices;
+    let {productions:data,market_prices} = this.state.production_data;
+    console.log("data",{data,market_prices})
+    
     let rangeSpan = 0;
     const accumulated = {}
     const market_price_accumulated = {}
@@ -387,11 +392,8 @@ export default class InventoryRework extends Component {
       }
     }
 
-    console.log("market_price_accumulated",market_price_accumulated)
-
 
     const accumulated_keys  = Object.keys(accumulated);
-    // const market_price_accumulated_keys  = Object.keys(market_price_accumulated);
     const accumulated_keys_length = accumulated_keys.length;
 
     for(let i=0;i<accumulated_keys_length;i++){
@@ -462,70 +464,67 @@ export default class InventoryRework extends Component {
 
     }
 
-  const datasetAccumulated = [];
+    const datasetAccumulated = [];
 
-  for(let j=0;j<1;j++){
-    const productionQuantity = [];
-    const marketPrice = [];
+    for(let j=0;j<1;j++){
+      const productionQuantity = [];
+      const marketPrice = [];
 
-    for(let i=0;i<accumulated_keys_length;i++){
-      const {price,occurrence} = market_price_res_data[accumulated_keys[i]][this.state.currentScreen];
-      let division = price/occurrence
-      division = isNaN(division) ? 0 : division
-      productionQuantity.push(resData[accumulated_keys[i]][this.state.currentScreen].total_produced)
-      marketPrice.push(parseFloat(division))
-    }
-    datasetAccumulated.push(
-      {
-        yAxisID: "A",
-        label: `${toTitleCase(this.state.currentScreen)} quantity Produced`,
-        fill: false,
-        lineTension: 0.1,
-        backgroundColor: "rgba(75,192,192,0.4)",
-        borderColor: "rgba(75,192,192,1)",
-        borderCapStyle: "butt",
-        borderDash: [],
-        borderDashOffset: 0.0,
-        borderJoinStyle: "miter",
-        pointBorderColor: "rgba(75,192,192,1)",
-        pointBackgroundColor: "#fff",
-        pointBorderWidth: 1,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: "rgba(75,192,192,1)",
-        pointHoverBorderColor: "rgba(220,220,220,1)",
-        pointHoverBorderWidth: 2,
-        pointRadius: 1,
-        pointHitRadius: 10,
-        data: productionQuantity
-      },
-      {
-        yAxisID: "B",
-        label: `${toTitleCase(this.state.currentScreen)} average market unit price`,
-        fill: false,
-        lineTension: 0.1,
-        backgroundColor: "#de6866",
-        borderColor: "#de6866",
-        borderCapStyle: "butt",
-        borderDash: [],
-        borderDashOffset: 0.0,
-        borderJoinStyle: "miter",
-        pointBorderColor: "#de6866",
-        pointBackgroundColor: "#fff",
-        pointBorderWidth: 1,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: "#de6866",
-        pointHoverBorderColor: "#fe6866",
-        pointHoverBorderWidth: 2,
-        pointRadius: 1,
-        pointHitRadius: 10,
-        data: marketPrice
+      for(let i=0;i<accumulated_keys_length;i++){
+        const {price,occurrence} = market_price_res_data[accumulated_keys[i]][this.state.currentScreen];
+        let division = price/occurrence
+        division = isNaN(division) ? 0 : division
+        productionQuantity.push(resData[accumulated_keys[i]][this.state.currentScreen].total_produced)
+        marketPrice.push(parseFloat(division))
       }
-    )
+      datasetAccumulated.push(
+        {
+          yAxisID: "A",
+          label: `${toTitleCase(this.state.currentScreen)} quantity Produced`,
+          fill: false,
+          lineTension: 0.1,
+          backgroundColor: "rgba(75,192,192,0.4)",
+          borderColor: "rgba(75,192,192,1)",
+          borderCapStyle: "butt",
+          borderDash: [],
+          borderDashOffset: 0.0,
+          borderJoinStyle: "miter",
+          pointBorderColor: "rgba(75,192,192,1)",
+          pointBackgroundColor: "#fff",
+          pointBorderWidth: 1,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: "rgba(75,192,192,1)",
+          pointHoverBorderColor: "rgba(220,220,220,1)",
+          pointHoverBorderWidth: 2,
+          pointRadius: 1,
+          pointHitRadius: 10,
+          data: productionQuantity
+        },
+        {
+          yAxisID: "B",
+          label: `${toTitleCase(this.state.currentScreen)} average market unit price`,
+          fill: false,
+          lineTension: 0.1,
+          backgroundColor: "#de6866",
+          borderColor: "#de6866",
+          borderCapStyle: "butt",
+          borderDash: [],
+          borderDashOffset: 0.0,
+          borderJoinStyle: "miter",
+          pointBorderColor: "#de6866",
+          pointBackgroundColor: "#fff",
+          pointBorderWidth: 1,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: "#de6866",
+          pointHoverBorderColor: "#fe6866",
+          pointHoverBorderWidth: 2,
+          pointRadius: 1,
+          pointHitRadius: 10,
+          data: marketPrice
+        }
+      )
 
-  }
-
-
-
+    }
 
     this.setState(
       {
@@ -538,16 +537,24 @@ export default class InventoryRework extends Component {
     );
   }
   
+  
   handleSubmit = async () => {
    
     const result = await axios.get(`${this.state.baseURL}/v1/supplies/${this.getRequestUrl()}`)
-    // console.log("result",result.data.data);
-  
-    this.setState({
-      server_data:result.data.data
-    },
-    ()=> this.state.view_category === "purchases" ? this.processViewLogics() : this.processProductionViewLogics()
-    )
+    console.log("this.state.view_category",this.state.view_category)
+
+    if(this.state.view_category === "purchases"){
+      this.setState({
+        purchase_data:result.data.data
+      })
+    }
+    if(this.state.view_category === "productions"){
+      this.setState({
+        production_data:result.data.data
+      })
+    }
+
+    await this.processViewLogics()
     
   };
 
@@ -573,7 +580,7 @@ export default class InventoryRework extends Component {
       }
     );
 
-    await this.state.view_category === "purchases" ? this.processViewLogics() : this.processProductionViewLogics()
+    await this.processViewLogics()
   };
 
   handleDateFilter = e => {
@@ -600,7 +607,7 @@ export default class InventoryRework extends Component {
       {
         currency
       },
-      () => this.state.view_category === "purchases" ? this.processViewLogics() : this.processProductionViewLogics()
+      () => this.processViewLogics()
     );
   };
 
@@ -809,11 +816,11 @@ export default class InventoryRework extends Component {
           stats="Inventory Metrics"
           content={
             <div className="ct-chart" style={{height:"100%",width:"100%"}}>
-               {currentView === "dailySales" && (
+               {currentView === "dailyPurchase" && (
               <div>
                   <Line
-                    height={400}
-                    width={800}
+                    height={500}
+                    width={900}
                     data={this.state.chart_object}
                     options={options}
                   />
@@ -821,19 +828,16 @@ export default class InventoryRework extends Component {
             )}
             {currentView === "accumulated" && (
               <div>
-                <Bar
+                <Line
                     data={this.state.chart_object}
-                    options={stackedBarOptions}
-                    height={400}
-                    width={800}
+                    options={options}
+                    height={500}
+                    width={900}
                   />
               </div>
             )}
             </div>
           }
-          // legend={
-          //   <div className="legend">{this.createLegend(legendSales)}</div>
-          // }
         />
       </Col>
     </Row>

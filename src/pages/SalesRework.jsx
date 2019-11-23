@@ -19,9 +19,7 @@ import {
   toTitleCase,
   CONSTANT
 } from "../helpers"
-import {
-  // legendSales
-} from "variables/Variables.jsx";
+
 
 export default class SalesRework extends Component {
   
@@ -328,6 +326,7 @@ export default class SalesRework extends Component {
       () => this.handleSubmit()
     );
   };  
+  
   handleCurrencyChange = e => {
     const currency = e.target.value;
     this.setState(

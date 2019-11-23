@@ -24,6 +24,8 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData) => {
   const pkcAvgProduction = [];
   const pkcInventoryValue = [];
 
+  console.log("P2ApiData",P2ApiData)
+
   P2ApiData.map(dta => {
     p2labels.push(convertDate(dta._id));
     p2QuantityData.push(convertTo2Dp(dta.quantitypurchased || 0));

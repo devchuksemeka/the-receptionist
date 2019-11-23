@@ -3,6 +3,7 @@ import Inventory from "pages/Inventory";
 import Sales from "pages/Sales";
 import Maintenance from "pages/Maintenance";
 import SalesRework from "pages/SalesRework";
+import InventoryRework from "pages/InventoryRework";
 
 const dashboardRoutes = [
   {
@@ -20,6 +21,13 @@ const dashboardRoutes = [
     layout: "/admin"
   },
   {
+    path: "/reworkinventory",
+    name: "Rework Inventory",
+    icon: "pe-7s-note2",
+    component: InventoryRework,
+    layout: "/admin"
+  },
+  {
     path: "/sales",
     name: "Sales",
     icon: "pe-7s-cash",
@@ -28,7 +36,7 @@ const dashboardRoutes = [
   },
   {
     path: "/reworksales",
-    name: "reworksales",
+    name: "Rework Sales",
     icon: "pe-7s-cash",
     component: SalesRework,
     layout: "/admin"

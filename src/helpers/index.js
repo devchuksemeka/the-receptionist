@@ -13,6 +13,16 @@ exports.getWeekInMonth = (date) => {
 
 }
 
+exports.toMoneyFormat = (number) =>{
+  const formatter = new Intl.NumberFormat('en-NG', {
+    style: 'currency',
+    currency: 'NGN',
+  });
+
+  return formatter.format(number)
+
+}
+
 exports.numberOfDays = (date1,date2) => {
   const oneDay = 24 * 60 * 60 * 1000; 
   const firstDate = new Date(date1);

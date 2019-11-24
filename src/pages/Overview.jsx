@@ -5,6 +5,7 @@ import { Grid,
   Row, 
   Col 
 } from "react-bootstrap";
+import {toMoneyFormat} from '../helpers/index'
 
 import { Card } from "components/Card/Card.jsx";
 import { StatsCard } from "components/StatsCard/StatsCard.jsx";
@@ -19,6 +20,8 @@ class Overview extends Component {
     pkc_all_time_sale:0,
     pksl_all_time_sale:0,
     p2_all_time_purchase:0,
+    total_revenue:0,
+    total_expenses:0,
     revenue_data: {
       labels: ["Nov 1st","Nov 2nd","Nov 3rd","Nov 4th","Nov 5th","Nov 6th"],
       datasets: [
@@ -58,6 +61,8 @@ class Overview extends Component {
   async componentDidMount(){
     this.getAllTimePurchases();
     this.getAllTimeSales();
+    this.getTotalRevenue();
+    this.getTotalExpenses();
   }
 
   getAllTimeSales = async ()=>{
@@ -69,6 +74,32 @@ class Overview extends Component {
         pksl_all_time_sale:PKSL || 0,
         pko_all_time_sale:PKO || 0,
         pkc_all_time_sale:PKC || 0,
+      })
+    }catch(err){
+      console.log(err.response)
+    }
+  }
+
+  getTotalRevenue = async ()=>{
+    try{
+      const total_revenue_res = await axios.get(`${this.state.baseURL}/v1/overview/total-revenue`)
+      const {total_revenue} = total_revenue_res.data
+
+      this.setState({
+        total_revenue
+      })
+    }catch(err){
+      console.log(err.response)
+    }
+  }
+
+  getTotalExpenses= async ()=>{
+    try{
+      const total_expenses_res = await axios.get(`${this.state.baseURL}/v1/overview/total-expenses`)
+      const {total_expenses} = total_expenses_res.data
+
+      this.setState({
+        total_expenses
       })
     }catch(err){
       console.log(err.response)
@@ -130,6 +161,24 @@ class Overview extends Component {
           <Row>
             <Col lg={3} sm={6}>
               <StatsCard
+                bigIcon={<i className="pe-7s-wallet text-success" />}
+                statsText="Total Revenue"
+                statsValue={`${toMoneyFormat(this.state.total_revenue)}`}
+                statsIcon={<i className="pe-7s-keypad" />}
+                statsIconText="Income before deductions"
+              />
+            </Col>
+            <Col lg={3} sm={6}>
+              <StatsCard
+                bigIcon={<i className="pe-7s-drop text-primary" />}
+                statsText="Total Expenses"
+                statsValue={`${toMoneyFormat(this.state.total_expenses)}`}
+                statsIcon={<i className="pe-7s-bookmarks" />}
+                statsIconText="Total amount invested"
+              />
+            </Col>
+            <Col lg={3} sm={6}>
+              <StatsCard
                 bigIcon={<i className="pe-7s-server text-warning" />}
                 statsText="Utilization Rate"
                 statsValue="68%"
@@ -146,48 +195,21 @@ class Overview extends Component {
                 statsIconText="In the last hour"
               />
             </Col>
-            <Col lg={3} sm={6}>
+            
+          </Row>
+          <Row>
+          <Col md={3}>
+            <Row>
+            <Col lg={12} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-note2 text-info" />}
-                statsText="Groos Margin"
+                statsText="Gross Margin"
                 statsValue="53%"
                 statsIcon={<i className="fa fa-refresh" />}
                 statsIconText="Updated now"
               />
             </Col>
-            <Col lg={3} sm={6}>
-              <StatsCard
-                bigIcon={<i className="pe-7s-wallet text-success" />}
-                statsText="Total Revenue"
-                statsValue="₦95,450"
-                statsIcon={<i className="fa fa-calendar-o" />}
-                statsIconText="Last day"
-              />
-            </Col>
-          </Row>
-          <Row>
-            <Col md={9}>
-              <Card
-                statsIcon="fa fa-history"
-                id="chartHours"
-                title="Revenue"
-                category="Accumulated Revenue"
-                stats="Revenue Chart"
-                content={
-                  <div className="ct-chart" style={{height:"100%",width:"100%"}}>
-                    <Line
-                      height={400}
-                      width={800}
-                      data={this.state.revenue_data}
-                      options={options}
-                    />
-                  </div>
-                }
-              />
-            </Col>
-            <Col md={3}>
-            <Row>
-              <Col lg={12} sm={12} >
+              <Col lg={12} sm={6} >
                 <StatsCard
                   bigIcon={<i className="pe-7s-attention text-warning" />}
                   statsText="P2 (Tons)"
@@ -196,7 +218,7 @@ class Overview extends Component {
                   statsIconText="P2 All time purchase (ATP)"
                 />
               </Col>
-              <Col lg={12} sm={12}>
+              <Col lg={12} sm={6}>
                 <StatsCard
                   bigIcon={<i className="pe-7s-star text-danger" />}
                   statsText="PKC (Tons)"
@@ -205,7 +227,7 @@ class Overview extends Component {
                   statsIconText="PKC All time Sale (ATS)"
                 />
               </Col>
-              <Col lg={12} sm={12}>
+              <Col lg={12} sm={6}>
                 <StatsCard
                   bigIcon={<i className="pe-7s-paper-plane text-info" />}
                   statsText="PKO (Tons)"
@@ -225,6 +247,26 @@ class Overview extends Component {
               </Col>
             </Row>
             </Col>
+            <Col md={9}>
+              <Card
+                statsIcon="fa fa-history"
+                id="chartHours"
+                title="Revenue"
+                category="Accumulated Revenue"
+                stats="Revenue Chart"
+                content={
+                  <div className="ct-chart" style={{height:"100%",width:"100%"}}>
+                    <Line
+                      height={400}
+                      width={800}
+                      data={this.state.revenue_data}
+                      options={options}
+                    />
+                  </div>
+                }
+              />
+            </Col>
+            
           </Row>
 
           {/* <Row>

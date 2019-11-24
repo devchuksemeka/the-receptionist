@@ -97,7 +97,7 @@ export default class SalesRework extends Component {
         datasetAccumulated.push(
           {
             yAxisID: "A",
-            label: `${toTitleCase(currentScreen)} Quantity Sold`,
+            label: `${toTitleCase(currentScreen)} daily sales`,
             fill: false,
             lineTension: 0.1,
             backgroundColor: "rgba(75,192,192,0.4)",

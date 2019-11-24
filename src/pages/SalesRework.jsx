@@ -6,18 +6,8 @@ import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
 import axios from 'axios'
 import {
-  getMonth,
-  numberOfDays,
-  numberOfWeeks,
-  numberOfMonths,
-  dateAddDays,
-  dateAddMonths,
-  dateAddWeeks,
-  getDate,
-  getWeek,
-  getWeekInMonth, 
-  toTitleCase,
-  CONSTANT
+
+  toTitleCase
 } from "../helpers"
 
 
@@ -33,7 +23,7 @@ export default class SalesRework extends Component {
     endDate: new Date(),
     currentDateFilter: "currentWeek",
     graphView: "day",
-    salesCyclesAvg: "N/A",
+    salesCyclesAvg: 0,
     currency: "naira",
     sales:[],
     chart_object:{
@@ -60,7 +50,7 @@ export default class SalesRework extends Component {
     this.setState({
       currentView,
       chart_object:{}
-    },() => this.processViewLogics());
+    },() => this.handleSubmit());
   }
 
   getStartDate = () =>{
@@ -79,151 +69,35 @@ export default class SalesRework extends Component {
   }
 
   getRequestQueryParams = () =>{
-    let query = `graphView=${this.getGraphView()}&startDate=${this.getStartDate()}&endDate=${this.getEndDate()}&product=${this.state.currentScreen}`;
+    let query = `graphView=${this.getGraphView()}&startDate=${this.getStartDate()}&endDate=${this.getEndDate()}&currentScreen=${this.state.currentScreen}&currentView=${this.state.currentView}&currency=${this.state.currency}`;
     return query;
   }
-
-  processViewLogics = async () => {
-    let data = this.state.sales;
-    let rangeSpan = 0;
-    const accumulated = {}
-    const resData = {};
-    let set_date = this.state.startDate;
+  
+  handleSubmit = async () => {
+   try{
+    const result = await axios.get(`${this.state.baseURL}/v1/sales/filter?${this.getRequestQueryParams()}`);
+    const {datasets,labels} = result.data.data
     
 
-    if(this.state.graphView === "day"){
-      rangeSpan = numberOfDays(this.state.startDate,this.state.endDate);
-      
-      
-      for(let i=0; i<=rangeSpan;i++){
-          const date = dateAddDays(set_date,i>0 ? 1:0);
-          const show_date = getDate(date);
-          set_date = date;
-          
-          const new_array = data.map(record => {
-              if(getDate(record.date) === show_date) {
-                  return {
-                      total_quantity_sales:record.quantity_in_ton,
-                      total_price_sales:this.state.currency === "naira" ? record.price_total : record.price_total/CONSTANT.USD_TO_NAIRA_CONV_RATE,
-                      avg_price_per_ton:this.state.currency === "naira" ? record.price_per_ton : record.price_per_ton/CONSTANT.USD_TO_NAIRA_CONV_RATE,
-                      product:record.product
-                  }
-              }
-              return {}
-          })
-          accumulated[`${show_date}`] = new_array;
-        
-      }
-    }
-
-    if(this.state.graphView === "week"){
-      rangeSpan = numberOfWeeks(this.state.startDate,this.state.endDate);
-      
-      for(let i=0; i<=rangeSpan;i++){
-        const date = dateAddWeeks(set_date,i>0 ? 1:0);
-
-        set_date = date;
-
-        const new_array = data.map(record => {
-          if(getWeek(record.date) === getWeek(date)) {
-              return {
-                  total_quantity_sales:record.quantity_in_ton,
-                  total_price_sales:this.state.currency === "naira" ? record.price_total : record.price_total/CONSTANT.USD_TO_NAIRA_CONV_RATE,
-                  avg_price_per_ton:this.state.currency === "naira" ? record.price_per_ton : record.price_per_ton/CONSTANT.USD_TO_NAIRA_CONV_RATE,
-                  product:record.product
-              }
-          }
-          return {}
-        })
-        accumulated[`${getWeekInMonth(date)}`] = new_array;
-      }
-    }
-
-    if(this.state.graphView === "month"){
-      rangeSpan = numberOfMonths(this.state.startDate,this.state.endDate);
-      for(let i=0; i<=rangeSpan;i++){
-        const date = dateAddMonths(set_date,i>0 ? 1:0);
-        let get_month = getMonth(date)
-        set_date = date;
-
-        const new_array = data.map(record => {
-          if(getMonth(record.date) === get_month) {
-              return {
-                  total_quantity_sales:record.quantity_in_ton,
-                  avg_price_per_ton:this.state.currency === "naira" ? record.price_per_ton : record.price_per_ton/CONSTANT.USD_TO_NAIRA_CONV_RATE,
-                  total_price_sales:this.state.currency === "naira" ? record.price_total : record.price_total/CONSTANT.USD_TO_NAIRA_CONV_RATE,
-                  product:record.product
-              }
-          }
-          return {}
-        })
-        accumulated[`${get_month}`] = new_array;
-      }
-    }
-
-    // check if current view is accumulated or dailySales
-
-    const accumulated_keys  = Object.keys(accumulated);
-    const accumulated_keys_length = accumulated_keys.length;
-
+    const result_keys = Object.keys(datasets);
     const datasetAccumulated = [];
-  
+    const currentScreen = this.state.currentScreen.toUpperCase();
 
     if(this.state.currentView === "dailySales"){
-      for(let i=0;i<accumulated_keys_length;i++){
-        const all_accu = accumulated[accumulated_keys[i]];
-        const all_accu_length = all_accu.length;
-        const every = {};
-  
-        for(let j=0;j<all_accu_length; j++){
-            const size = Object.keys(all_accu[j]).length;
-            
-            if(size > 0){
-                const key = this.state.currentScreen;
-                // const key = all_accu[j].product;
-                if(every[key] !== undefined){
-                    every[key] = {
-                      total_quantity_sales: every[key].total_quantity_sales + all_accu[j].total_quantity_sales,
-                      total_price_sales: every[key].total_price_sales + all_accu[j].total_price_sales,
-                      avg_price_per_ton: every[key].avg_price_per_ton + all_accu[j].avg_price_per_ton,
-                    }
-  
-                }else{
-                    every[key] = {
-                      total_quantity_sales: all_accu[j].total_quantity_sales,
-                      total_price_sales: all_accu[j].total_price_sales,
-                      avg_price_per_ton: all_accu[j].avg_price_per_ton,
-                    }
-                }
-                
-            }
-        }
-        if(every[this.state.currentScreen] === undefined){
-            every[this.state.currentScreen] = {
-              total_quantity_sales: 0,
-              total_price_sales: 0,
-              avg_price_per_ton: 0,
-            }
-        }
-  
-        resData[accumulated_keys[i]] = every
-      }
-  
       for(let j=0;j<1;j++){
-  
+    
         const saleQuantity = [];
         const salePrice = [];
         const avgUnitPrice = [];
-        for(let i=0;i<accumulated_keys_length;i++){
-          saleQuantity.push(resData[accumulated_keys[i]][this.state.currentScreen].total_quantity_sales)
-          salePrice.push(resData[accumulated_keys[i]][this.state.currentScreen].total_price_sales)
-          avgUnitPrice.push(resData[accumulated_keys[i]][this.state.currentScreen].avg_price_per_ton)
+        for(let i=0;i<result_keys.length;i++){
+          saleQuantity.push(datasets[result_keys[i]][currentScreen].total_quantity_sales)
+          salePrice.push(datasets[result_keys[i]][currentScreen].total_price_sales)
+          avgUnitPrice.push(datasets[result_keys[i]][currentScreen].avg_price_per_ton)
         }
-        // if(this.state.currentView === "accumulated")
         datasetAccumulated.push(
           {
             yAxisID: "A",
-            label: `${toTitleCase(this.state.currentScreen)} Quantity Sold`,
+            label: `${toTitleCase(currentScreen)} Quantity Sold`,
             fill: false,
             lineTension: 0.1,
             backgroundColor: "rgba(75,192,192,0.4)",
@@ -245,7 +119,7 @@ export default class SalesRework extends Component {
           },
           {
             yAxisID: "B",
-            label: `${toTitleCase(this.state.currentScreen)} Average Unit Selling Price`,
+            label: `${toTitleCase(currentScreen)} Average Unit Selling Price`,
             fill: false,
             lineTension: 0.1,
             backgroundColor: "#de6866",
@@ -266,65 +140,20 @@ export default class SalesRework extends Component {
             data: avgUnitPrice
           }
         )
-  
       }
     }
-
     if(this.state.currentView === "accumulated"){
-      // const product_colors = {PKO:"#de6866",PKC:"rgba(75,192,192,1)"}
-
-      let accumulated_total_sale_price = 0;
-      for(let i=0;i<accumulated_keys_length;i++){
-        const all_accu = accumulated[accumulated_keys[i]];
-        const all_accu_length = all_accu.length;
-        const every = {};
-  
-        for(let j=0;j<all_accu_length; j++){
-            const size = Object.keys(all_accu[j]).length;
-
-            let total_price_sales = 0;
-            
-            if(size > 0){
-                const key = this.state.currentScreen;
-                let summer = 0;
-                if(every[key] !== undefined){
-                  summer = every[key].total_price_sales + all_accu[j].total_price_sales;
-                  total_price_sales = summer + accumulated_total_sale_price;
-                  accumulated_total_sale_price += summer
-                  every[key] = {total_price_sales}
-                }else{
-                  summer = all_accu[j].total_price_sales;
-                  total_price_sales = summer + accumulated_total_sale_price;
-                  accumulated_total_sale_price += summer
-
-                  every[key] = {total_price_sales}
-                }
-            }
-            
-            
-        }
-
-        // console.log("accumulated_total_sale_price",accumulated_total_sale_price)
-        if(every[this.state.currentScreen] === undefined){
-            every[this.state.currentScreen] = {
-              total_price_sales: accumulated_total_sale_price,
-            }
-        }
-  
-        resData[accumulated_keys[i]] = every
-        
-      }
       for(let j=0;j<1;j++){
   
         const saleQuantity = [];
         const salePrice = [];
-        for(let i=0;i<accumulated_keys_length;i++){
-          saleQuantity.push(resData[accumulated_keys[i]][this.state.currentScreen].total_quantity_sales)
-          salePrice.push(resData[accumulated_keys[i]][this.state.currentScreen].total_price_sales)
+        for(let i=0;i<result_keys.length;i++){
+          saleQuantity.push(datasets[result_keys[i]][currentScreen].total_quantity_sales)
+          salePrice.push(datasets[result_keys[i]][currentScreen].total_price_sales)
         }
         datasetAccumulated.push(
           {
-            label: `${toTitleCase(this.state.currentScreen)} Sales`,
+            label: `${toTitleCase(currentScreen)} Sales`,
             stack: "Stack 0",
             fill: false,
             lineTension: 0.1,
@@ -372,25 +201,21 @@ export default class SalesRework extends Component {
       }
     }
 
-   
-
-    this.setState(
-      {
-        loading: false,
-        chart_object:{
-          labels:accumulated_keys,
-          datasets:datasetAccumulated
-        }
-      },
-    );
-  }
-  
-  handleSubmit = async () => {
-   
-    const result = await axios.get(`${this.state.baseURL}/v1/sales/filter?${this.getRequestQueryParams()}`);
+    
     this.setState({
-      sales:result.data.data
-    },()=>this.processViewLogics())
+      loading: false,
+      chart_object:{
+        labels,
+        datasets:datasetAccumulated
+      }
+    })
+    
+   }catch(err){
+    this.setState({
+      loading: false
+    })
+    console.log(err)
+   }
     
   };
 
@@ -410,14 +235,11 @@ export default class SalesRework extends Component {
 
   handleGraphView = async e => {
     const graphView = e.target.value;
-    await this.setState(
+    this.setState(
       {
         graphView
       }
-    );
-
-    await this.processViewLogics();
-  };
+    ,()=>this.handleSubmit())};
 
   handleDateFilter = e => {
     const currentDateFilter = e.target.value;
@@ -442,9 +264,8 @@ export default class SalesRework extends Component {
     this.setState(
       {
         currency
-      },
-      () => this.processViewLogics()
-    );
+      },() =>this.handleSubmit()
+    )
   };
 
   render() {
@@ -464,8 +285,7 @@ export default class SalesRework extends Component {
         callbacks: {
           label: function(tooltipItem, data) {
             const key = data.datasets[tooltipItem.datasetIndex].label;
-            const val =
-              data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+            const val = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
             if (val) return key + ` : ${currency === "naira" ? "₦":"$"}` + val.toLocaleString();
           }
         }
@@ -494,8 +314,7 @@ export default class SalesRework extends Component {
           label: function(tooltipItem, data) {
             const key = data.datasets[tooltipItem.datasetIndex].label;
             const yAxis = data.datasets[tooltipItem.datasetIndex].yAxisID;
-            const val =
-              data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+            const val = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
             if (val && yAxis === "A") return key + ": " +val.toLocaleString() +" tons";
             if (val && yAxis === "B") return key + ` : ${currency === "naira" ? "₦":"$"}` + val.toLocaleString();
           }

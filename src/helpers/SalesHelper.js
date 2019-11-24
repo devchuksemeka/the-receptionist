@@ -3,6 +3,9 @@ import { convertDate } from "../common";
 const convertTo2Dp = number => (number ? +number.toFixed(2) : 0);
 
 export const getChartData = (PkoApiData, PkcApiData, P2ApiData) => {
+  console.log("PkoApiData",PkoApiData)
+  console.log("PkcApiData",PkcApiData)
+    console.log("P2ApiData",P2ApiData)
   const pkolabels = [];
   const pkoSalesQuantityData = [];
   const pkoSalesPriceData = [];
@@ -159,7 +162,6 @@ export const getChartData = (PkoApiData, PkcApiData, P2ApiData) => {
       }
     ]
   };
-  console.log("accumulatedSalesObject",accumulatedSalesObject);
   const accumulatedLabels = Object.keys(accumulatedSalesObject).sort();
   const pkoAccumulated = [];
   const pkcAccumulated = [];

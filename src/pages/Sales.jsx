@@ -5,7 +5,6 @@ import { Line, Bar } from "react-chartjs-2";
 import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
 import { getChartData } from "../helpers/SalesHelper";
-import axios from 'axios'
 import {
   getP2Inventory,
   getPkoInventory,
@@ -39,7 +38,6 @@ export default class Sales extends Component {
 
   async componentDidMount() {
     await this.handleSubmit();
-    await this.handleSubmitNew();
   }
 
 
@@ -77,22 +75,6 @@ export default class Sales extends Component {
     return query;
   }
 
-
-
-  handleSubmitNew = async () => {
-
-    const result = await axios.get(`${this.state.baseURL}/v1/sales/filter?${this.getRequestQueryParams()}`)
-    console.log("new_submit_request",result.data.data)
-
-    // this.setState(
-    //   {
-    //     PkoApiData,
-    //     PkcApiData,
-    //     P2ApiData
-    //   },
-    //   () => this.setGraphValues()
-    // );
-  };
   
   handleSubmit = async () => {
     const { startDate, endDate, graphView } = this.state;
@@ -134,8 +116,7 @@ export default class Sales extends Component {
       PkcApiData,
       P2ApiData
     );
-    console.log("PkoData",PkoData)
-    console.log("PkcData",PkcData)
+    
     
     this.setState({
       PkoData,

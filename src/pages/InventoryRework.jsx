@@ -6,18 +6,7 @@ import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
 import axios from 'axios'
 import {
-  getMonth,
-  numberOfDays,
-  numberOfWeeks,
-  numberOfMonths,
-  dateAddDays,
-  dateAddMonths,
-  dateAddWeeks,
-  getDate,
-  getWeek,
-  getWeekInMonth, 
-  toTitleCase,
-  CONSTANT
+  toTitleCase
 } from "../helpers"
 
 
@@ -65,7 +54,7 @@ export default class InventoryRework extends Component {
     const currentView = e.target.value;
     this.setState({
       currentView
-    },this.processViewLogics);
+    },() => this.handleSubmit());
   }
 
   getStartDate = () =>{
@@ -85,13 +74,8 @@ export default class InventoryRework extends Component {
 
   getRequestQueryParams = () =>{
 
-    let query = `graphView=${this.getGraphView()}&startDate=${this.getStartDate()}&endDate=${this.getEndDate()}&product=${this.state.currentScreen}`;
+    let query = `currency=${this.state.currency}&graphView=${this.getGraphView()}&startDate=${this.getStartDate()}&endDate=${this.getEndDate()}&currentScreen=${this.state.currentScreen}&currentView=${this.state.currentView}&viewCategory=${this.state.view_category}`;
     return query;
-  }
-
-  getRequestUrl = () => {
-   
-    return `${this.state.view_category}/filter?${this.getRequestQueryParams()}`;
   }
 
   processViewLogics = async () => {
@@ -99,133 +83,23 @@ export default class InventoryRework extends Component {
   }
 
   processPurchaseViewLogics = async () => {
-    let data = this.state.purchase_data;
-    let rangeSpan = 0;
-    const accumulated = {}
-    const resData = {};
-    let set_date = this.state.startDate;
-    
-
-    if(this.state.graphView === "day"){
-      rangeSpan = numberOfDays(this.state.startDate,this.state.endDate);
-      for(let i=0; i<=rangeSpan;i++){
-          const date = dateAddDays(set_date,i>0 ? 1:0);
-          const show_date = getDate(date);
-          set_date = date;
-          
-          const new_array = data.map(record => {
-              if(getDate(record.date) === show_date) {
-                  return {
-                      total_quantity_sales:record.quantity_in_ton,
-                      total_price_sales:this.state.currency === "naira" ? record.price_per_ton : record.price_per_ton/CONSTANT.USD_TO_NAIRA_CONV_RATE,
-                      product:record.product
-                  }
-              }
-              return {}
-          })
-          accumulated[`${show_date}`] = new_array;
-        
-      }
-    }
-
-    if(this.state.graphView === "week"){
-      rangeSpan = numberOfWeeks(this.state.startDate,this.state.endDate);
-      
-      for(let i=0; i<=rangeSpan;i++){
-        const date = dateAddWeeks(set_date,i>0 ? 1:0);
-
-        set_date = date;
-
-        const new_array = data.map(record => {
-          if(getWeek(record.date) === getWeek(date)) {
-              return {
-                  total_quantity_sales:record.quantity_in_ton,
-                  total_price_sales:this.state.currency === "naira" ? record.price_per_ton : record.price_per_ton/CONSTANT.USD_TO_NAIRA_CONV_RATE,
-                  product:record.product
-              }
-          }
-          return {}
-        })
-        accumulated[`${getWeekInMonth(date)}`] = new_array;
-      }
-    }
-
-    if(this.state.graphView === "month"){
-      rangeSpan = numberOfMonths(this.state.startDate,this.state.endDate);
-      for(let i=0; i<=rangeSpan;i++){
-        const date = dateAddMonths(set_date,i>0 ? 1:0);
-        let get_month = getMonth(date)
-        set_date = date;
-
-        const new_array = data.map(record => {
-          if(getMonth(record.date) === get_month) {
-              return {
-                  total_quantity_sales:record.quantity_in_ton,
-                  total_price_sales:this.state.currency === "naira" ? record.price_per_ton : record.price_per_ton/CONSTANT.USD_TO_NAIRA_CONV_RATE,
-                  product:record.product
-              }
-          }
-          return {}
-        })
-        accumulated[`${get_month}`] = new_array;
-      }
-    }
-
-    const accumulated_keys  = Object.keys(accumulated);
-    const accumulated_keys_length = accumulated_keys.length;
-
-  
+    let {datasets,labels} = this.state.data;
+    const result_keys = Object.keys(datasets);
     const datasetAccumulated = [];
+    const currentScreen = this.state.currentScreen.toUpperCase();
 
     if(this.state.currentView === "dailyPurchase"){
-      for(let i=0;i<accumulated_keys_length;i++){
-        const all_accu = accumulated[accumulated_keys[i]];
-        const all_accu_length = all_accu.length;
-        const every = {};
-  
-        for(let j=0;j<all_accu_length; j++){
-            const size = Object.keys(all_accu[j]).length;
-            
-            if(size > 0){
-                const key = this.state.currentScreen;
-                // const key = all_accu[j].product;
-                if(every[key] !== undefined){
-                    every[key] = {
-                      total_quantity_sales: every[key].total_quantity_sales + all_accu[j].total_quantity_sales,
-                      total_price_sales: every[key].total_price_sales + all_accu[j].total_price_sales,
-                    }
-  
-                }else{
-                    every[key] = {
-                      total_quantity_sales: all_accu[j].total_quantity_sales,
-                      total_price_sales: all_accu[j].total_price_sales,
-                    }
-                }
-                
-            }
-        }
-        if(every[this.state.currentScreen] === undefined){
-            every[this.state.currentScreen] = {
-              total_quantity_sales: 0,
-              total_price_sales: 0,
-            }
-        }
-  
-        resData[accumulated_keys[i]] = every
-  
-  
-      }
       for(let j=0;j<1;j++){
         const saleQuantity = [];
         const salePrice = [];
-        for(let i=0;i<accumulated_keys_length;i++){
-          saleQuantity.push(resData[accumulated_keys[i]][this.state.currentScreen].total_quantity_sales)
-          salePrice.push(resData[accumulated_keys[i]][this.state.currentScreen].total_price_sales)
+        for(let i=0;i<result_keys.length;i++){
+          saleQuantity.push(datasets[result_keys[i]][currentScreen].total_quantity_sales)
+          salePrice.push(datasets[result_keys[i]][currentScreen].total_price_sales)
         }
         datasetAccumulated.push(
           {
             yAxisID: "A",
-            label: `${toTitleCase(this.state.currentScreen)} Quantity Purchased`,
+            label: `${toTitleCase(currentScreen)} Quantity Purchased`,
             fill: false,
             lineTension: 0.1,
             backgroundColor: "rgba(75,192,192,0.4)",
@@ -247,7 +121,7 @@ export default class InventoryRework extends Component {
           },
           {
             yAxisID: "B",
-            label: `${toTitleCase(this.state.currentScreen)} Average Unit Cost Price`,
+            label: `${toTitleCase(currentScreen)} Average Unit Cost Price`,
             fill: false,
             lineTension: 0.1,
             backgroundColor: "#de6866",
@@ -272,78 +146,17 @@ export default class InventoryRework extends Component {
       }
     }
     if(this.state.currentView === "accumulated"){
-
-      let accumulated_total_quantity = 0;
-      let accumulated_total_amount_v = 0;
-      for(let i=0;i<accumulated_keys_length;i++){
-        const all_accu = accumulated[accumulated_keys[i]];
-        const all_accu_length = all_accu.length;
-        const every = {};
-  
-
-        for(let j=0;j<all_accu_length; j++){
-            const size = Object.keys(all_accu[j]).length;
-            let total_quantity_sales = 0;
-            let total_price_sales = 0;
-            
-            if(size > 0){
-                const key = this.state.currentScreen;
-                let quantity_summer = 0;
-                let amount_summer = 0;
-                if(every[key] !== undefined){
-                  quantity_summer = every[key].total_quantity_sales + all_accu[j].total_quantity_sales;
-                  total_quantity_sales = quantity_summer + accumulated_total_quantity;
-                  accumulated_total_quantity += quantity_summer;
-
-                  amount_summer = every[key].total_price_sales + all_accu[j].total_price_sales;
-                  total_price_sales = amount_summer + accumulated_total_amount_v;
-                  accumulated_total_amount_v += amount_summer;
-
-                  every[key] = {
-                    total_quantity_sales,
-                    total_price_sales,
-                  }
-  
-                }else{
-                  
-                  quantity_summer = all_accu[j].total_quantity_sales;
-                  total_quantity_sales = quantity_summer + accumulated_total_quantity;
-                  accumulated_total_quantity += quantity_summer;
-
-                  amount_summer = all_accu[j].total_price_sales;
-                  total_price_sales = amount_summer + accumulated_total_amount_v;
-                  accumulated_total_amount_v += amount_summer;
-
-                  every[key] = {
-                    total_quantity_sales,
-                    total_price_sales,
-                  }
-                }
-              }
-        }
-        if(every[this.state.currentScreen] === undefined){
-            every[this.state.currentScreen] = {
-              total_quantity_sales: accumulated_total_quantity,
-              total_price_sales: accumulated_total_amount_v,
-            }
-        }
-  
-        resData[accumulated_keys[i]] = every
-  
-  
-      }
-      // console.log("resData",resData)
       for(let j=0;j<1;j++){
         const saleQuantity = [];
         const salePrice = [];
-        for(let i=0;i<accumulated_keys_length;i++){
-          saleQuantity.push(resData[accumulated_keys[i]][this.state.currentScreen].total_quantity_sales)
-          salePrice.push(resData[accumulated_keys[i]][this.state.currentScreen].total_price_sales)
+        for(let i=0;i<result_keys.length;i++){
+          saleQuantity.push(datasets[result_keys[i]][currentScreen].total_quantity_sales)
+          salePrice.push(datasets[result_keys[i]][currentScreen].total_price_sales)
         }
         datasetAccumulated.push(
           {
             yAxisID: "A",
-            label: `${toTitleCase(this.state.currentScreen)} Current Inventory`,
+            label: `${toTitleCase(currentScreen)} Current Inventory`,
             fill: false,
             lineTension: 0.1,
             backgroundColor: "rgba(75,192,192,0.4)",
@@ -365,7 +178,7 @@ export default class InventoryRework extends Component {
           },
           {
             yAxisID: "B",
-            label: `${toTitleCase(this.state.currentScreen)} Current Inventory Value`,
+            label: `${toTitleCase(currentScreen)} Current Inventory Value`,
             fill: false,
             lineTension: 0.1,
             backgroundColor: "#de6866",
@@ -393,202 +206,28 @@ export default class InventoryRework extends Component {
       {
         loading: false,
         chart_object:{
-          labels:accumulated_keys,
+          labels,
           datasets:datasetAccumulated
         }
       },
     );
   }
 
-  processProductionViewLogics = async () => {
-    let {productions:data,market_prices} = this.state.production_data;
-    console.log("data",{data,market_prices})
-    
-    let rangeSpan = 0;
-    const accumulated = {}
-    const market_price_accumulated = {}
-    const resData = {};
-    const market_price_res_data = {};
-    let set_date = this.state.startDate;
-    
-
-    if(this.state.graphView === "day"){
-      rangeSpan = numberOfDays(this.state.startDate,this.state.endDate);
-      for(let i=0; i<=rangeSpan;i++){
-          const date = dateAddDays(set_date,i>0 ? 1:0);
-          const show_date = getDate(date);
-          set_date = date;
-          
-          const new_array = data.map(record => {
-            let total_produced = this.state.currentScreen === "pko" ? record.pko_produced : record.pkc_produced
-              if(getDate(record.date) === show_date) {
-                  return {
-                    total_produced: total_produced || 0,
-                    product:this.state.currentScreen
-                  }
-              }
-              return {}
-          })
-          const marketPricesArray = market_prices.map(record => {
-              if(getDate(record.date) === show_date && this.state.currentScreen.toUpperCase() === record.commodity) {
-                  return {
-                    price:this.state.currency === "naira" ? record.price_per_ton : record.price_per_ton/CONSTANT.USD_TO_NAIRA_CONV_RATE,
-                    product:record.commodity
-                  }
-              }
-              return {}
-          })
-          accumulated[`${show_date}`] = new_array;
-          market_price_accumulated[`${show_date}`] = marketPricesArray;
-      }
-    }
-
-    if(this.state.graphView === "week"){
-      rangeSpan = numberOfWeeks(this.state.startDate,this.state.endDate);
-      
-      for(let i=0; i<=rangeSpan;i++){
-        const date = dateAddWeeks(set_date,i>0 ? 1:0);
-
-        set_date = date;
-
-        const new_array = data.map(record => {
-          if(getWeek(record.date) === getWeek(date)) {
-            let total_produced = this.state.currentScreen === "pko" ? record.pko_produced : record.pkc_produced
-              return {
-                  total_produced: total_produced || 0,
-                  product:this.state.currentScreen
-              }
-          }
-          return {}
-        })
-        const marketPricesArray = market_prices.map(record => {
-          if(getWeek(record.date) === getWeek(date) && this.state.currentScreen.toUpperCase() === record.commodity) {
-              return {
-                price:this.state.currency === "naira" ? record.price_per_ton : record.price_per_ton/CONSTANT.USD_TO_NAIRA_CONV_RATE,
-                product:record.commodity
-              }
-          }
-          return {}
-        })
-        accumulated[`${getWeekInMonth(date)}`] = new_array;
-        market_price_accumulated[`${getWeekInMonth(date)}`] = marketPricesArray;
-      }
-    }
-
-    if(this.state.graphView === "month"){
-      rangeSpan = numberOfMonths(this.state.startDate,this.state.endDate);
-      for(let i=0; i<=rangeSpan;i++){
-        const date = dateAddMonths(set_date,i>0 ? 1:0);
-        let get_month = getMonth(date)
-        set_date = date;
-
-        const new_array = data.map(record => {
-          if(getMonth(record.date) === get_month) {
-            let total_produced = this.state.currentScreen === "pko" ? record.pko_produced : record.pkc_produced
-            return {
-              total_produced: total_produced || 0,
-              product:this.state.currentScreen
-            }
-          }
-          return {}
-        })
-        const marketPricesArray = market_prices.map(record => {
-          if(getMonth(record.date) === get_month && this.state.currentScreen.toUpperCase() === record.commodity) {
-              return {
-                price:this.state.currency === "naira" ? record.price_per_ton : record.price_per_ton/CONSTANT.USD_TO_NAIRA_CONV_RATE,
-                product:record.commodity
-              }
-          }
-          return {}
-        })
-        accumulated[`${get_month}`] = new_array;
-        market_price_accumulated[`${get_month}`] = marketPricesArray;
-      }
-    }
-
-
-    const accumulated_keys  = Object.keys(accumulated);
-    const accumulated_keys_length = accumulated_keys.length;
-
+  processProductionViewLogics = async () => { 
+    let {datasets,labels} = this.state.data;
+    const result_keys = Object.keys(datasets);
     const datasetAccumulated = [];
+    const currentScreen = this.state.currentScreen.toUpperCase();
 
     if(this.state.currentView === "dailyPurchase"){
-      for(let i=0;i<accumulated_keys_length;i++){
-        const all_accu = accumulated[accumulated_keys[i]];
-        const market_prices = market_price_accumulated[accumulated_keys[i]];
-        const all_accu_length = all_accu.length;
-        const every = {};
-        const every_market_price = {};
-  
-        for(let j=0;j<all_accu_length; j++){
-            const size = Object.keys(all_accu[j]).length;
-            
-            if(size > 0){
-                const key = this.state.currentScreen;
-                if(every[key] !== undefined){
-                    every[key] = {
-                      total_produced: parseFloat(every[key].total_produced.toFixed(3)) + parseFloat(all_accu[j].total_produced.toFixed(3)),
-                      // total_price_sales: every[key].total_price_sales + all_accu[j].total_price_sales,
-                    }
-  
-                }else{
-                    every[key] = {
-                      total_produced: parseFloat(all_accu[j].total_produced.toFixed(3)),
-                      // total_price_sales: all_accu[j].total_price_sales,
-                    }
-                }
-                
-            }
-        }
-        if(every[this.state.currentScreen] === undefined){
-            every[this.state.currentScreen] = {
-              total_produced: 0,
-              // total_price_sales: 0,
-            }
-        }
-  
-        for(let j=0;j<market_prices.length; j++){
-          const size = Object.keys(market_prices[j]).length;
-          
-          if(size > 0){
-              const key = this.state.currentScreen;
-            if(every_market_price[key] !== undefined){
-              every_market_price[key] = {
-                price: every_market_price[key].price + market_prices[j].price,
-                occurrence: every_market_price[key].occurrence + 1
-                // total_price_sales: every[key].total_price_sales + all_accu[j].total_price_sales,
-              }
-  
-            }else{
-              every_market_price[key] = {
-                price: market_prices[j].price,
-                occurrence:1
-              }
-            }
-          }
-        }
-  
-      if(every_market_price[this.state.currentScreen] === undefined){
-        every_market_price[this.state.currentScreen] = {
-          price: 0,
-          occurrence:0
-        }
-      }
-  
-        resData[accumulated_keys[i]] = every
-        market_price_res_data[accumulated_keys[i]] = every_market_price
-  
-      }
+      
       for(let j=0;j<1;j++){
         const productionQuantity = [];
         const marketPrice = [];
   
-        for(let i=0;i<accumulated_keys_length;i++){
-          const {price,occurrence} = market_price_res_data[accumulated_keys[i]][this.state.currentScreen];
-          let division = price/occurrence
-          division = isNaN(division) ? 0 : division
-          productionQuantity.push(resData[accumulated_keys[i]][this.state.currentScreen].total_produced)
-          marketPrice.push(parseFloat(division))
+        for(let i=0;i<result_keys.length;i++){
+          productionQuantity.push(datasets[result_keys[i]][currentScreen].total_produced)
+          marketPrice.push(datasets[result_keys[i]][currentScreen].market_price)
         }
         datasetAccumulated.push(
           {
@@ -640,110 +279,19 @@ export default class InventoryRework extends Component {
       }
     }
     if(this.state.currentView === "accumulated"){
-      let accumulated_total_quantity_produced = 0;
-      let accumulated_total_amount_price = 0; 
-      let accumulated_total_occurence = 0; 
-
-      for(let i=0;i<accumulated_keys_length;i++){
-        const all_accu = accumulated[accumulated_keys[i]];
-        const market_prices = market_price_accumulated[accumulated_keys[i]];
-        const all_accu_length = all_accu.length;
-        const every = {};
-        const every_market_price = {};
-  
-        for(let j=0;j<all_accu_length; j++){
-            const size = Object.keys(all_accu[j]).length;
-            let total_produced = 0;
-            
-            if(size > 0){
-                const key = this.state.currentScreen;
-                let quantity_summer = 0;
-                if(every[key] !== undefined){
-                  quantity_summer = every[key].total_produced + all_accu[j].total_produced;
-                  total_produced = quantity_summer + accumulated_total_quantity_produced;
-                  accumulated_total_quantity_produced += quantity_summer;
-
-                  every[key] = {total_produced}
-  
-                }else{
-                  quantity_summer = parseFloat(all_accu[j].total_produced.toFixed(3));
-                  total_produced = quantity_summer + parseFloat(accumulated_total_quantity_produced.toFixed(3));
-                  accumulated_total_quantity_produced += quantity_summer;
-                  every[key] = {total_produced}
-                }
-            }
-        }
-        if(every[this.state.currentScreen] === undefined){
-            every[this.state.currentScreen] = {total_produced: accumulated_total_quantity_produced}
-        }
-  
-        for(let j=0;j<market_prices.length; j++){
-          const size = Object.keys(market_prices[j]).length;
-          let price = 0;
-          let occurrence = 0;
-          
-          if(size > 0){
-              const key = this.state.currentScreen;
-              let price_summer = 0;
-              let occurence_summer = 0;
-            if(every_market_price[key] !== undefined){
-              price_summer = every_market_price[key].price + parseFloat(market_prices[j].price.toFixed(3));
-              price = price_summer + parseFloat(accumulated_total_amount_price.toFixed(3));
-              accumulated_total_amount_price += price_summer;
-
-              occurence_summer = every_market_price[key].occurrence + 1;
-              occurrence = occurence_summer + accumulated_total_occurence;
-              accumulated_total_occurence += occurence_summer;
-
-              every_market_price[key] = {
-                price,
-                occurrence
-              }
-  
-            }else{
-              price_summer = market_prices[j].price;
-              price = price_summer + accumulated_total_amount_price;
-              accumulated_total_amount_price += price_summer;
-
-              occurence_summer = 1;
-              occurrence = occurence_summer + accumulated_total_occurence;
-              accumulated_total_occurence += occurence_summer;
-
-              every_market_price[key] = {
-                price,
-                occurrence
-              }
-            }
-          }
-        }
-  
-      if(every_market_price[this.state.currentScreen] === undefined){
-        every_market_price[this.state.currentScreen] = {
-          price: accumulated_total_amount_price,
-          occurrence:accumulated_total_occurence
-        }
-      }
-  
-        resData[accumulated_keys[i]] = every
-        market_price_res_data[accumulated_keys[i]] = every_market_price
-      }
-      console.log("resData",resData)
-      console.log("market_price_res_data",market_price_res_data)
+      
       for(let j=0;j<1;j++){
         const productionQuantity = [];
         const marketPrice = [];
   
-        for(let i=0;i<accumulated_keys_length;i++){
-          const {price,occurrence} = market_price_res_data[accumulated_keys[i]][this.state.currentScreen];
-          let division = price/occurrence
-          division = isNaN(division) ? 0 : division
-          productionQuantity.push(parseFloat(resData[accumulated_keys[i]][this.state.currentScreen].total_produced.toFixed(3)))
-          marketPrice.push(parseFloat(division.toFixed(3)))
+        for(let i=0;i<result_keys.length;i++){
+          productionQuantity.push(parseFloat(datasets[result_keys[i]][currentScreen].total_produced))
+          marketPrice.push(datasets[result_keys[i]][currentScreen].market_price)
         }
         datasetAccumulated.push(
           {
             yAxisID: "A",
-            label: `${toTitleCase(this.state.currentScreen)} quantity Produced`,
+            label: `${toTitleCase(currentScreen)} quantity Produced`,
             fill: false,
             lineTension: 0.1,
             backgroundColor: "rgba(75,192,192,0.4)",
@@ -765,7 +313,7 @@ export default class InventoryRework extends Component {
           },
           {
             yAxisID: "B",
-            label: `${toTitleCase(this.state.currentScreen)} average market unit price`,
+            label: `${toTitleCase(currentScreen)} average market unit price`,
             fill: false,
             lineTension: 0.1,
             backgroundColor: "#de6866",
@@ -790,13 +338,12 @@ export default class InventoryRework extends Component {
       }
     }
 
-    
 
     this.setState(
       {
         loading: false,
         chart_object:{
-          labels:accumulated_keys,
+          labels,
           datasets:datasetAccumulated
         }
       },
@@ -806,22 +353,15 @@ export default class InventoryRework extends Component {
   
   handleSubmit = async () => {
    
-    const result = await axios.get(`${this.state.baseURL}/v1/supplies/${this.getRequestUrl()}`)
+    const result = await axios.get(`${this.state.baseURL}/v1/supplies/filter?${this.getRequestQueryParams()}`)
 
-    if(this.state.view_category === "purchases"){
-      this.setState({
-        purchase_data:result.data.data
-      })
-    }
-    if(this.state.view_category === "productions"){
-      this.setState({
-        production_data:result.data.data
-      })
-    }
-
-    await this.processViewLogics()
     
-  };
+    this.setState({
+        data:result.data.data
+      },
+      ()=>this.processViewLogics()
+    );
+  }
 
   handleStartDateChange = e => {
     const date = e.target.value;
@@ -842,10 +382,9 @@ export default class InventoryRework extends Component {
     await this.setState(
       {
         graphView
-      }
+      },() => this.handleSubmit()
     );
 
-    await this.processViewLogics()
   };
 
   handleDateFilter = e => {
@@ -872,7 +411,7 @@ export default class InventoryRework extends Component {
       {
         currency
       },
-      () => this.processViewLogics()
+      () => this.handleSubmit()
     );
   };
 

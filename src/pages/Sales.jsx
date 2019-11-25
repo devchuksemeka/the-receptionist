@@ -170,7 +170,8 @@ export default class Sales extends Component {
       },
       () => this.handleSubmit()
     );
-  };  
+  }; 
+   
   handleCurrencyChange = e => {
     const currency = e.target.value;
     this.setState(

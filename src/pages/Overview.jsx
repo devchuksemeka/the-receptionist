@@ -5,7 +5,8 @@ import { Grid,
   Row, 
   Col 
 } from "react-bootstrap";
-import {toMoneyFormat} from '../helpers/index'
+import { getDateFilter } from "../common";
+// import {toMoneyFormat} from '../helpers/index'
 
 import { Card } from "components/Card/Card.jsx";
 import { StatsCard } from "components/StatsCard/StatsCard.jsx";
@@ -62,18 +63,35 @@ class Overview extends Component {
   };
 
   async componentDidMount(){
+    this.handleSubmit();
+  }
+
+  handleSubmit = async () => {
     this.getAllTimePurchases();
     this.getAllTimeSales();
     this.getGrossMargin();
     this.getTotalDownTime();
     this.getTotalUtilizationRate();
-    // this.getTotalRevenue();
-    // this.getTotalExpenses();
+  }
+
+  getStartDate = () =>{
+    const start_date = this.state.startDate.toISOString();
+    return start_date;
+  }
+
+  getEndDate = () =>{
+    const end_date = this.state.endDate.toISOString();
+    return end_date;
+  }
+
+  getRequestQueryParams = () =>{
+    let query = `&startDate=${this.getStartDate()}&endDate=${this.getEndDate()}`;
+    return query;
   }
 
   getGrossMargin = async ()=>{
     try{
-      const gross_margin_res = await axios.get(`${this.state.baseURL}/v1/overview/gross-margin`)
+      const gross_margin_res = await axios.get(`${this.state.baseURL}/v1/overview/gross-margin?${this.getRequestQueryParams()}`)
       const {gross_margin} = gross_margin_res.data
 
       this.setState({
@@ -86,7 +104,7 @@ class Overview extends Component {
   
   getTotalDownTime = async ()=>{
     try{
-      const total_downtime_res = await axios.get(`${this.state.baseURL}/v1/overview/total-downtime`)
+      const total_downtime_res = await axios.get(`${this.state.baseURL}/v1/overview/total-downtime?${this.getRequestQueryParams()}`)
       const {total_downtime} = total_downtime_res.data
 
       this.setState({
@@ -99,7 +117,7 @@ class Overview extends Component {
 
   getTotalUtilizationRate = async ()=>{
     try{
-      const total_utilization_rate_res = await axios.get(`${this.state.baseURL}/v1/overview/total-utilization-rate`)
+      const total_utilization_rate_res = await axios.get(`${this.state.baseURL}/v1/overview/total-utilization-rate?${this.getRequestQueryParams()}`)
       const {total_utilization_rate} = total_utilization_rate_res.data
 
       this.setState({
@@ -112,7 +130,7 @@ class Overview extends Component {
 
   getAllTimeSales = async ()=>{
     try{
-      const all_time_sales_response = await axios.get(`${this.state.baseURL}/v1/overview/all-time-sales`)
+      const all_time_sales_response = await axios.get(`${this.state.baseURL}/v1/overview/all-time-sales?${this.getRequestQueryParams()}`)
       const {PKSL,PKO,PKC} = all_time_sales_response.data.data
 
       this.setState({
@@ -127,9 +145,8 @@ class Overview extends Component {
 
   getAllTimePurchases = async ()=>{
     try{
-      const all_time_purchases_response = await axios.get(`${this.state.baseURL}/v1/overview/all-time-purchases`)
+      const all_time_purchases_response = await axios.get(`${this.state.baseURL}/v1/overview/all-time-purchases?${this.getRequestQueryParams()}`)
       const {P2} = all_time_purchases_response.data.data
-
       this.setState({
         p2_all_time_purchase:P2 || 0,
       })
@@ -138,9 +155,44 @@ class Overview extends Component {
     }
   }
 
+  handleStartDateChange = e => {
+    const date = e.target.value;
+    console.log("date",date);
+    this.setState({
+      startDate: new Date(date)
+    });
+  };
+
+  handleEndDateChange = e => {
+    const date = e.target.value;
+    this.setState({
+      endDate: new Date(date)
+    });
+  };
+
+  handleDateFilter = e => {
+    const currentDateFilter = e.target.value;
+    if (currentDateFilter === "custom") {
+      return this.setState({
+        currentDateFilter
+      });
+    }
+    const { startDate, endDate } = getDateFilter(currentDateFilter);
+    this.setState(
+      {
+        currentDateFilter,
+        startDate,
+        endDate
+      },
+      () => this.handleSubmit()
+    );
+  }; 
+
   render() {
 
-    const options = { maintainAspectRatio: true, responsive: true,
+    const options = { 
+      maintainAspectRatio: true, 
+      responsive: true,
       tooltips : {
         mode: "label",
         callbacks: {
@@ -177,6 +229,43 @@ class Overview extends Component {
     return (
       <div className="content">
         <Grid fluid>
+          <div className="row" style={{marginBottom:"0.5rem"}}>
+            <div className="col-md-3 block">
+              <select 
+                className="form-control form-control-lg"
+                value={this.state.currentDateFilter}
+                onChange={this.handleDateFilter}>
+                  <option value="currentWeek">Current Week</option>
+                  <option value="lastWeek">Last Week</option>
+                  <option value="last2Weeks">Last 2 Weeks</option>
+                  <option value="lastMonth">Last Month</option>
+                  <option value="custom">Custom</option>
+              </select>
+            </div>
+            {this.state.currentDateFilter === "custom"  && (<React.Fragment>
+              <div className="col-md-3 block">
+                <div className="form-group row">
+                  <label htmlFor="custom_date_from" className="col-sm-2 col-form-label">From</label>
+                  <div className="col-sm-10">
+                    <input type="date" onChange={this.handleStartDateChange} className="form-control" id="custom_date_from"></input>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-3 block">
+                <div className="form-group row">
+                  <label htmlFor="custom_date_to" className="col-sm-2 col-form-label">To</label>
+                  <div className="col-sm-10">
+                    <input type="date" onChange={this.handleEndDateChange} className="form-control" id="custom_date_to"></input>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-2">
+                <button className="btn btn-primary" onClick={this.handleSubmit}>Go</button>
+              </div>
+            </React.Fragment> 
+            )}
+          </div>
+        
           <Row>
             {/* <Col lg={3} sm={6}>
               <StatsCard

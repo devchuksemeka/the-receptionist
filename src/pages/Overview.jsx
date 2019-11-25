@@ -21,6 +21,7 @@ class Overview extends Component {
     pksl_all_time_sale:0,
     p2_all_time_purchase:0,
     gross_margin:0,
+    total_downtime:0,
     // total_revenue:0,
     // total_expenses:0,
     revenue_data: {
@@ -63,6 +64,7 @@ class Overview extends Component {
     this.getAllTimePurchases();
     this.getAllTimeSales();
     this.getGrossMargin();
+    this.getTotalDownTime();
     // this.getTotalRevenue();
     // this.getTotalExpenses();
   }
@@ -79,6 +81,19 @@ class Overview extends Component {
       console.log(err.response)
     }
   }
+  
+  getTotalDownTime = async ()=>{
+    try{
+      const total_downtime_res = await axios.get(`${this.state.baseURL}/v1/overview/total-downtime`)
+      const {total_downtime} = total_downtime_res.data
+
+      this.setState({
+        total_downtime
+      })
+    }catch(err){
+      console.log(err.response)
+    }
+  }
 
   getAllTimeSales = async ()=>{
     try{
@@ -89,32 +104,6 @@ class Overview extends Component {
         pksl_all_time_sale:PKSL || 0,
         pko_all_time_sale:PKO || 0,
         pkc_all_time_sale:PKC || 0,
-      })
-    }catch(err){
-      console.log(err.response)
-    }
-  }
-
-  getTotalRevenue = async ()=>{
-    try{
-      const total_revenue_res = await axios.get(`${this.state.baseURL}/v1/overview/total-revenue`)
-      const {total_revenue} = total_revenue_res.data
-
-      this.setState({
-        total_revenue
-      })
-    }catch(err){
-      console.log(err.response)
-    }
-  }
-
-  getTotalExpenses= async ()=>{
-    try{
-      const total_expenses_res = await axios.get(`${this.state.baseURL}/v1/overview/total-expenses`)
-      const {total_expenses} = total_expenses_res.data
-
-      this.setState({
-        total_expenses
       })
     }catch(err){
       console.log(err.response)
@@ -205,7 +194,7 @@ class Overview extends Component {
               <StatsCard
                 bigIcon={<i className="pe-7s-graph1 text-danger" />}
                 statsText="Downtime"
-                statsValue="8%"
+                statsValue={`${this.state.total_downtime}%`}
                 statsIcon={<i className="fa fa-clock-o" />}
                 statsIconText="In the last hour"
               />

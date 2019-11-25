@@ -378,7 +378,7 @@ export default class Maintenance extends Component {
     </div>
     <div className="row" style={{marginBottom:"0.5rem"}}>
       {this.state.currentDateFilter === "custom"  && (<React.Fragment>
-        <div className="col-md-4 block">
+        <div className="col-md-3 block">
           <div className="form-group row">
             <label htmlFor="custom_date_from" className="col-sm-2 col-form-label">From</label>
             <div className="col-sm-10">
@@ -386,7 +386,7 @@ export default class Maintenance extends Component {
             </div>
           </div>
         </div>
-        <div className="col-md-4 block">
+        <div className="col-md-3 block">
           <div className="form-group row">
             <label htmlFor="custom_date_to" className="col-sm-2 col-form-label">To</label>
             <div className="col-sm-10">

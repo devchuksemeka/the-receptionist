@@ -382,7 +382,7 @@ export default class Maintenance extends Component {
           <div className="form-group row">
             <label htmlFor="custom_date_from" className="col-sm-2 col-form-label">From</label>
             <div className="col-sm-10">
-              <input type="datetime-local" onChange={this.handleStartDateChange} className="form-control" id="custom_date_from"></input>
+              <input type="date" onChange={this.handleStartDateChange} className="form-control" id="custom_date_from"></input>
             </div>
           </div>
         </div>
@@ -390,7 +390,7 @@ export default class Maintenance extends Component {
           <div className="form-group row">
             <label htmlFor="custom_date_to" className="col-sm-2 col-form-label">To</label>
             <div className="col-sm-10">
-              <input type="datetime-local" onChange={this.handleEndDateChange} className="form-control" id="custom_date_to"></input>
+              <input type="date" onChange={this.handleEndDateChange} className="form-control" id="custom_date_to"></input>
             </div>
           </div>
         </div>

@@ -20,8 +20,9 @@ class Overview extends Component {
     pkc_all_time_sale:0,
     pksl_all_time_sale:0,
     p2_all_time_purchase:0,
-    total_revenue:0,
-    total_expenses:0,
+    gross_margin:0,
+    // total_revenue:0,
+    // total_expenses:0,
     revenue_data: {
       labels: ["Nov 1st","Nov 2nd","Nov 3rd","Nov 4th","Nov 5th","Nov 6th"],
       datasets: [
@@ -61,8 +62,22 @@ class Overview extends Component {
   async componentDidMount(){
     this.getAllTimePurchases();
     this.getAllTimeSales();
-    this.getTotalRevenue();
-    this.getTotalExpenses();
+    this.getGrossMargin();
+    // this.getTotalRevenue();
+    // this.getTotalExpenses();
+  }
+
+  getGrossMargin = async ()=>{
+    try{
+      const gross_margin_res = await axios.get(`${this.state.baseURL}/v1/overview/gross-margin`)
+      const {gross_margin} = gross_margin_res.data
+
+      this.setState({
+        gross_margin
+      })
+    }catch(err){
+      console.log(err.response)
+    }
   }
 
   getAllTimeSales = async ()=>{
@@ -159,7 +174,7 @@ class Overview extends Component {
       <div className="content">
         <Grid fluid>
           <Row>
-            <Col lg={3} sm={6}>
+            {/* <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-wallet text-success" />}
                 statsText="Total Revenue"
@@ -167,8 +182,8 @@ class Overview extends Component {
                 statsIcon={<i className="pe-7s-keypad" />}
                 statsIconText="Income before deductions"
               />
-            </Col>
-            <Col lg={3} sm={6}>
+            </Col> */}
+            {/* <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-drop text-primary" />}
                 statsText="Total Expenses"
@@ -176,7 +191,7 @@ class Overview extends Component {
                 statsIcon={<i className="pe-7s-bookmarks" />}
                 statsIconText="Total amount invested"
               />
-            </Col>
+            </Col> */}
             <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-server text-warning" />}
@@ -195,21 +210,16 @@ class Overview extends Component {
                 statsIconText="In the last hour"
               />
             </Col>
-            
-          </Row>
-          <Row>
-          <Col md={3}>
-            <Row>
-            <Col lg={12} sm={6}>
+            <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-note2 text-info" />}
                 statsText="Gross Margin"
-                statsValue="53%"
+                statsValue={`${this.state.gross_margin}%`}
                 statsIcon={<i className="fa fa-refresh" />}
-                statsIconText="Updated now"
+                statsIconText="Total Summary Gross Margin"
               />
             </Col>
-              <Col lg={12} sm={6} >
+            <Col lg={3} sm={6} >
                 <StatsCard
                   bigIcon={<i className="pe-7s-attention text-warning" />}
                   statsText="P2 (Tons)"
@@ -218,35 +228,9 @@ class Overview extends Component {
                   statsIconText="P2 All time purchase (ATP)"
                 />
               </Col>
-              <Col lg={12} sm={6}>
-                <StatsCard
-                  bigIcon={<i className="pe-7s-star text-danger" />}
-                  statsText="PKC (Tons)"
-                  statsValue={this.state.pkc_all_time_sale}
-                  statsIcon={<i className="fa fa-clock-o" />}
-                  statsIconText="PKC All time Sale (ATS)"
-                />
-              </Col>
-              <Col lg={12} sm={6}>
-                <StatsCard
-                  bigIcon={<i className="pe-7s-paper-plane text-info" />}
-                  statsText="PKO (Tons)"
-                  statsValue={this.state.pko_all_time_sale}
-                  statsIcon={<i className="fa fa-refresh" />}
-                  statsIconText="PKO All time sale (ATS)"
-                />
-              </Col>
-              <Col lg={12} sm={12}>
-                <StatsCard
-                  bigIcon={<i className="pe-7s-refresh-cloud text-warning" />}
-                  statsText="PKSL (Tons)"
-                  statsValue={this.state.pksl_all_time_sale}
-                  statsIcon={<i className="fa fa-refresh" />}
-                  statsIconText="PKSL All time sale (ATS)"
-                />
-              </Col>
-            </Row>
-            </Col>
+            
+          </Row>
+          <Row>
             <Col md={9}>
               <Card
                 statsIcon="fa fa-history"
@@ -266,7 +250,37 @@ class Overview extends Component {
                 }
               />
             </Col>
-            
+            <Col md={3}>
+              <Row>
+                <Col lg={12} sm={6}>
+                  <StatsCard
+                    bigIcon={<i className="pe-7s-star text-danger" />}
+                    statsText="PKC (Tons)"
+                    statsValue={this.state.pkc_all_time_sale}
+                    statsIcon={<i className="fa fa-clock-o" />}
+                    statsIconText="PKC All time Sale (ATS)"
+                  />
+                </Col>
+                <Col lg={12} sm={6}>
+                  <StatsCard
+                    bigIcon={<i className="pe-7s-paper-plane text-info" />}
+                    statsText="PKO (Tons)"
+                    statsValue={this.state.pko_all_time_sale}
+                    statsIcon={<i className="fa fa-refresh" />}
+                    statsIconText="PKO All time sale (ATS)"
+                  />
+                </Col>
+                <Col lg={12} sm={12}>
+                  <StatsCard
+                    bigIcon={<i className="pe-7s-refresh-cloud text-warning" />}
+                    statsText="PKSL (Tons)"
+                    statsValue={this.state.pksl_all_time_sale}
+                    statsIcon={<i className="fa fa-refresh" />}
+                    statsIconText="PKSL All time sale (ATS)"
+                  />
+                </Col>
+              </Row>
+            </Col>
           </Row>
 
           {/* <Row>

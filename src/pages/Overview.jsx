@@ -22,6 +22,7 @@ class Overview extends Component {
     p2_all_time_purchase:0,
     gross_margin:0,
     total_downtime:0,
+    total_utilization_rate:0,
     // total_revenue:0,
     // total_expenses:0,
     revenue_data: {
@@ -65,6 +66,7 @@ class Overview extends Component {
     this.getAllTimeSales();
     this.getGrossMargin();
     this.getTotalDownTime();
+    this.getTotalUtilizationRate();
     // this.getTotalRevenue();
     // this.getTotalExpenses();
   }
@@ -89,6 +91,19 @@ class Overview extends Component {
 
       this.setState({
         total_downtime
+      })
+    }catch(err){
+      console.log(err.response)
+    }
+  }
+
+  getTotalUtilizationRate = async ()=>{
+    try{
+      const total_utilization_rate_res = await axios.get(`${this.state.baseURL}/v1/overview/total-utilization-rate`)
+      const {total_utilization_rate} = total_utilization_rate_res.data
+
+      this.setState({
+        total_utilization_rate
       })
     }catch(err){
       console.log(err.response)
@@ -185,7 +200,7 @@ class Overview extends Component {
               <StatsCard
                 bigIcon={<i className="pe-7s-server text-warning" />}
                 statsText="Utilization Rate"
-                statsValue="68%"
+                statsValue={`${this.state.total_utilization_rate}%`}
                 statsIcon={<i className="pe-7s-server" />}
                 statsIconText="Utilization Rate"
               />

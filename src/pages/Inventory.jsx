@@ -248,7 +248,7 @@ export default class Inventory extends Component {
         ticks: {
           callback: value => `${currency === "naira" ? "₦":"$"}` + value.toLocaleString(),
           beginAtZero: true,
-          stepSize: 100
+          stepSize: 100000
         },
       }
     ];

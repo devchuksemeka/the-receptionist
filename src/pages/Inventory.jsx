@@ -63,6 +63,18 @@ export default class Inventory extends Component {
       PkoAvgProduction,
       PkcAvgProduction
     } = getGraphValues(P2ApiData, PkoApiData, PkcApiData);
+
+    console.log({
+      P2Data,
+      P2Accumulated,
+      PkoData,
+      PkoAccumulated,
+      PkcData,
+      PkcAccumulated,
+      P2AvgProduction,
+      PkoAvgProduction,
+      PkcAvgProduction
+    })
     this.setState({
       P2Data,
       P2Accumulated,

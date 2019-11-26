@@ -42,9 +42,9 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData) => {
     pkolabels.push(convertDate(dta._id));
     pkoQuantityData.push(convertTo2Dp(dta.quantity || 0));
     pkoMarketPriceData.push(convertTo2Dp(dta.averageUnitMarketPrice));
-    pkoaccumulatedInventory.push(convertTo2Dp(dta.currentQuantity));
+    pkoaccumulatedInventory.push(convertTo2Dp(Math.abs(dta.currentQuantity)));
     pkoInventoryValue.push(
-      convertTo2Dp(dta.currentQuantity * dta.averageUnitMarketPrice)
+      convertTo2Dp(Math.abs(dta.currentQuantity * dta.averageUnitMarketPrice))
     );
     return true;
   });
@@ -53,10 +53,10 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData) => {
     pkclabels.push(convertDate(dta._id));
     pkcQuantityData.push(convertTo2Dp(dta.quantity || 0));
     pkcMarketPriceData.push(convertTo2Dp(dta.averageUnitMarketPrice));
-    pkcAccumulated.push(convertTo2Dp(dta.currentQuantity));
+    pkcAccumulated.push(convertTo2Dp(Math.abs(dta.currentQuantity)));
     pkcAvgProduction.push(convertTo2Dp(dta.productionPerHour));
     pkcInventoryValue.push(
-      convertTo2Dp(dta.currentQuantity * dta.averageUnitMarketPrice)
+      convertTo2Dp(Math.abs(dta.currentQuantity * dta.averageUnitMarketPrice))
     );
     return true;
   });

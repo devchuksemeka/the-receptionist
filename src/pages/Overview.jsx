@@ -26,33 +26,7 @@ class Overview extends Component {
     total_utilization_rate:0,
     // total_revenue:0,
     // total_expenses:0,
-    revenue_data: {
-      labels: ["Nov 1st","Nov 2nd","Nov 3rd","Nov 4th","Nov 5th","Nov 6th"],
-      datasets: [
-        {
-          yAxisID: "A",
-          label: "Accumulated Daily Revenue",
-          fill: false,
-          lineTension: 0.1,
-          backgroundColor: "rgba(75,192,192,0.4)",
-          borderColor: "rgba(75,192,192,1)",
-          borderCapStyle: "butt",
-          borderDash: [],
-          borderDashOffset: 0.0,
-          borderJoinStyle: "miter",
-          pointBorderColor: "rgba(75,192,192,1)",
-          pointBackgroundColor: "#fff",
-          pointBorderWidth: 1,
-          pointHoverRadius: 5,
-          pointHoverBackgroundColor: "rgba(75,192,192,1)",
-          pointHoverBorderColor: "rgba(220,220,220,1)",
-          pointHoverBorderWidth: 2,
-          pointRadius: 1,
-          pointHitRadius: 10,
-          data: [10000,25000,27000,35000,48000,69000]
-        }
-      ]
-    },
+    revenue_data: {},
     
     startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
     endDate: new Date(),
@@ -72,6 +46,7 @@ class Overview extends Component {
     this.getGrossMargin();
     this.getTotalDownTime();
     this.getTotalUtilizationRate();
+    this.getAccumulatedRevenue();
   }
 
   getStartDate = () =>{
@@ -86,6 +61,10 @@ class Overview extends Component {
 
   getRequestQueryParams = () =>{
     let query = `&startDate=${this.getStartDate()}&endDate=${this.getEndDate()}`;
+    return query;
+  }  
+  getRequestQueryParamsForGraph = () =>{
+    let query = `${this.getRequestQueryParams()}`;
     return query;
   }
 
@@ -123,6 +102,58 @@ class Overview extends Component {
       this.setState({
         total_utilization_rate
       })
+    }catch(err){
+      console.log(err.response)
+    }
+  }
+
+  getAccumulatedRevenue =  async () => {
+    try{
+      const result = await axios.get(`${this.state.baseURL}/v1/overview/accumulated-revenue?${this.getRequestQueryParamsForGraph()}`)
+      const {datasets,labels} = result.data.data
+    
+
+    const result_keys = Object.keys(datasets);
+    const datasetAccumulated = [];
+
+    for(let j=0;j<1;j++){
+    
+      const totalPrice = [];
+      for(let i=0;i<result_keys.length;i++){
+        totalPrice.push(datasets[result_keys[i]].total_price)
+      }
+      datasetAccumulated.push(
+        {
+          yAxisID: "A",
+          label: `Accumulated Revenue`,
+          fill: false,
+          lineTension: 0.1,
+          backgroundColor: "rgba(75,192,192,0.4)",
+          borderColor: "rgba(75,192,192,1)",
+          borderCapStyle: "butt",
+          borderDash: [],
+          borderDashOffset: 0.0,
+          borderJoinStyle: "miter",
+          pointBorderColor: "rgba(75,192,192,1)",
+          pointBackgroundColor: "#fff",
+          pointBorderWidth: 1,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: "rgba(75,192,192,1)",
+          pointHoverBorderColor: "rgba(220,220,220,1)",
+          pointHoverBorderWidth: 2,
+          pointRadius: 1,
+          pointHitRadius: 10,
+          data: totalPrice
+        }
+      )
+    }
+    this.setState({
+      // loading: false,
+      revenue_data:{
+        labels,
+        datasets:datasetAccumulated
+      }
+    })
     }catch(err){
       console.log(err.response)
     }
@@ -219,7 +250,9 @@ class Overview extends Component {
               labelString: ""
             },
             ticks: {
-              callback: value => ` ₦ ` + value.toLocaleString()
+              callback: value => ` ₦ ` + value.toLocaleString(),
+              beginAtZero: true,
+              stepSize: 1000000
               // callback: value => ` ${currency === "naira" ? "₦":"$"} ` + value.toLocaleString()
             }
           }

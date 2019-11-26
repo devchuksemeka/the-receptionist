@@ -171,7 +171,7 @@ export default class Sales extends Component {
       () => this.handleSubmit()
     );
   }; 
-   
+
   handleCurrencyChange = e => {
     const currency = e.target.value;
     this.setState(
@@ -259,7 +259,9 @@ export default class Sales extends Component {
               labelString: ""
             },
             ticks: {
-              callback: value => value + " tons"
+              callback: value => value + " tons",
+              beginAtZero: true,
+              stepSize: 2
             }
           },
           {
@@ -272,7 +274,9 @@ export default class Sales extends Component {
               labelString: ""
             },
             ticks: {
-              callback: value => ` ${currency === "naira" ? "₦":"$"} ` + value.toLocaleString()
+              callback: value => ` ${currency === "naira" ? "₦":"$"} ` + value.toLocaleString(),
+              beginAtZero: true,
+              stepSize: 100000
             }
           }
         ]

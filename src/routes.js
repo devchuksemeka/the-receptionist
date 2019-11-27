@@ -2,8 +2,8 @@ import Overview from "pages/Overview";
 import Inventory from "pages/Inventory";
 import Sales from "pages/Sales";
 import Maintenance from "pages/Maintenance";
-import SalesRework from "pages/SalesRework";
-import InventoryRework from "pages/InventoryRework";
+// import SalesRework from "pages/SalesRework";
+// import InventoryRework from "pages/InventoryRework";
 
 const dashboardRoutes = [
   {

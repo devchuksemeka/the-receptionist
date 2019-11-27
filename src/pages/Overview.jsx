@@ -229,11 +229,9 @@ class Overview extends Component {
         callbacks: {
           label: function(tooltipItem, data) {
             const key = data.datasets[tooltipItem.datasetIndex].label;
-            const yAxis = data.datasets[tooltipItem.datasetIndex].yAxisID;
             const val =
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-            if (val && yAxis === "A") return key + ": " +val.toLocaleString() +" tons";
-            if (val && yAxis === "B") return key + ` :  ₦` + val.toLocaleString();
+            if (val) return key + ` :  ₦` + val.toLocaleString();
             // if (val && yAxis === "B") return key + ` : ${currency === "naira" ? "₦":"$"}` + val.toLocaleString();
           }
         }
@@ -300,24 +298,6 @@ class Overview extends Component {
           </div>
         
           <Row>
-            {/* <Col lg={3} sm={6}>
-              <StatsCard
-                bigIcon={<i className="pe-7s-wallet text-success" />}
-                statsText="Total Revenue"
-                statsValue={`${toMoneyFormat(this.state.total_revenue)}`}
-                statsIcon={<i className="pe-7s-keypad" />}
-                statsIconText="Income before deductions"
-              />
-            </Col> */}
-            {/* <Col lg={3} sm={6}>
-              <StatsCard
-                bigIcon={<i className="pe-7s-drop text-primary" />}
-                statsText="Total Expenses"
-                statsValue={`${toMoneyFormat(this.state.total_expenses)}`}
-                statsIcon={<i className="pe-7s-bookmarks" />}
-                statsIconText="Total amount invested"
-              />
-            </Col> */}
             <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-server text-warning" />}
@@ -333,7 +313,7 @@ class Overview extends Component {
                 statsText="Downtime"
                 statsValue={`${this.state.total_downtime}%`}
                 statsIcon={<i className="fa fa-clock-o" />}
-                statsIconText="In the last hour"
+                statsIconText="Total Downtime"
               />
             </Col>
             <Col lg={3} sm={6}>
@@ -351,7 +331,7 @@ class Overview extends Component {
                   statsText="P2 (Tons)"
                   statsValue={this.state.p2_all_time_purchase}
                   statsIcon={<i className="pe-7s-server" />}
-                  statsIconText="P2 All time purchase (ATP)"
+                  statsIconText="P2 purchase (ATP)"
                 />
               </Col>
             
@@ -384,7 +364,7 @@ class Overview extends Component {
                     statsText="PKC (Tons)"
                     statsValue={this.state.pkc_all_time_sale}
                     statsIcon={<i className="fa fa-clock-o" />}
-                    statsIconText="PKC All time Sale (ATS)"
+                    statsIconText="PKC Sale (ATS)"
                   />
                 </Col>
                 <Col lg={12} sm={6}>
@@ -393,7 +373,7 @@ class Overview extends Component {
                     statsText="PKO (Tons)"
                     statsValue={this.state.pko_all_time_sale}
                     statsIcon={<i className="fa fa-refresh" />}
-                    statsIconText="PKO All time sale (ATS)"
+                    statsIconText="PKO sale (ATS)"
                   />
                 </Col>
                 <Col lg={12} sm={12}>
@@ -402,7 +382,7 @@ class Overview extends Component {
                     statsText="PKSL (Tons)"
                     statsValue={this.state.pksl_all_time_sale}
                     statsIcon={<i className="fa fa-refresh" />}
-                    statsIconText="PKSL All time sale (ATS)"
+                    statsIconText="PKSL ale (ATS)"
                   />
                 </Col>
               </Row>

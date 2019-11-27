@@ -28,6 +28,7 @@ export default class Inventory extends Component {
     loading: true,
     currentScreen: "p2",
     currentView: "dailyPurchase",
+    currentViewMessage: "Daily Purchase",
     P2Data: {},
     PkoData: {},
     PkcData: {},
@@ -91,13 +92,19 @@ export default class Inventory extends Component {
 
   setCurrentScreen = e => {
     const currentScreen = e.target.value;
+    let currentViewMessage = "Daily Purchase"
+    if(currentScreen !== "p2"){
+      currentViewMessage = "Daily Production"
+    }
     this.setState({
-      currentScreen
+      currentScreen,
+      currentViewMessage,
     });
   }
 
   setCurrentView =  e=> {
     const currentView = e.target.value;
+    // if(cur)
     this.setState({
       currentView
     });
@@ -322,7 +329,7 @@ export default class Inventory extends Component {
           className="form-control form-control-lg"
           value={currentView}
           onChange={this.setCurrentView}>
-         <option value="dailyPurchase">Daily Purchase/Production</option>
+         <option value="dailyPurchase">{this.state.currentViewMessage}</option>
           <option value="accumulated">Accumulated</option>
         </select>
       </div>

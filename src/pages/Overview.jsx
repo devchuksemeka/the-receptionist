@@ -120,7 +120,7 @@ class Overview extends Component {
     
       const totalPrice = [];
       for(let i=0;i<result_keys.length;i++){
-        totalPrice.push(datasets[result_keys[i]].total_price)
+        totalPrice.push(datasets[result_keys[i]].total_sales)
       }
       datasetAccumulated.push(
         {

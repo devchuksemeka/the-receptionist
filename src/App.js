@@ -25,7 +25,6 @@ class App extends Component {
   }
 
   logout = (props) => {
-    console.log(props)
     this.setState({
       token:null,
       role:null,

@@ -1,17 +1,17 @@
 import axios from "axios";
-// import jwtDecode from "jwt-decode";
+import jwtDecode from "jwt-decode";
 
 export const isAuthenticated = () => {
   let isAuthenticated = false;
   const token = localStorage.getItem("authToken");
   if (token) {
-    isAuthenticated =  true;
-    // const decoded = jwtDecode(token);
-    // if (Date.now() >= decoded.exp * 1000) {
-    //   isAuthenticated = false;
-    // } else {
-    //   isAuthenticated = true;
-    // }
+    const decoded = jwtDecode(token);
+    if (Date.now() >= decoded.exp * 1000) {
+      isAuthenticated = false;
+    } else {
+      isAuthenticated = true;
+      setAuthHeaderToken()
+    }
   }
   return isAuthenticated;
 };

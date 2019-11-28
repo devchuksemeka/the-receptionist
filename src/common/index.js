@@ -38,12 +38,12 @@ export const getDateFilter = currentDateFilter => {
   let startDate = moment().startOf("week").toDate();
   let endDate = moment().endOf("week").toDate();
 
-  if (currentDateFilter === "currentWeek") {
-    // startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    startDate = startDate;
-    endDate = endDate;
-    // endDate = new Date();
-  }
+  // if (currentDateFilter === "currentWeek") {
+  //   // startDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  //   startDate = startDate;
+  //   endDate = endDate;
+  //   // endDate = new Date();
+  // }
   if (currentDateFilter === "lastWeek") {
     startDate = moment(startDate).subtract(7,"days");
     // startDate = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);

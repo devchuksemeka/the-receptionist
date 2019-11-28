@@ -367,7 +367,7 @@ class Overview extends Component {
                     statsText="PKC (Tons)"
                     statsValue={this.state.pkc_all_time_sale}
                     statsIcon={<i className="fa fa-clock-o" />}
-                    statsIconText="PKC Sale (ATS)"
+                    statsIconText="PKC Sales (ATS)"
                   />
                 </Col>
                 <Col lg={12} sm={6}>
@@ -376,7 +376,7 @@ class Overview extends Component {
                     statsText="PKO (Tons)"
                     statsValue={this.state.pko_all_time_sale}
                     statsIcon={<i className="fa fa-refresh" />}
-                    statsIconText="PKO sale (ATS)"
+                    statsIconText="PKO Sales (ATS)"
                   />
                 </Col>
                 <Col lg={12} sm={12}>
@@ -385,7 +385,7 @@ class Overview extends Component {
                     statsText="PKSL (Tons)"
                     statsValue={this.state.pksl_all_time_sale}
                     statsIcon={<i className="fa fa-refresh" />}
-                    statsIconText="PKSL ale (ATS)"
+                    statsIconText="PKSL Sales (ATS)"
                   />
                 </Col>
               </Row>

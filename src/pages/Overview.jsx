@@ -10,6 +10,7 @@ import { getDateFilter } from "../common";
 
 import { Card } from "components/Card/Card.jsx";
 import { StatsCard } from "components/StatsCard/StatsCard.jsx";
+import moment from 'moment'
 
 class Overview extends Component {
   state = {
@@ -28,8 +29,10 @@ class Overview extends Component {
     // total_expenses:0,
     revenue_data: {},
     
-    startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-    endDate: new Date(),
+    startDate: moment().startOf("week").toDate(),
+    // startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+    endDate: moment().endOf("week").toDate(),
+    // endDate: new Date(),
     currentDateFilter: "currentWeek",
     graphView: "day",
     salesCyclesAvg: "N/A",

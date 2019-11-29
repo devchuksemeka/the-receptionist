@@ -4,8 +4,20 @@ import { NavItem, Nav,
   // MenuItem 
 } from "react-bootstrap";
 import AuthContext from '../../context/AuthContext';
+import axios from "axios"
 
 class AdminNavbarLinks extends Component {
+  state={
+
+  }
+
+  updateRecordFromSheet = async () =>{
+    
+    const update_db = await axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/v1/generals/update-from-sheet`)
+    alert(update_db.data.message)
+    console.log(update_db.data)
+  }
+
   static contextType = AuthContext;
 
   render() {
@@ -58,6 +70,12 @@ class AdminNavbarLinks extends Component {
             <MenuItem divider />
             <MenuItem eventKey={2.5}>Separated link</MenuItem>
           </NavDropdown> */}
+          {/* <button className="btn btn-primary">
+            Hello
+          </button> */}
+          <NavItem onClick={this.updateRecordFromSheet} eventKey={3} style={{backgroundColor:"#679aeb",}}>
+            <span style={{color:"white",fontSize:"1.5rem"}}>Update Records</span>
+          </NavItem>
           <NavItem onClick={this.context.logout} eventKey={3}>
             Log out
           </NavItem>

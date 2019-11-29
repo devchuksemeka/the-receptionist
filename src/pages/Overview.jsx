@@ -325,7 +325,7 @@ class Overview extends Component {
                 statsText="Gross Margin"
                 statsValue={`${this.state.gross_margin}%`}
                 statsIcon={<i className="fa fa-refresh" />}
-                statsIconText="Total Summary Gross Margin"
+                statsIconText="Gross Margin"
               />
             </Col>
             <Col lg={3} sm={6} >

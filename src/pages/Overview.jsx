@@ -3,8 +3,9 @@ import axios from 'axios'
 import { Line } from "react-chartjs-2";
 import { Grid, 
   Row, 
-  Col 
+  Col
 } from "react-bootstrap";
+import Button from "components/CustomButton/CustomButton.jsx";
 import { getDateFilter } from "../common";
 // import {toMoneyFormat} from '../helpers/index'
 
@@ -12,7 +13,16 @@ import { Card } from "components/Card/Card.jsx";
 import { StatsCard } from "components/StatsCard/StatsCard.jsx";
 import moment from 'moment'
 
+
 class Overview extends Component {
+  constructor(props){
+    super(props);
+    this.utitlizationRateEl = React.createRef();
+    this.downtimeEl = React.createRef();
+    this.grossMarginEL = React.createRef();
+    this.pkoEL = React.createRef();
+}
+
   state = {
     baseURL:process.env.REACT_APP_SERVER_ENDPOINT,
     loading: true,
@@ -25,8 +35,6 @@ class Overview extends Component {
     gross_margin:0,
     total_downtime:0,
     total_utilization_rate:0,
-    // total_revenue:0,
-    // total_expenses:0,
     revenue_data: {},
     
     startDate: moment().startOf("week").toDate(),
@@ -41,6 +49,21 @@ class Overview extends Component {
 
   async componentDidMount(){
     this.handleSubmit();
+  }
+
+  handleUpdateTarget = async (e) => {
+    e.preventDefault()
+    const form_data = {
+      utilization_rate:this.utitlizationRateEl.current.value,
+      downtime:this.downtimeEl.current.value,
+      gross_margin:this.grossMarginEL.current.value,
+      pko:this.pkoEL.current.value,
+    }
+
+    // maake the post request
+    const response = await axios.post(`${this.state.baseURL}/v1/settings/update-target`, form_data);
+    // console.log(response)
+    console.log(response.data)
   }
 
   handleSubmit = async () => {
@@ -361,7 +384,7 @@ class Overview extends Component {
             </Col>
             <Col md={3}>
               <Row>
-                <Col lg={12} sm={6}>
+                <Col lg={12} sm={12}>
                   <StatsCard
                     bigIcon={<i className="pe-7s-star text-danger" />}
                     statsText="PKC (Tons)"
@@ -370,7 +393,7 @@ class Overview extends Component {
                     statsIconText="PKC Sales (ATS)"
                   />
                 </Col>
-                <Col lg={12} sm={6}>
+                <Col lg={12} sm={12}>
                   <StatsCard
                     bigIcon={<i className="pe-7s-paper-plane text-info" />}
                     statsText="PKO (Tons)"
@@ -392,46 +415,77 @@ class Overview extends Component {
             </Col>
           </Row>
 
-          {/* <Row>
-            <Col md={6}>
+          <Row>
+          <Col md={8}>
               <Card
-                id="chartActivity"
-                title="2014 Sales"
-                category="All products including Taxes"
-                stats="Data information certified"
-                statsIcon="fa fa-check"
+                title="System Targets"
                 content={
-                  <div className="ct-chart">
-                    <ChartistGraph
-                      data={dataBar}
-                      type="Bar"
-                      options={optionsBar}
-                      responsiveOptions={responsiveBar}
-                    />
-                  </div>
-                }
-                legend={
-                  <div className="legend">{this.createLegend(legendBar)}</div>
+                  <form onSubmit={this.handleUpdateTarget} >
+                    <div className="form-group">
+                      <div className="col-md-6 col-xs-12">
+                        <label htmlFor="utilization_rate">Utilization Rate (%)</label>
+                        <input 
+                          type="number" 
+                          className="form-control" 
+                          id="exampleInputEmail1" 
+                          ref={this.utitlizationRateEl}
+                          placeholder="Utilization Rate"
+                          required>
+                        </input>
+                      </div>
+                      <div className="col-md-6 col-xs-12">
+                        <label htmlFor="downtime">Downtime (%)</label>
+                        <input 
+                          type="number" 
+                          className="form-control" 
+                          id="downtime" 
+                          ref={this.downtimeEl}
+                          placeholder="Downtime"
+                          required>
+                        </input>
+                      </div>
+                    </div>
+                    <div className="form-group">
+                      <div className="col-md-6 col-xs-12">
+                        <label htmlFor="gross_margin">Gross Margin (%)</label>
+                        <input 
+                          type="number" 
+                          className="form-control" 
+                          id="gross_margin" 
+                          ref={this.grossMarginEL}
+                          placeholder="Gross Margin"
+                          required>
+                        </input>
+                      </div>
+                      <div className="col-md-6 col-xs-12">
+                        <label htmlFor="pko">PKO (%)</label>
+                        <input 
+                          type="number" 
+                          className="form-control" 
+                          id="pko" 
+                          ref={this.pkoEL}
+                          placeholder="PKO"
+                          required>
+                        </input>
+                      </div>
+                    </div>
+                    <div className="form-group">
+                      <div className="col-md-6 col-xs-12 pull-right">
+                        <Button bsStyle="info" pullRight fill type="submit">
+                          Update Targets
+                        </Button>
+                      </div>
+                      
+                    </div>
+                    <div className="clearfix" />
+                  </form>
                 }
               />
             </Col>
+           
 
-            <Col md={6}>
-              <Card
-                title="Tasks"
-                category="Backend development"
-                stats="Updated 3 minutes ago"
-                statsIcon="fa fa-history"
-                content={
-                  <div className="table-full-width">
-                    <table className="table">
-                      <Tasks />
-                    </table>
-                  </div>
-                }
-              />
-            </Col>
-          </Row> */}
+            
+          </Row>
         </Grid>
       </div>
     );

@@ -103,7 +103,6 @@ export default class Auth extends Component{
                 }
                 try {
                     const response = await axios.post(`${this.state.baseURL}/v1/user/signup`, formData);
-                    console.log(response);
                     this.setState({
                         loading:false
                     });

@@ -45,6 +45,8 @@ class Overview extends Component {
     graphView: "day",
     salesCyclesAvg: "N/A",
     currency: "naira",
+    target_info:{},
+    target_loading:false,
   };
 
   async componentDidMount(){
@@ -53,6 +55,9 @@ class Overview extends Component {
 
   handleUpdateTarget = async (e) => {
     e.preventDefault()
+    this.setState({
+      target_loading:true
+    })
     const form_data = {
       utilization_rate:this.utitlizationRateEl.current.value,
       downtime:this.downtimeEl.current.value,
@@ -64,7 +69,15 @@ class Overview extends Component {
     const response = await axios.post(`${this.state.baseURL}/v1/settings/update-target`, form_data);
     // console.log(response)
     console.log(response.data)
+    this.setState({
+      target_info:response.data,
+      target_loading:false
+    },()=>alert("Target Update Successful"))
+
+    
   }
+
+
 
   handleSubmit = async () => {
     this.getAllTimePurchases();
@@ -471,9 +484,12 @@ class Overview extends Component {
                     </div>
                     <div className="form-group">
                       <div className="col-md-6 col-xs-12 pull-right">
-                        <Button bsStyle="info" pullRight fill type="submit">
+                      {!this.state.target_loading && (<Button bsStyle="info" pullRight fill type="submit">
                           Update Targets
-                        </Button>
+                        </Button>)}
+                        {this.state.target_loading && (<Button bsStyle="info" pullRight fill >
+                          Updating .....
+                        </Button>)}
                       </div>
                       
                     </div>

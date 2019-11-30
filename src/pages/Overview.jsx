@@ -51,6 +51,7 @@ class Overview extends Component {
 
   async componentDidMount(){
     this.handleSubmit();
+    this.getTargetSetting();
   }
 
   handleUpdateTarget = async (e) => {
@@ -64,20 +65,17 @@ class Overview extends Component {
       gross_margin:this.grossMarginEL.current.value,
       pko:this.pkoEL.current.value,
     }
-
-    // maake the post request
     const response = await axios.post(`${this.state.baseURL}/v1/settings/update-target`, form_data);
-    // console.log(response)
-    console.log(response.data)
     this.setState({
       target_info:response.data,
       target_loading:false
     },()=>alert("Target Update Successful"))
-
-    
   }
 
-
+  getTargetSetting = async () => {
+    const target_setting_res = await axios.get(`${this.state.baseURL}/v1/settings/type/target`);
+    console.log(target_setting_res.data)
+  }
 
   handleSubmit = async () => {
     this.getAllTimePurchases();

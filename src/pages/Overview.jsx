@@ -36,8 +36,11 @@ class Overview extends Component {
       pko_total_sales:0,
       pko_total_left:0
     },
+    p2_product:{
+      p2_total_purchased:0,
+      p2_total_crushed:0
+    },
     pksl_all_time_sale:0,
-    p2_all_time_purchase:0,
     gross_margin:0,
     gross_margin_computation:{},
     total_downtime:0,
@@ -47,9 +50,7 @@ class Overview extends Component {
     revenue_data: {},
     
     startDate: moment().startOf("week").toDate(),
-    // startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
     endDate: moment().endOf("week").toDate(),
-    // endDate: new Date(),
     currentDateFilter: "currentWeek",
     graphView: "day",
     salesCyclesAvg: "N/A",
@@ -103,7 +104,6 @@ class Overview extends Component {
 
   handleSubmit = async () => {
     this.getAllTimePurchases();
-    this.getAllTimeSales();
     this.getGrossMargin();
     this.getTotalDownTime();
     this.getTotalUtilizationRate();
@@ -261,27 +261,17 @@ class Overview extends Component {
     }
   }
 
-  getAllTimeSales = async ()=>{
-    try{
-      const all_time_sales_response = await axios.get(`${this.state.baseURL}/v1/overview/all-time-sales?${this.getRequestQueryParams()}`)
-      const {PKSL,PKO,PKC} = all_time_sales_response.data.data
-
-      this.setState({
-        pksl_all_time_sale:PKSL || 0,
-        pko_all_time_sale:PKO || 0,
-        pkc_all_time_sale:PKC || 0,
-      })
-    }catch(err){
-      console.log(err.response)
-    }
-  }
-
   getAllTimePurchases = async ()=>{
     try{
-      const all_time_purchases_response = await axios.get(`${this.state.baseURL}/v1/overview/all-time-purchases?${this.getRequestQueryParams()}`)
-      const {P2} = all_time_purchases_response.data.data
+      const all_time_purchases_response = await axios.get(`${this.state.baseURL}/v1/overview/product-purchases-info?${this.getRequestQueryParams()}`)
+      const {p2,total_crushed} = all_time_purchases_response.data.data
+      console.log({p2,total_crushed})
+
       this.setState({
-        p2_all_time_purchase:P2 || 0,
+        p2_product:{
+          p2_total_purchased:p2 || 0,
+          p2_total_crushed: total_crushed || 0
+        }
       })
     }catch(err){
       console.log(err.response)
@@ -334,7 +324,6 @@ class Overview extends Component {
             const val =
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
             if (val) return key + ` :  ₦` + val.toLocaleString();
-            // if (val && yAxis === "B") return key + ` : ${currency === "naira" ? "₦":"$"}` + val.toLocaleString();
           }
         }
       },
@@ -434,9 +423,9 @@ class Overview extends Component {
                 <StatsCard
                   bigIcon={<i className="pe-7s-attention text-warning" />}
                   statsText="P2 Purchased (Tons)"
-                  statsValue={this.state.p2_all_time_purchase}
+                  statsValue={this.state.p2_product.p2_total_purchased}
                   statsIcon={<i className="pe-7s-server" />}
-                  statsIconText="P2 crushed"
+                  statsIconText={`P2 Crushed ${this.state.p2_product.p2_total_crushed} (tons)`}
                 />
               </Col>
             

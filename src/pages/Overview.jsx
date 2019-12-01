@@ -71,10 +71,10 @@ class Overview extends Component {
       target_loading:true
     })
     const form_data = {
-      utilization_rate:this.utitlizationRateEl.current.value,
-      downtime:this.downtimeEl.current.value,
-      gross_margin:this.grossMarginEL.current.value,
-      pko:this.pkoEL.current.value,
+      utilization_rate:this.utitlizationRateEl.current.value || this.state.target_setting.utilization_rate || 0,
+      downtime:this.downtimeEl.current.value  || this.state.target_setting.downtime || 0,
+      gross_margin:this.grossMarginEL.current.value || this.state.target_setting.gross_margin || 0,
+      pko:this.pkoEL.current.value || this.state.target_setting.pko || 0,
     }
     try{
       const response = await axios.post(`${this.state.baseURL}/v1/settings/update-target`, form_data);
@@ -93,9 +93,12 @@ class Overview extends Component {
     try{
       const target_setting_res = await axios.get(`${this.state.baseURL}/v1/settings/type/target`);
       let target_setting = target_setting_res.data.data
+      
       this.setState({
         target_setting
-      })
+      });
+      
+
     }catch(err){
       console.log(err.message);
     }
@@ -498,7 +501,7 @@ class Overview extends Component {
                           id="exampleInputEmail1" 
                           ref={this.utitlizationRateEl}
                           placeholder="Utilization Rate"
-                          required>
+                          >
                         </input>
                       </div>
                       <div className="col-md-6 col-xs-12">
@@ -509,7 +512,7 @@ class Overview extends Component {
                           id="downtime" 
                           ref={this.downtimeEl}
                           placeholder="Downtime"
-                          required>
+                          >
                         </input>
                       </div>
                     </div>
@@ -522,18 +525,18 @@ class Overview extends Component {
                           id="gross_margin" 
                           ref={this.grossMarginEL}
                           placeholder="Gross Margin"
-                          required>
+                          >
                         </input>
                       </div>
                       <div className="col-md-6 col-xs-12">
-                        <label htmlFor="pko">PKO (%) | <strong>Current Value: {this.state.target_setting.pko}%</strong></label>
+                        <label htmlFor="pko">PKO (tons) | <strong>Current Value: {this.state.target_setting.pko} (tons)</strong></label>
                         <input 
                           type="number" 
                           className="form-control" 
                           id="pko" 
                           ref={this.pkoEL}
                           placeholder="PKO"
-                          required>
+                          >
                         </input>
                       </div>
                     </div>

@@ -15,7 +15,7 @@ class AdminNavbarLinks extends Component {
     
     const update_db = await axios.get(`${process.env.REACT_APP_SERVER_ENDPOINT}/v1/generals/update-from-sheet`)
     alert(update_db.data.message)
-    console.log(update_db.data)
+    window.location.reload(true);
   }
 
   static contextType = AuthContext;

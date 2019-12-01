@@ -7,7 +7,7 @@ import { Grid,
 } from "react-bootstrap";
 import Button from "components/CustomButton/CustomButton.jsx";
 import { getDateFilter } from "../common";
-// import {toMoneyFormat} from '../helpers/index'
+import {toTitleCase} from '../helpers/index'
 
 import { Card } from "components/Card/Card.jsx";
 import { StatsCard } from "components/StatsCard/StatsCard.jsx";
@@ -33,8 +33,11 @@ class Overview extends Component {
     pksl_all_time_sale:0,
     p2_all_time_purchase:0,
     gross_margin:0,
+    gross_margin_computation:{},
     total_downtime:0,
+    downtime_computation:{},
     total_utilization_rate:0,
+    utilization_rate_computation:{},
     revenue_data: {},
     
     startDate: moment().startOf("week").toDate(),
@@ -47,6 +50,7 @@ class Overview extends Component {
     currency: "naira",
     target_info:{},
     target_loading:false,
+    target_setting:{}
   };
 
   async componentDidMount(){
@@ -65,16 +69,30 @@ class Overview extends Component {
       gross_margin:this.grossMarginEL.current.value,
       pko:this.pkoEL.current.value,
     }
-    const response = await axios.post(`${this.state.baseURL}/v1/settings/update-target`, form_data);
-    this.setState({
-      target_info:response.data,
-      target_loading:false
-    },()=>alert("Target Update Successful"))
+    try{
+      const response = await axios.post(`${this.state.baseURL}/v1/settings/update-target`, form_data);
+      this.setState({
+        target_info:response.data,
+        target_loading:false,
+        target_setting:form_data
+      },()=>alert("Target Update Successful"))
+    }catch(err){
+      console.log(err.message)
+    }
+   
   }
 
   getTargetSetting = async () => {
-    const target_setting_res = await axios.get(`${this.state.baseURL}/v1/settings/type/target`);
-    console.log(target_setting_res.data)
+    try{
+      const target_setting_res = await axios.get(`${this.state.baseURL}/v1/settings/type/target`);
+      let target_setting = target_setting_res.data.data
+      this.setState({
+        target_setting
+      })
+    }catch(err){
+      console.log(err.message);
+    }
+    
   }
 
   handleSubmit = async () => {
@@ -108,10 +126,11 @@ class Overview extends Component {
   getGrossMargin = async ()=>{
     try{
       const gross_margin_res = await axios.get(`${this.state.baseURL}/v1/overview/gross-margin?${this.getRequestQueryParams()}`)
-      const {gross_margin} = gross_margin_res.data
+      const {gross_margin,target_setting} = gross_margin_res.data
 
       this.setState({
-        gross_margin
+        gross_margin,
+        gross_margin_computation:target_setting
       })
     }catch(err){
       console.log(err.response)
@@ -121,10 +140,11 @@ class Overview extends Component {
   getTotalDownTime = async ()=>{
     try{
       const total_downtime_res = await axios.get(`${this.state.baseURL}/v1/overview/total-downtime?${this.getRequestQueryParams()}`)
-      const {total_downtime} = total_downtime_res.data
+      const {total_downtime,target_setting} = total_downtime_res.data
 
       this.setState({
-        total_downtime
+        total_downtime,
+        downtime_computation:target_setting
       })
     }catch(err){
       console.log(err.response)
@@ -134,10 +154,11 @@ class Overview extends Component {
   getTotalUtilizationRate = async ()=>{
     try{
       const total_utilization_rate_res = await axios.get(`${this.state.baseURL}/v1/overview/total-utilization-rate?${this.getRequestQueryParams()}`)
-      const {total_utilization_rate} = total_utilization_rate_res.data
+      const {total_utilization_rate,target_setting} = total_utilization_rate_res.data
 
       this.setState({
-        total_utilization_rate
+        total_utilization_rate,
+        utilization_rate_computation:target_setting
       })
     }catch(err){
       console.log(err.response)
@@ -341,7 +362,9 @@ class Overview extends Component {
                 statsText="Utilization Rate"
                 statsValue={`${this.state.total_utilization_rate}%`}
                 statsIcon={<i className="pe-7s-server" />}
-                statsIconText="Utilization Rate"
+                statsIconText={`Target Computation : 
+                  ${this.state.utilization_rate_computation.percentage}% 
+                  ${toTitleCase(this.state.utilization_rate_computation.status || "")}`}
               />
             </Col>
             <Col lg={3} sm={6}>
@@ -350,7 +373,9 @@ class Overview extends Component {
                 statsText="Downtime"
                 statsValue={`${this.state.total_downtime}%`}
                 statsIcon={<i className="fa fa-clock-o" />}
-                statsIconText="Total Downtime"
+                statsIconText={`Target Computation : 
+                  ${this.state.downtime_computation.percentage}% 
+                  ${toTitleCase(this.state.downtime_computation.status || "")}`}
               />
             </Col>
             <Col lg={3} sm={6}>
@@ -359,7 +384,9 @@ class Overview extends Component {
                 statsText="Gross Margin"
                 statsValue={`${this.state.gross_margin}%`}
                 statsIcon={<i className="fa fa-refresh" />}
-                statsIconText="Gross Margin"
+                statsIconText={`Target Computation : 
+                  ${this.state.gross_margin_computation.percentage}% 
+                  ${toTitleCase(this.state.gross_margin_computation.status || "")}`}
               />
             </Col>
             <Col lg={3} sm={6} >
@@ -434,7 +461,7 @@ class Overview extends Component {
                   <form onSubmit={this.handleUpdateTarget} >
                     <div className="form-group">
                       <div className="col-md-6 col-xs-12">
-                        <label htmlFor="utilization_rate">Utilization Rate (%)</label>
+                        <label htmlFor="utilization_rate">Utilization Rate (%) | <strong>Current Value: {this.state.target_setting.utilization_rate}%</strong></label>
                         <input 
                           type="number" 
                           className="form-control" 
@@ -445,7 +472,7 @@ class Overview extends Component {
                         </input>
                       </div>
                       <div className="col-md-6 col-xs-12">
-                        <label htmlFor="downtime">Downtime (%)</label>
+                        <label htmlFor="downtime">Downtime (%) | <strong>Current Value: {this.state.target_setting.downtime}%</strong></label>
                         <input 
                           type="number" 
                           className="form-control" 
@@ -458,7 +485,7 @@ class Overview extends Component {
                     </div>
                     <div className="form-group">
                       <div className="col-md-6 col-xs-12">
-                        <label htmlFor="gross_margin">Gross Margin (%)</label>
+                        <label htmlFor="gross_margin">Gross Margin (%) | <strong>Current Value: {this.state.target_setting.gross_margin}%</strong></label>
                         <input 
                           type="number" 
                           className="form-control" 
@@ -469,7 +496,7 @@ class Overview extends Component {
                         </input>
                       </div>
                       <div className="col-md-6 col-xs-12">
-                        <label htmlFor="pko">PKO (%)</label>
+                        <label htmlFor="pko">PKO (%) | <strong>Current Value: {this.state.target_setting.pko}%</strong></label>
                         <input 
                           type="number" 
                           className="form-control" 

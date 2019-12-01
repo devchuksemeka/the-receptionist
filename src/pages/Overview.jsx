@@ -362,9 +362,8 @@ class Overview extends Component {
                 statsText="Utilization Rate"
                 statsValue={`${this.state.total_utilization_rate}%`}
                 statsIcon={<i className="pe-7s-server" />}
-                statsIconText={`Target Computation : 
-                  ${this.state.utilization_rate_computation.percentage}% 
-                  ${toTitleCase(this.state.utilization_rate_computation.status || "")}`}
+                statsIconText={`${this.state.utilization_rate_computation.percentage}% 
+                  ${toTitleCase(this.state.utilization_rate_computation.status || "")} target`}
               />
             </Col>
             <Col lg={3} sm={6}>
@@ -373,9 +372,8 @@ class Overview extends Component {
                 statsText="Downtime"
                 statsValue={`${this.state.total_downtime}%`}
                 statsIcon={<i className="fa fa-clock-o" />}
-                statsIconText={`Target Computation : 
-                  ${this.state.downtime_computation.percentage}% 
-                  ${toTitleCase(this.state.downtime_computation.status || "")}`}
+                statsIconText={`${this.state.downtime_computation.percentage}% 
+                  ${toTitleCase(this.state.downtime_computation.status || "")} target`}
               />
             </Col>
             <Col lg={3} sm={6}>
@@ -384,9 +382,8 @@ class Overview extends Component {
                 statsText="Gross Margin"
                 statsValue={`${this.state.gross_margin}%`}
                 statsIcon={<i className="fa fa-refresh" />}
-                statsIconText={`Target Computation : 
-                  ${this.state.gross_margin_computation.percentage}% 
-                  ${toTitleCase(this.state.gross_margin_computation.status || "")}`}
+                statsIconText={`${this.state.gross_margin_computation.percentage}% 
+                  ${toTitleCase(this.state.gross_margin_computation.status || "")} target`}
               />
             </Col>
             <Col lg={3} sm={6} >

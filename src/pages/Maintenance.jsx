@@ -137,35 +137,90 @@ export default class Maintenance extends Component {
       const result_keys = Object.keys(datasets);
       const datasetAccumulated = [];
 
-      for(let j=0;j<labels.length;j++){
-        const dataScore = [];
+      if(this.state.maintenance_level === "factory_level"){
+      
+        const downtime = [];
+        const utilization = [];
         for(let i=0;i<result_keys.length;i++){
-          dataScore.push(datasets[result_keys[i]][labels[j]])
+          downtime.push(datasets[result_keys[i]].downtime)
+          utilization.push(datasets[result_keys[i]].utilization)
         }
-        const color = this.getRandomColor()
-        datasetAccumulated.push({
-          label: this.toTitleCase(labels[j].replace(/_/g," ")),
-          stack: "Stack 0",
-          fill: false,
-          lineTension: 0.1,
-          backgroundColor: color,
-          borderColor: color,
-          borderCapStyle: "butt",
-          borderDash: [],
-          borderDashOffset: 0.0,
-          borderJoinStyle: "miter",
-          pointBorderColor: color,
-          pointBackgroundColor: "#fff",
-          pointBorderWidth: 1,
-          pointHoverRadius: 5,
-          pointHoverBackgroundColor: color,
-          pointHoverBorderColor: color,
-          pointHoverBorderWidth: 2,
-          pointRadius: 1,
-          pointHitRadius: 10,
-          data: dataScore
-        })
-
+        datasetAccumulated.push(
+          {
+            label: "Downtime",
+            stack: "Stack 0",
+            fill: false,
+            lineTension: 0.1,
+            backgroundColor: "#de6866",
+            borderColor: "#de6866",
+            borderCapStyle: "butt",
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: "miter",
+            pointBorderColor: "#de6866",
+            pointBackgroundColor: "#fff",
+            pointBorderWidth: 1,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: "#de6866",
+            pointHoverBorderColor: "#fe6866",
+            pointHoverBorderWidth: 2,
+            pointRadius: 1,
+            pointHitRadius: 10,
+            data: downtime
+          },
+          {
+            label: "Utilization Rate",
+            stack: "Stack 1",
+            fill: false,
+            lineTension: 0.1,
+            backgroundColor: "#ffaa1d",
+            borderColor: "#ffaa1d",
+            borderCapStyle: "butt",
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: "miter",
+            pointBorderColor: "#ffaa1d",
+            pointBackgroundColor: "#fff",
+            pointBorderWidth: 1,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: "#ffaa1d",
+            pointHoverBorderColor: "#ffaa1d",
+            pointHoverBorderWidth: 2,
+            pointRadius: 1,
+            pointHitRadius: 10,
+            data: utilization
+          })
+        
+      }else{
+        for(let j=0;j<labels.length;j++){
+          const dataScore = [];
+          for(let i=0;i<result_keys.length;i++){
+            dataScore.push(datasets[result_keys[i]][labels[j]])
+          }
+          const color = this.getRandomColor()
+          datasetAccumulated.push({
+            label: this.toTitleCase(labels[j].replace(/_/g," ")),
+            stack: "Stack 0",
+            fill: false,
+            lineTension: 0.1,
+            backgroundColor: color,
+            borderColor: color,
+            borderCapStyle: "butt",
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: "miter",
+            pointBorderColor: color,
+            pointBackgroundColor: "#fff",
+            pointBorderWidth: 1,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: color,
+            pointHoverBorderColor: color,
+            pointHoverBorderWidth: 2,
+            pointRadius: 1,
+            pointHitRadius: 10,
+            data: dataScore
+          })
+        }
       }
       
       this.setState(
@@ -264,6 +319,7 @@ export default class Maintenance extends Component {
   };
 
   render() {
+    const {maintenance_level} = this.state;
 
     const maintenance_levels_options = this.state.maintenance_levels.map((maintenance_level,index)=>{
       return  <option key={index} value={maintenance_level.key}>{maintenance_level.value}</option>
@@ -287,9 +343,10 @@ export default class Maintenance extends Component {
           label: function(tooltipItem, data) {
             const key = data.datasets[tooltipItem.datasetIndex].label;
             const val =
-              data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-             
-              if(val) return `${key}: ${val.toLocaleString()} ${val > 1 ? "Hours":"Hour"}`;
+              data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];             
+              if(val && maintenance_level === "factory_level") 
+                return `${key}: ${val.toLocaleString()}%`;
+              else if(val) return `${key}: ${val.toLocaleString()} ${val > 1 ? "Hours":"Hour"}`;
           }
         }
       },
@@ -307,14 +364,19 @@ export default class Maintenance extends Component {
             stacked: true,
             ticks: {
               callback: value => {
-                if(value <= 1) return `${value.toLocaleString()} hour`
-                return `${value.toLocaleString()} hours `
+                if(value && maintenance_level === "factory_level") {
+                  return `${value.toLocaleString()}% `
+                }else{
+                  if(value <= 1) return `${value.toLocaleString()} hour`
+                  return `${value.toLocaleString()} hours `
+                }
+                
               },
               beginAtZero: true,
               stepSize: 1
             }
           }
-        ]
+        ],
       }
     };
 

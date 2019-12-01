@@ -17,6 +17,7 @@ export default class Maintenance extends Component {
     maintenance_level:"factory_level",
     maintenance_levels:[
       {key:"factory_level",value:"Factory Level"},
+      {key:"factory_level_machine",value:"Factory Level Machine Base"},
       {key:"machine_level",value:"Machine Level"},
       {key:"maintenance_action_level",value:"Maintenance Action Level"}
     ],

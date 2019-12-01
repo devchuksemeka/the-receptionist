@@ -486,7 +486,7 @@ class Overview extends Component {
           <Row>
           <Col md={8}>
               <Card
-                title="System Targets"
+                title="Production Targets"
                 content={
                   <form onSubmit={this.handleUpdateTarget} >
                     <div className="form-group">

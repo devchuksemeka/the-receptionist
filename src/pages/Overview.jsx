@@ -28,8 +28,14 @@ class Overview extends Component {
     loading: true,
     currentScreen: "pko",
     currentView: "dailySales",
-    pko_all_time_sale:0,
-    pkc_all_time_sale:0,
+    pkc_product_sales:{
+      pkc_total_sales:0,
+      pkc_total_left:0,
+    },
+    pko_product_sales:{
+      pko_total_sales:0,
+      pko_total_left:0
+    },
     pksl_all_time_sale:0,
     p2_all_time_purchase:0,
     gross_margin:0,
@@ -102,6 +108,9 @@ class Overview extends Component {
     this.getTotalDownTime();
     this.getTotalUtilizationRate();
     this.getAccumulatedRevenue();
+    this.getProductSales("PKO");
+    this.getProductSales("PKC");
+    this.getProductSales("PKSL");
   }
 
   getStartDate = () =>{
@@ -212,6 +221,41 @@ class Overview extends Component {
         datasets:datasetAccumulated
       }
     })
+    }catch(err){
+      console.log(err.response)
+    }
+  }
+
+  getProductSales = async (product="PKO")=>{
+    try{
+      const product_sales = await axios.get(`${this.state.baseURL}/v1/overview/product-sales-info?product=${product}${this.getRequestQueryParams()}`)
+      const {total_left,total_sales} = product_sales.data.data
+      console.log({total_left,total_sales} )
+
+      if(product === "PKO"){
+        this.setState({
+          pko_product_sales:{
+            pko_total_sales: total_sales || 0,
+            pko_total_left:total_left || 0,
+          }
+        })
+      }
+
+      else if(product === "PKC"){
+        this.setState({
+          pkc_product_sales:{
+            pkc_total_sales:total_sales || 0,
+            pkc_total_left: total_left || 0,
+          }
+        })
+      }
+
+      else if(product === "PKSL"){
+        this.setState({
+          pksl_all_time_sale: total_sales || 0
+        })
+      }
+      
     }catch(err){
       console.log(err.response)
     }
@@ -389,10 +433,10 @@ class Overview extends Component {
             <Col lg={3} sm={6} >
                 <StatsCard
                   bigIcon={<i className="pe-7s-attention text-warning" />}
-                  statsText="P2 (Tons)"
+                  statsText="P2 Purchased (Tons)"
                   statsValue={this.state.p2_all_time_purchase}
                   statsIcon={<i className="pe-7s-server" />}
-                  statsIconText="P2 purchase (ATP)"
+                  statsIconText="P2 crushed"
                 />
               </Col>
             
@@ -422,28 +466,28 @@ class Overview extends Component {
                 <Col lg={12} sm={12}>
                   <StatsCard
                     bigIcon={<i className="pe-7s-star text-danger" />}
-                    statsText="PKC (Tons)"
-                    statsValue={this.state.pkc_all_time_sale}
+                    statsText="PKC Sold (Tons)"
+                    statsValue={this.state.pkc_product_sales.pkc_total_sales}
                     statsIcon={<i className="fa fa-clock-o" />}
-                    statsIconText="PKC Sales (ATS)"
+                    statsIconText={`PKC left ${this.state.pkc_product_sales.pkc_total_left} (tons)`}
                   />
                 </Col>
                 <Col lg={12} sm={12}>
                   <StatsCard
                     bigIcon={<i className="pe-7s-paper-plane text-info" />}
-                    statsText="PKO (Tons)"
-                    statsValue={this.state.pko_all_time_sale}
+                    statsText="PKO Sold (Tons)"
+                    statsValue={this.state.pko_product_sales.pko_total_sales}
                     statsIcon={<i className="fa fa-refresh" />}
-                    statsIconText="PKO Sales (ATS)"
+                    statsIconText={`PKO left ${this.state.pko_product_sales.pko_total_left} (tons)`}
                   />
                 </Col>
                 <Col lg={12} sm={12}>
                   <StatsCard
                     bigIcon={<i className="pe-7s-refresh-cloud text-warning" />}
-                    statsText="PKSL (Tons)"
+                    statsText="PKSL Sold (Tons)"
                     statsValue={this.state.pksl_all_time_sale}
                     statsIcon={<i className="fa fa-refresh" />}
-                    statsIconText="PKSL Sales (ATS)"
+                    statsIconText="PKSL Sales"
                   />
                 </Col>
               </Row>
@@ -520,9 +564,6 @@ class Overview extends Component {
                 }
               />
             </Col>
-           
-
-            
           </Row>
         </Grid>
       </div>

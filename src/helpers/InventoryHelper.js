@@ -32,6 +32,7 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData) => {
 
   P2ApiData.map(dta => {
     const quantity = Math.abs(dta.quantitypurchased);
+
     const curshed_quantity = dta.crushed;
     p2_accumulated_total_purchased_quantity += quantity;
     const accumlated_quantity = p2_accumulated_total_purchased_quantity - curshed_quantity;
@@ -41,7 +42,8 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData) => {
     p2labels.push(convertDate(dta._id));
     p2QuantityData.push(convertTo2Dp(dta.quantitypurchased || 0));
     p2PriceData.push(convertTo2Dp(dta.unitprice || 0));
-    p2AccumulatedInventory.push(convertTo2Dp(accumlated_quantity));
+    p2AccumulatedInventory.push(convertTo2Dp(quantity));
+    // p2AccumulatedInventory.push(convertTo2Dp(p2_accumulated_total_purchased_quantity));
     p2AvgProduction.push(convertTo2Dp(dta.crushedPerHr || 0));
     p2InventoryValue.push(convertTo2Dp(avg_unitprice));
     return true;

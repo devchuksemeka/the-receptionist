@@ -29,19 +29,21 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData) => {
   let pkc_total_quantity = 0;
 
   let p2_accumulated_total_purchased_quantity = 0;
-  // let p2_accumulated_marketprice_total_amount = 0;
+  let p2_accumulated_total_crushed_quantity = 0;
 
   P2ApiData.map(dta => {
     const quantity = Math.abs(dta.quantitypurchased);
+    const curshed_quantity = dta.crushed;
     p2_accumulated_total_purchased_quantity += quantity;
+    p2_accumulated_total_crushed_quantity += curshed_quantity;
+    const accumlated_quantity = p2_accumulated_total_purchased_quantity - p2_accumulated_total_crushed_quantity;
 
     const avg_unitprice = dta.currentQuantity * dta.averageUnitMarketPrice
-    // p2_accumulated_marketprice_total_amount += avg_unitprice
 
     p2labels.push(convertDate(dta._id));
     p2QuantityData.push(convertTo2Dp(dta.quantitypurchased || 0));
     p2PriceData.push(convertTo2Dp(dta.unitprice || 0));
-    p2AccumulatedInventory.push(convertTo2Dp(p2_accumulated_total_purchased_quantity));
+    p2AccumulatedInventory.push(convertTo2Dp(accumlated_quantity));
     p2AvgProduction.push(convertTo2Dp(dta.crushedPerHr || 0));
     p2InventoryValue.push(convertTo2Dp(avg_unitprice));
     return true;

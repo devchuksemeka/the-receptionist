@@ -233,7 +233,6 @@ class Overview extends Component {
     try{
       const product_sales = await axios.get(`${this.state.baseURL}/v1/overview/product-sales-info?product=${product}${this.getRequestQueryParams()}`)
       const {total_left,total_sales} = product_sales.data.data
-      console.log({total_left,total_sales} )
 
       if(product === "PKO"){
         this.setState({
@@ -268,7 +267,7 @@ class Overview extends Component {
     try{
       const all_time_purchases_response = await axios.get(`${this.state.baseURL}/v1/overview/product-purchases-info?${this.getRequestQueryParams()}`)
       const {p2,total_crushed} = all_time_purchases_response.data.data
-      console.log({p2,total_crushed})
+      // console.log({p2,total_crushed})
 
       this.setState({
         p2_product:{

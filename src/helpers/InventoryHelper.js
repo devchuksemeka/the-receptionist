@@ -24,22 +24,27 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData) => {
   const pkcAvgProduction = [];
   const pkcInventoryValue = [];
 
-  let p2_total_quantity = 0;
+  
   let pko_total_quantity = 0;
   let pkc_total_quantity = 0;
 
+  let p2_accumulated_total_purchased_quantity = 0;
+  let p2_accumulated_marketprice_total_amount = 0;
+
   P2ApiData.map(dta => {
     const quantity = Math.abs(dta.quantitypurchased);
-    p2_total_quantity += quantity;
+    p2_accumulated_total_purchased_quantity += quantity;
+
+    const avg_unitprice = dta.currentQuantity * dta.averageUnitMarketPrice
+    p2_accumulated_marketprice_total_amount += avg_unitprice
+
     p2labels.push(convertDate(dta._id));
     p2QuantityData.push(convertTo2Dp(dta.quantitypurchased || 0));
     p2PriceData.push(convertTo2Dp(dta.unitprice || 0));
-    p2AccumulatedInventory.push(convertTo2Dp(p2_total_quantity));
-    // p2AccumulatedInventory.push(convertTo2Dp(p2_total_quantity));
+    p2AccumulatedInventory.push(convertTo2Dp(p2_accumulated_total_purchased_quantity));
     p2AvgProduction.push(convertTo2Dp(dta.crushedPerHr || 0));
-    p2InventoryValue.push(
-      convertTo2Dp(dta.currentQuantity * dta.averageUnitMarketPrice)
-    );
+    p2InventoryValue.push(convertTo2Dp(p2_accumulated_marketprice_total_amount));
+    // p2InventoryValue.push(convertTo2Dp(dta.currentQuantity * dta.averageUnitMarketPrice));
     return true;
   });
 

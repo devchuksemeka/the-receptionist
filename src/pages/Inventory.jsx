@@ -65,17 +65,6 @@ export default class Inventory extends Component {
       PkcAvgProduction
     } = getGraphValues(P2ApiData, PkoApiData, PkcApiData);
 
-    console.log({
-      P2Data,
-      P2Accumulated,
-      PkoData,
-      PkoAccumulated,
-      PkcData,
-      PkcAccumulated,
-      P2AvgProduction,
-      PkoAvgProduction,
-      PkcAvgProduction
-    })
     this.setState({
       P2Data,
       P2Accumulated,
@@ -143,6 +132,24 @@ export default class Inventory extends Component {
     );
   };
 
+  // handleDateFilter = e => {
+  //   const currentDateFilter = e.target.value;
+  //   if (currentDateFilter === "custom") {
+  //     return this.setState({
+  //       currentDateFilter
+  //     });
+  //   }
+  //   const { startDate, endDate } = getDateFilter(currentDateFilter);
+  //   this.setState(
+  //     {
+  //       currentDateFilter,
+  //       startDate,
+  //       endDate
+  //     },
+  //     () => this.handleSubmit()
+  //   );
+  // };
+
   handleGraphView = e => {
     const graphView = e.target.value;
     this.setState(
@@ -163,9 +170,7 @@ export default class Inventory extends Component {
     );
   };
 
-  handleSubmit = async () => {
-
-    
+  handleSubmit = async () => {  
     const { startDate, endDate, graphView } = this.state;
     this.setState({
       loading: true

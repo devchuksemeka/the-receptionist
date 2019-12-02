@@ -14,8 +14,15 @@ export const getChartData = (PkoApiData, PkcApiData, P2ApiData) => {
 
   const accumulatedSalesObject = {};
 
+  let accumulated_pko = 0;
+  let accumulated_pkc = 0;
+  let accumulated_p2 = 0;
+
   const salesDates = [];
   PkoApiData.map(dta => {
+
+    const sale_amount = dta.quantitySold * dta.unitPriceSold;
+    accumulated_pko += sale_amount;
     pkolabels.push(convertDate(dta._id));
     pkoSalesQuantityData.push(convertTo2Dp(dta.quantitySold || 0));
     pkoSalesPriceData.push(convertTo2Dp(dta.unitPriceSold || 0));
@@ -24,13 +31,11 @@ export const getChartData = (PkoApiData, PkcApiData, P2ApiData) => {
       salesDates.push(dta._id["date"]);
     }
     accumulatedSalesObject[convertDate(dta._id)] = {
-      pko: dta.quantitySold * dta.unitPriceSold,
+      pko: accumulated_pko,
       ...accumulatedSalesObject[convertDate(dta._id)]
     };
     return true;
   });
-
-  
 
   const salesCycles = [];
   salesDates.forEach((date, index) => {
@@ -46,19 +51,25 @@ export const getChartData = (PkoApiData, PkcApiData, P2ApiData) => {
   );
 
   PkcApiData.map(dta => {
+    const sale_amount = dta.quantitySold * dta.unitPriceSold
+    accumulated_pkc += sale_amount;
     pkclabels.push(convertDate(dta._id));
     pkcSalesQuantityData.push(convertTo2Dp(dta.quantitySold || 0));
     pkcSalesPriceData.push(convertTo2Dp(dta.unitPriceSold || 0));
     accumulatedSalesObject[convertDate(dta._id)] = {
-      pkc: dta.quantitySold * dta.unitPriceSold,
+      pkc: accumulated_pkc,
       ...accumulatedSalesObject[convertDate(dta._id)]
     };
     return true;
   });
 
   P2ApiData.map(dta => {
+    const total = dta.averageUnitMarketPrice * dta.crushed;
+    accumulated_p2 += total;
+    // console.log("total",total)
+    // console.log("accumulated_p2",accumulated_p2)
     accumulatedSalesObject[convertDate(dta._id)] = {
-      p2: dta.averageUnitMarketPrice * dta.crushed,
+      p2: total,
       ...accumulatedSalesObject[convertDate(dta._id)]
     };
     return true;

@@ -47,7 +47,7 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData) => {
     return true;
   });
 
-  console.log("p2AccumulatedInventory",p2AccumulatedInventory)
+  // console.log("p2AccumulatedInventory",p2AccumulatedInventory)
   
   PkoApiData.map(dta => {
     const quantity = Math.abs(dta.currentQuantity);

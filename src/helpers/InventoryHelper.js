@@ -29,14 +29,12 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData) => {
   let pkc_total_quantity = 0;
 
   let p2_accumulated_total_purchased_quantity = 0;
-  let p2_accumulated_total_crushed_quantity = 0;
 
   P2ApiData.map(dta => {
     const quantity = Math.abs(dta.quantitypurchased);
     const curshed_quantity = dta.crushed;
     p2_accumulated_total_purchased_quantity += quantity;
-    p2_accumulated_total_crushed_quantity += curshed_quantity;
-    const accumlated_quantity = p2_accumulated_total_purchased_quantity - p2_accumulated_total_crushed_quantity;
+    const accumlated_quantity = p2_accumulated_total_purchased_quantity - curshed_quantity;
 
     const avg_unitprice = dta.currentQuantity * dta.averageUnitMarketPrice
 

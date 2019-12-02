@@ -42,6 +42,7 @@ export default class Inventory extends Component {
     P2ApiData: [],
     PkoApiData: [],
     PkcApiData: [],
+    total_p2_remaining: 0,
     currentDateFilter: "currentWeek",
     graphView: "day",
     currency: "naira",
@@ -52,7 +53,7 @@ export default class Inventory extends Component {
   }
 
   setGraphValues = () => {
-    const { P2ApiData, PkoApiData, PkcApiData } = this.state;
+    const { P2ApiData, PkoApiData, PkcApiData,total_p2_remaining } = this.state;
     const {
       P2Data,
       P2Accumulated,
@@ -63,7 +64,7 @@ export default class Inventory extends Component {
       P2AvgProduction,
       PkoAvgProduction,
       PkcAvgProduction
-    } = getGraphValues(P2ApiData, PkoApiData, PkcApiData);
+    } = getGraphValues(P2ApiData, PkoApiData, PkcApiData,{total_p2_remaining});
 
     this.setState({
       P2Data,
@@ -175,12 +176,12 @@ export default class Inventory extends Component {
     this.setState({
       loading: true
     });
-    const P2ApiData = (await getP2Inventory(
+    const {p2Data:P2ApiData,total_p2_remaining} = (await getP2Inventory(
       startDate.toISOString(),
       endDate.toISOString(),
       graphView,
       this.state.currency
-    )).p2Data;
+    ));
     const PkoApiData = (await getPkoInventory(
       startDate.toISOString(),
       endDate.toISOString(),
@@ -198,6 +199,7 @@ export default class Inventory extends Component {
         P2ApiData,
         PkoApiData,
         PkcApiData,
+        total_p2_remaining,
         loading: false
       },
       () => this.setGraphValues()

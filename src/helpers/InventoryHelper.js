@@ -2,7 +2,7 @@ import { convertDate } from "../common";
 
 const convertTo2Dp = number => (number ? +number.toFixed(2) : 0);
 
-export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData) => {
+export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData,extra={}) => {
   const p2labels = [];
   const p2QuantityData = [];
   const p2PriceData = [];
@@ -30,11 +30,23 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData) => {
 
   let p2_accumulated_total_purchased_quantity = 0;
 
-  P2ApiData.map(dta => {
-    const quantity = Math.abs(dta.quantitypurchased);
+  
+  // console.log("extra_total_p2_remaining",extra.total_p2_remaining)
 
+  P2ApiData.map((dta,index) => {
+   
+    let quantity = Math.abs(dta.quantitypurchased);
+    // console.log("actual_quantity",quantity)
+    if(index < 1){
+      quantity += extra.total_p2_remaining
+      // console.log("total_p2_remaining",extra.total_p2_remaining)
+      // console.log("quantity_after",quantity)
+    }
+    
+    
     const curshed_quantity = dta.crushed;
     p2_accumulated_total_purchased_quantity += quantity;
+
     const accumlated_quantity = p2_accumulated_total_purchased_quantity - curshed_quantity;
 
     const avg_unitprice = dta.currentQuantity * dta.averageUnitMarketPrice
@@ -42,8 +54,7 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData) => {
     p2labels.push(convertDate(dta._id));
     p2QuantityData.push(convertTo2Dp(dta.quantitypurchased || 0));
     p2PriceData.push(convertTo2Dp(dta.unitprice || 0));
-    p2AccumulatedInventory.push(convertTo2Dp(quantity));
-    // p2AccumulatedInventory.push(convertTo2Dp(p2_accumulated_total_purchased_quantity));
+    p2AccumulatedInventory.push(convertTo2Dp(accumlated_quantity));
     p2AvgProduction.push(convertTo2Dp(dta.crushedPerHr || 0));
     p2InventoryValue.push(convertTo2Dp(avg_unitprice));
     return true;

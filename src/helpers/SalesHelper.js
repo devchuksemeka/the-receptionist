@@ -30,6 +30,8 @@ export const getChartData = (PkoApiData, PkcApiData, P2ApiData) => {
     return true;
   });
 
+  
+
   const salesCycles = [];
   salesDates.forEach((date, index) => {
     if (index > 0) {
@@ -38,6 +40,7 @@ export const getChartData = (PkoApiData, PkcApiData, P2ApiData) => {
       salesCycles.push(days);
     }
   });
+
   const salesCyclesAvg = convertTo2Dp(
     salesCycles.reduce((a, b) => a + b, 0) / salesCycles.length
   );

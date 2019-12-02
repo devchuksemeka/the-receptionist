@@ -7,6 +7,7 @@ export const isAuthenticated = () => {
   if (token) {
     const decoded = jwtDecode(token);
     if (Date.now() >= decoded.exp * 1000) {
+      localStorage.removeItem("authToken");
       isAuthenticated = false;
     } else {
       isAuthenticated = true;

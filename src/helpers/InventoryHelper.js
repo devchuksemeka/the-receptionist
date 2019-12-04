@@ -2,7 +2,7 @@ import { convertDate } from "../common";
 
 const convertTo2Dp = number => (number ? +number.toFixed(2) : 0);
 
-export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData,extra={}) => {
+export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData,extras={}) => {
   const p2labels = [];
   const p2QuantityData = [];
   const p2PriceData = [];
@@ -29,6 +29,7 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData,extra={}) => {
   let pkc_total_quantity = 0;
 
   let p2_accumulated_total_purchased_quantity = 0;
+ 
 
   
   // console.log("extra_total_p2_remaining",extra.total_p2_remaining)
@@ -37,7 +38,7 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData,extra={}) => {
    
     let quantity = Math.abs(dta.quantitypurchased);
     if(index < 1){
-      quantity += extra.total_p2_remaining
+      quantity += extras.total_p2_remaining
     }
     
     const crushed_quantity = dta.crushed;
@@ -57,10 +58,17 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData,extra={}) => {
   });
 
   // console.log("p2AccumulatedInventory",p2AccumulatedInventory)
-  
-  PkoApiData.map(dta => {
-    const quantity = Math.abs(dta.currentQuantity);
+  PkoApiData.map((dta,index) => {
+    
+    let quantity = Math.abs(dta.currentQuantity);
+    if(index < 1){
+      quantity += extras.total_pko_remaining
+    }
+
+    const quantity_sold = dta.quantitySold;
     pko_total_quantity += quantity;
+    pko_total_quantity -= quantity_sold;
+
     pkolabels.push(convertDate(dta._id));
     pkoQuantityData.push(convertTo2Dp(dta.quantity || 0));
     pkoMarketPriceData.push(convertTo2Dp(dta.averageUnitMarketPrice));
@@ -73,9 +81,16 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData,extra={}) => {
 
   // console.log("pkoaccumulatedInventory",pkoaccumulatedInventory)
 
-  PkcApiData.map(dta => {
-    const quantity = Math.abs(dta.currentQuantity);
+  PkcApiData.map((dta,index) => {
+    let quantity = Math.abs(dta.currentQuantity);
+    if(index < 1){
+      quantity += extras.total_pko_remaining
+    }
+
+    const quantity_sold = dta.quantitySold;
     pkc_total_quantity += quantity;
+    pkc_total_quantity -= quantity_sold;
+
     pkclabels.push(convertDate(dta._id));
     pkcQuantityData.push(convertTo2Dp(dta.quantity || 0));
     pkcMarketPriceData.push(convertTo2Dp(dta.averageUnitMarketPrice));

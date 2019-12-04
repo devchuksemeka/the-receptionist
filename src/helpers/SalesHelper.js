@@ -23,6 +23,7 @@ export const getChartData = (PkoApiData, PkcApiData, P2ApiData) => {
 
     const sale_amount = dta.quantitySold * dta.unitPriceSold;
     accumulated_pko += sale_amount;
+
     pkolabels.push(convertDate(dta._id));
     pkoSalesQuantityData.push(convertTo2Dp(dta.quantitySold || 0));
     pkoSalesPriceData.push(convertTo2Dp(dta.unitPriceSold || 0));
@@ -31,7 +32,7 @@ export const getChartData = (PkoApiData, PkcApiData, P2ApiData) => {
       salesDates.push(dta._id["date"]);
     }
     accumulatedSalesObject[convertDate(dta._id)] = {
-      pko: accumulated_pko,
+      pko: sale_amount,
       ...accumulatedSalesObject[convertDate(dta._id)]
     };
     return true;
@@ -57,7 +58,7 @@ export const getChartData = (PkoApiData, PkcApiData, P2ApiData) => {
     pkcSalesQuantityData.push(convertTo2Dp(dta.quantitySold || 0));
     pkcSalesPriceData.push(convertTo2Dp(dta.unitPriceSold || 0));
     accumulatedSalesObject[convertDate(dta._id)] = {
-      pkc: accumulated_pkc,
+      pkc: sale_amount,
       ...accumulatedSalesObject[convertDate(dta._id)]
     };
     return true;

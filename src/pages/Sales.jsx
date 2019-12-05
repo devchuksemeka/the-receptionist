@@ -5,7 +5,6 @@ import { Line, Bar } from "react-chartjs-2";
 import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
 import { getChartData } from "../helpers/SalesHelper";
-import { getDate } from "../helpers/index";
 import {
   getP2Inventory,
   getPkoInventory,
@@ -14,7 +13,6 @@ import {
 import {
   // legendSales
 } from "variables/Variables.jsx";
-import axios from "axios";
 
 export default class Sales extends Component {
   
@@ -111,102 +109,13 @@ export default class Sales extends Component {
     );
   };
 
-  setGraphValues = async () => {
+  setGraphValues = () => {
     const { PkoApiData, PkcApiData, P2ApiData } = this.state;
-    const { PkoData, PkcData, salesCyclesAvg } = getChartData(
+    const { PkoData, PkcData, accumulatedData, salesCyclesAvg } = getChartData(
       PkoApiData,
       PkcApiData,
       P2ApiData
     );
-
-    // 
-    const combined_sales = await axios.get(`${this.state.baseURL}/v1/sales/combined-sales?${this.getRequestQueryParams()}`);
-    const {datasets,labels} = combined_sales.data;
-    const pkoAccumulated = [];
-    const pkcAccumulated = [];
-    const pkslAccumulated = [];
-    const p2Accumulated = [];
-
-    labels.forEach(element => {
-      pkoAccumulated.push(datasets[element].PKO.total_price)
-      pkcAccumulated.push(datasets[element].PKC.total_price)
-      pkslAccumulated.push(datasets[element].PKSL.total_price)
-      p2Accumulated.push(datasets[element].PKC.total_price)
-    })
-
-    const accumulatedData = {
-      labels:labels.map(element=>{
-        return getDate(element)
-      }),
-      datasets: [
-        {
-          label: "Pko sales",
-          stack: "Stack 0",
-          fill: false,
-          lineTension: 0.1,
-          backgroundColor: "#de6866",
-          borderColor: "#de6866",
-          borderCapStyle: "butt",
-          borderDash: [],
-          borderDashOffset: 0.0,
-          borderJoinStyle: "miter",
-          pointBorderColor: "#de6866",
-          pointBackgroundColor: "#fff",
-          pointBorderWidth: 1,
-          pointHoverRadius: 5,
-          pointHoverBackgroundColor: "#de6866",
-          pointHoverBorderColor: "#fe6866",
-          pointHoverBorderWidth: 2,
-          pointRadius: 1,
-          pointHitRadius: 10,
-          data: pkoAccumulated
-        },
-        {
-          label: "Pkc sales",
-          stack: "Stack 0",
-          fill: false,
-          lineTension: 0.1,
-          backgroundColor: "rgba(75,192,192,0.4)",
-          borderColor: "rgba(75,192,192,1)",
-          borderCapStyle: "butt",
-          borderDash: [],
-          borderDashOffset: 0.0,
-          borderJoinStyle: "miter",
-          pointBorderColor: "rgba(75,192,192,1)",
-          pointBackgroundColor: "#fff",
-          pointBorderWidth: 1,
-          pointHoverRadius: 5,
-          pointHoverBackgroundColor: "rgba(75,192,192,1)",
-          pointHoverBorderColor: "rgba(220,220,220,1)",
-          pointHoverBorderWidth: 2,
-          pointRadius: 1,
-          pointHitRadius: 10,
-          data: pkcAccumulated
-        },
-        {
-          label: "P2 crushed till date value",
-          stack: "Stack 1",
-          fill: false,
-          lineTension: 0.1,
-          backgroundColor: "#ffaa1d",
-          borderColor: "#ffaa1d",
-          borderCapStyle: "butt",
-          borderDash: [],
-          borderDashOffset: 0.0,
-          borderJoinStyle: "miter",
-          pointBorderColor: "#ffaa1d",
-          pointBackgroundColor: "#fff",
-          pointBorderWidth: 1,
-          pointHoverRadius: 5,
-          pointHoverBackgroundColor: "#ffaa1d",
-          pointHoverBorderColor: "#ffaa1d",
-          pointHoverBorderWidth: 2,
-          pointRadius: 1,
-          pointHitRadius: 10,
-          data: p2Accumulated
-        }
-      ]
-    };
     
     
     this.setState({

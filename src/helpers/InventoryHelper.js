@@ -29,10 +29,6 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData,extras={}) => {
   let pkc_total_quantity = 0;
 
   let p2_accumulated_total_purchased_quantity = 0;
- 
-
-  
-  // console.log("extra_total_p2_remaining",extra.total_p2_remaining)
 
   P2ApiData.map((dta,index) => {
    

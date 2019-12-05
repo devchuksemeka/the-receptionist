@@ -232,13 +232,13 @@ class Overview extends Component {
   getProductSales = async (product="PKO")=>{
     try{
       const product_sales = await axios.get(`${this.state.baseURL}/v1/overview/product-sales-info?product=${product}${this.getRequestQueryParams()}`)
-      const {total_left,total_sales} = product_sales.data.data
+      const {total_produced,total_sales} = product_sales.data.data
 
       if(product === "PKO"){
         this.setState({
           pko_product_sales:{
             pko_total_sales: total_sales || 0,
-            pko_total_left:total_left || 0,
+            pko_total_left:total_produced || 0,
           }
         })
       }
@@ -247,7 +247,7 @@ class Overview extends Component {
         this.setState({
           pkc_product_sales:{
             pkc_total_sales:total_sales || 0,
-            pkc_total_left: total_left || 0,
+            pkc_total_left: total_produced || 0,
           }
         })
       }
@@ -460,7 +460,7 @@ class Overview extends Component {
                     statsText="PKC Sold (Tons)"
                     statsValue={this.state.pkc_product_sales.pkc_total_sales}
                     statsIcon={<i className="fa fa-clock-o" />}
-                    statsIconText={`PKC left ${this.state.pkc_product_sales.pkc_total_left} (tons)`}
+                    statsIconText={`PKC produced ${this.state.pkc_product_sales.pkc_total_left} (tons)`}
                   />
                 </Col>
                 <Col lg={12} sm={12}>
@@ -469,7 +469,7 @@ class Overview extends Component {
                     statsText="PKO Sold (Tons)"
                     statsValue={this.state.pko_product_sales.pko_total_sales}
                     statsIcon={<i className="fa fa-refresh" />}
-                    statsIconText={`PKO left ${this.state.pko_product_sales.pko_total_left} (tons)`}
+                    statsIconText={`PKO produced ${this.state.pko_product_sales.pko_total_left} (tons)`}
                   />
                 </Col>
                 <Col lg={12} sm={12}>

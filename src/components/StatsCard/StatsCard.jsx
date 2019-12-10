@@ -15,7 +15,10 @@ export class StatsCard extends Component {
             <Col xs={10}>
               <div className="numbers">
                 <p>{this.props.statsText}</p>
-                <span style={{fontSize:"2.5rem"}}>{this.props.statsValue}</span>
+                <div>
+                  <span style={{fontSize:"2.5rem"}}>{this.props.statsValue}</span>
+                  <span style={{fontSize:"1.7rem"}}>{this.props.progressLabel}</span>
+                </div>
               </div>
             </Col>
           </Row>

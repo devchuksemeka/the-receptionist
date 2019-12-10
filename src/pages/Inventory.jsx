@@ -346,7 +346,7 @@ export default class Inventory extends Component {
           value={currentView}
           onChange={this.setCurrentView}>
          <option value="dailyPurchase">{this.state.currentViewMessage}</option>
-          <option value="accumulated">Accumulated</option>
+          {/* <option value="accumulated">Accumulated</option> */}
         </select>
       </div>
 

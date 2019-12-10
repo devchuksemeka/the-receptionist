@@ -49,9 +49,10 @@ class Overview extends Component {
     utilization_rate_computation:{},
     revenue_data: {},
     
-    startDate: moment().startOf("week").toDate(),
-    endDate: moment().endOf("week").toDate(),
-    currentDateFilter: "currentWeek",
+    startDate: moment().subtract(1,"months").startOf("month").toDate(),
+    endDate: moment().subtract(1,"months").endOf("month").toDate(),
+    currentDateFilter: "lastMonth",
+    // currentDateFilter: "currentWeek",
     graphView: "day",
     salesCyclesAvg: "N/A",
     currency: "naira",

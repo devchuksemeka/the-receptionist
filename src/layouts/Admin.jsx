@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch,Redirect } from "react-router-dom";
 import NotificationSystem from "react-notification-system";
 
 import AdminNavbar from "components/Navbars/AdminNavbar";
@@ -73,10 +73,7 @@ class Admin extends Component {
         );
       } else {
         return (
-          <Route
-            path="/overview"
-            component={Overview}
-          />
+          <Redirect to="/overview"/>
         );
       }
     });

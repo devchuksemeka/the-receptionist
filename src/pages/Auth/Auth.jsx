@@ -65,6 +65,7 @@ export default class Auth extends Component{
                         response.data.authToken,
                         response.data.role,
                     )
+                    this.props.history.push("/overview")
 
                   } catch (error) {
                     if(!error.response) return;
@@ -110,6 +111,7 @@ export default class Auth extends Component{
                         response.data.authToken,
                         response.data.role,
                     )
+                    this.props.history.push("/overview")
                   } catch (error) {
                       if(!error.response) return;
                     this.setState({

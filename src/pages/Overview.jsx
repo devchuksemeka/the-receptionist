@@ -132,7 +132,7 @@ class Overview extends Component {
     return query;
   }  
   getRequestQueryParamsForGraph = () =>{
-    let query = `${this.getRequestQueryParams()}`;
+    let query = `${this.getRequestQueryParams()}&currency=${this.state.currency}`;
     return query;
   }
 
@@ -314,6 +314,16 @@ class Overview extends Component {
     );
   }; 
 
+  handleCurrencyChange = e => {
+    const currency = e.target.value;
+    this.setState(
+      {
+        currency
+      },
+      () => this.getAccumulatedRevenue()
+    );
+  };
+
   render() {
     const getProgressiveLabelStatIcon = (value,status) => {
         if(status === "above") return "fa fa-arrow-up text-success";
@@ -326,6 +336,7 @@ class Overview extends Component {
       else if(status === "below" && value < 60) return "text-warning";
       else if(status === "below" && value >= 60) return "text-danger";
   }
+  const {currency} = this.state
 
     const options = { 
       maintainAspectRatio: true, 
@@ -337,10 +348,11 @@ class Overview extends Component {
             const key = data.datasets[tooltipItem.datasetIndex].label;
             const val =
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-            if (val) return key + ` :  ₦` + val.toLocaleString();
+            if (val) return key + ` :  ${currency === "naira" ? "₦":"$"}` + val.toLocaleString();
           }
         }
       },
+      
       scales:{
         yAxes :[
           {
@@ -353,10 +365,10 @@ class Overview extends Component {
               labelString: ""
             },
             ticks: {
-              callback: value => ` ₦ ` + value.toLocaleString(),
+              // callback: value => ` ₦ ` + value.toLocaleString(),
               beginAtZero: true,
-              stepSize: 1000000
-              // callback: value => ` ${currency === "naira" ? "₦":"$"} ` + value.toLocaleString()
+              stepSize: currency === "naira" ? 1000000: 2000,
+              callback: value => ` ${currency === "naira" ? "₦":"$"} ` + value.toLocaleString()
             }
           }
         ]
@@ -446,6 +458,18 @@ class Overview extends Component {
           </Row>
           <Row>
             <Col md={9}>
+              <div className="row" style={{marginBottom:"0.5rem"}}>
+                <div className="col-md-3 block pull-right">
+                <select 
+                    value={this.currency}
+                    onChange={this.handleCurrencyChange}
+                    className="form-control form-control-lg">
+                  <option value="naira">Nigeria Naira (NGN)</option>
+                    <option value="usd">US Dollar (USD)</option>
+                  </select>
+                  
+                </div>
+              </div>
               <Card
                 statsIcon="fa fa-history"
                 id="chartHours"
@@ -455,7 +479,7 @@ class Overview extends Component {
                 content={
                   <div className="ct-chart" style={{height:"100%",width:"100%"}}>
                     <Line
-                      height={400}
+                      height={500}
                       width={800}
                       data={this.state.revenue_data}
                       options={options}

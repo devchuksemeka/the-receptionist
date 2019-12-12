@@ -343,7 +343,7 @@ export default class Sales extends Component {
           value={currentView}
           onChange={this.setCurrentView}>
          <option value="dailySales">Daily Sales</option>
-          {/* <option value="accumulated">Accumulated</option> */}
+          <option value="accumulated">Combined Sales</option>
         </select>
       </div>
 

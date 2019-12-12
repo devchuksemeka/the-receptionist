@@ -445,16 +445,19 @@ class Overview extends Component {
                 progressLabel={<i className={getProgressiveLabelStatIcon(this.state.gross_margin_computation.percentage,this.state.gross_margin_computation.status)}></i>}
               />
             </Col>
-            <Col lg={3} sm={6} >
-                <StatsCard
-                  bigIcon={<i className="pe-7s-attention text-warning" />}
-                  statsText="P2 Purchased (Tons)"
-                  statsValue={this.state.p2_product.p2_total_purchased}
-                  statsIcon={<i className="pe-7s-server" />}
-                  statsIconText={`P2 Crushed ${this.state.p2_product.p2_total_crushed} (tons)`}
-                />
-              </Col>
-            
+            <Col lg={3} sm={6}>
+              <StatsCard
+                bigIcon={<i className="pe-7s-up-arrow text-secondary" />}
+                statsText="Annual Run Rate"
+                statsValue={`${this.state.gross_margin}%`}
+                // statsIcon={<i className={getProgressiveLabelStatIcon(this.state.gross_margin_computation.percentage,this.state.gross_margin_computation.status)} />}
+                // statsIconText={<span className={getProgressiveLabelStatTextColor(this.state.gross_margin_computation.percentage,this.state.gross_margin_computation.status)} style={{fontWeight:"bold"}}>{this.state.gross_margin_computation.percentage}% {toTitleCase(this.state.gross_margin_computation.status || "")} target</span>}
+                statsIconText={`ARR`}
+                // statsIconText={<span className={getProgressiveLabelStatTextColor(this.state.gross_margin_computation.percentage,this.state.gross_margin_computation.status)} style={{fontWeight:"bold"}}>{this.state.gross_margin_computation.percentage}% {toTitleCase(this.state.gross_margin_computation.status || "")} target</span>}
+                // progressLabel={<i className={getProgressiveLabelStatIcon(this.state.gross_margin_computation.percentage,this.state.gross_margin_computation.status)}></i>}
+              
+              />
+            </Col>
           </Row>
           <Row>
             <Col md={9}>
@@ -490,6 +493,15 @@ class Overview extends Component {
             </Col>
             <Col md={3}>
               <Row>
+                <Col lg={12} sm={12} >
+                  <StatsCard
+                    bigIcon={<i className="pe-7s-attention text-warning" />}
+                    statsText="P2 Purchased (Tons)"
+                    statsValue={this.state.p2_product.p2_total_purchased}
+                    statsIcon={<i className="pe-7s-server" />}
+                    statsIconText={`P2 Crushed ${this.state.p2_product.p2_total_crushed} (tons)`}
+                  />
+                </Col>
                 <Col lg={12} sm={12}>
                   <StatsCard
                     bigIcon={<i className="pe-7s-star text-danger" />}

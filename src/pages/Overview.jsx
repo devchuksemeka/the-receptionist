@@ -508,7 +508,7 @@ class Overview extends Component {
                     statsIconText={`PKO produced ${this.state.pko_product_sales.pko_total_left} (tons)`}
                   />
                 </Col>
-                <Col lg={12} sm={12}>
+                {/* <Col lg={12} sm={12}>
                   <StatsCard
                     bigIcon={<i className="pe-7s-refresh-cloud text-warning" />}
                     statsText="PKSL Sold (Tons)"
@@ -516,7 +516,7 @@ class Overview extends Component {
                     statsIcon={<i className="fa fa-refresh" />}
                     statsIconText="PKSL Sales"
                   />
-                </Col>
+                </Col> */}
               </Row>
             </Col>
           </Row>

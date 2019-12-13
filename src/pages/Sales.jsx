@@ -108,7 +108,10 @@ export default class Sales extends Component {
   };
 
   setGraphValues = async () => {
+
+
     const { PkoApiData, PkcApiData, P2ApiData } = this.state;
+
     const { PkoData, PkcData, salesCyclesAvg } = getChartData(
       PkoApiData,
       PkcApiData,
@@ -117,6 +120,7 @@ export default class Sales extends Component {
     
     const combined_sale_res = await axios.get(`${this.state.baseURL}/v1/sales/combined-sales?${this.getRequestQueryParams()}`)
     const {datasets,labels} = combined_sale_res.data;
+    
     const pkoAccumulated = [];
     const pkcAccumulated = [];
     labels.forEach((element)=>{

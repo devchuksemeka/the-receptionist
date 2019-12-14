@@ -43,14 +43,14 @@ export default class Sales extends Component {
     const currentScreen = e.target.value;
     this.setState({
       currentScreen
-    });
+    },() => this.handleSubmit());
   }
 
   setCurrentView = e => {
     const currentView = e.target.value;
     this.setState({
       currentView
-    });
+    },() => this.handleSubmit());
   }
 
   getStartDate = () =>{
@@ -113,6 +113,7 @@ export default class Sales extends Component {
     const { PkoApiData, PkcApiData, P2ApiData } = this.state;
 
     const { PkoData, PkcData, salesCyclesAvg } = getChartData(
+    // const { PkoData, PkcData,accumulatedData, salesCyclesAvg } = getChartData(
       PkoApiData,
       PkcApiData,
       P2ApiData
@@ -120,13 +121,17 @@ export default class Sales extends Component {
     
     const combined_sale_res = await axios.get(`${this.state.baseURL}/v1/sales/combined-sales?${this.getRequestQueryParams()}`)
     const {datasets,labels} = combined_sale_res.data;
-    
+
     const pkoAccumulated = [];
     const pkcAccumulated = [];
+    const p2CrushedValue = [];
+
     labels.forEach((element)=>{
       pkoAccumulated.push(datasets[element].PKO.total_price)
       pkcAccumulated.push(datasets[element].PKC.total_price)
+      p2CrushedValue.push(datasets[element].crushed_payload.total_cost_price)
     })
+
     const accumulatedData = {
       labels,
       datasets: [
@@ -174,28 +179,28 @@ export default class Sales extends Component {
           pointHitRadius: 10,
           data: pkcAccumulated
         },
-        // {
-        //   label: "P2 crushed till date value",
-        //   stack: "Stack 1",
-        //   fill: false,
-        //   lineTension: 0.1,
-        //   backgroundColor: "#ffaa1d",
-        //   borderColor: "#ffaa1d",
-        //   borderCapStyle: "butt",
-        //   borderDash: [],
-        //   borderDashOffset: 0.0,
-        //   borderJoinStyle: "miter",
-        //   pointBorderColor: "#ffaa1d",
-        //   pointBackgroundColor: "#fff",
-        //   pointBorderWidth: 1,
-        //   pointHoverRadius: 5,
-        //   pointHoverBackgroundColor: "#ffaa1d",
-        //   pointHoverBorderColor: "#ffaa1d",
-        //   pointHoverBorderWidth: 2,
-        //   pointRadius: 1,
-        //   pointHitRadius: 10,
-        //   data: p2Accumulated
-        // }
+        {
+          label: "P2 crushed till date value",
+          stack: "Stack 1",
+          fill: false,
+          lineTension: 0.1,
+          backgroundColor: "#ffaa1d",
+          borderColor: "#ffaa1d",
+          borderCapStyle: "butt",
+          borderDash: [],
+          borderDashOffset: 0.0,
+          borderJoinStyle: "miter",
+          pointBorderColor: "#ffaa1d",
+          pointBackgroundColor: "#fff",
+          pointBorderWidth: 1,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: "#ffaa1d",
+          pointHoverBorderColor: "#ffaa1d",
+          pointHoverBorderWidth: 2,
+          pointRadius: 1,
+          pointHitRadius: 10,
+          data: p2CrushedValue
+        }
       ]
     };
 

@@ -188,16 +188,14 @@ export default class InventoryRework extends Component {
     const date = e.target.value;
     this.setState({
       startDate: new Date(date)
-    },
-    () => this.handleSubmit());
+    });
   };
 
   handleEndDateChange = e => {
     const date = e.target.value;
     this.setState({
       endDate: new Date(date)
-    },
-    () => this.handleSubmit());
+    })
   };
 
 

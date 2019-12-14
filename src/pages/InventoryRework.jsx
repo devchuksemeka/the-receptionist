@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Grid, Row, Col } from "react-bootstrap";
 import { Card } from "components/Card/Card.jsx";
 import { Line, 
-  // Bar 
 } from "react-chartjs-2";
 import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
@@ -12,8 +11,9 @@ import {
   getPkoInventory,
   getPkcInventory
 } from "../actions/sheetActions";
+import axios from 'axios'
 
-export default class Inventory extends Component {
+export default class InventoryRework extends Component {
   createLegend(json) {
     var legend = [];
     for (var i = 0; i < json["names"].length; i++) {
@@ -25,6 +25,7 @@ export default class Inventory extends Component {
     return legend;
   }
   state = {
+    baseURL:process.env.REACT_APP_SERVER_ENDPOINT,
     loading: true,
     currentScreen: "p2",
     currentView: "dailyPurchase",
@@ -57,11 +58,30 @@ export default class Inventory extends Component {
     await this.handleSubmit();
   }
 
-  setGraphValues = () => {
+  getStartDate = () =>{
+    const start_date = this.state.startDate.toISOString();
+    return start_date;
+  }
+
+  getEndDate = () =>{
+    const end_date = this.state.endDate.toISOString();
+    return end_date;
+  }
+
+  getGraphView = () => {
+    let view = this.state.graphView;
+    return view
+  }
+
+  getRequestQueryParams = () =>{
+    let query = `graphView=${this.getGraphView()}&startDate=${this.getStartDate()}&endDate=${this.getEndDate()}&product=${this.state.currentScreen}`;
+    return query;
+  }
+
+  setGraphValues = async () => {
     const { P2ApiData, PkoApiData, PkcApiData,extras } = this.state;
     const {
       P2Data,
-      P2Accumulated,
       PkoData,
       PkoAccumulated,
       PkcData,
@@ -71,6 +91,63 @@ export default class Inventory extends Component {
       PkcAvgProduction
     } = getGraphValues(P2ApiData, PkoApiData, PkcApiData,extras);
 
+    const purchase_and_crushing_analysis = await axios.get(`${this.state.baseURL}/v1/supplies/purchasing-and-crushing-analysis?${this.getRequestQueryParams()}`)
+    const {datasets,labels} = purchase_and_crushing_analysis.data;
+    const quantity_remaining = [];
+    const total_price = [];
+    labels.forEach(element=>{
+      quantity_remaining.push(datasets[element].total_p2_remaining)
+      total_price.push(datasets[element].total_price)
+    })
+    const P2Accumulated = {
+      labels,
+      datasets: [
+        {
+          yAxisID: "A",
+          label: "P2 current inventory",
+          fill: false,
+          lineTension: 0.1,
+          backgroundColor: "rgba(75,192,192,0.4)",
+          borderColor: "rgba(75,192,192,1)",
+          borderCapStyle: "butt",
+          borderDash: [],
+          borderDashOffset: 0.0,
+          borderJoinStyle: "miter",
+          pointBorderColor: "rgba(75,192,192,1)",
+          pointBackgroundColor: "#fff",
+          pointBorderWidth: 1,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: "rgba(75,192,192,1)",
+          pointHoverBorderColor: "rgba(220,220,220,1)",
+          pointHoverBorderWidth: 2,
+          pointRadius: 1,
+          pointHitRadius: 10,
+          data: quantity_remaining
+        },
+        {
+          yAxisID: "B",
+          label: "P2 current inventory value",
+          fill: false,
+          lineTension: 0.1,
+          backgroundColor: "#de6866",
+          borderColor: "#de6866",
+          borderCapStyle: "butt",
+          borderDash: [],
+          borderDashOffset: 0.0,
+          borderJoinStyle: "miter",
+          pointBorderColor: "#de6866",
+          pointBackgroundColor: "#fff",
+          pointBorderWidth: 1,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: "#de6866",
+          pointHoverBorderColor: "#fe6866",
+          pointHoverBorderWidth: 2,
+          pointRadius: 1,
+          pointHitRadius: 10,
+          data: total_price
+        }
+      ]
+    };
     this.setState({
       P2Data,
       P2Accumulated,
@@ -94,7 +171,8 @@ export default class Inventory extends Component {
     this.setState({
       currentScreen,
       currentViewMessage,
-    });
+    },
+    () => this.handleSubmit());
   }
 
   setCurrentView =  e=> {
@@ -102,21 +180,24 @@ export default class Inventory extends Component {
     // if(cur)
     this.setState({
       currentView
-    });
+    },
+    () => this.handleSubmit());
   }
 
   handleStartDateChange = e => {
     const date = e.target.value;
     this.setState({
       startDate: new Date(date)
-    });
+    },
+    () => this.handleSubmit());
   };
 
   handleEndDateChange = e => {
     const date = e.target.value;
     this.setState({
       endDate: new Date(date)
-    });
+    },
+    () => this.handleSubmit());
   };
 
 
@@ -138,23 +219,6 @@ export default class Inventory extends Component {
     );
   };
 
-  // handleDateFilter = e => {
-  //   const currentDateFilter = e.target.value;
-  //   if (currentDateFilter === "custom") {
-  //     return this.setState({
-  //       currentDateFilter
-  //     });
-  //   }
-  //   const { startDate, endDate } = getDateFilter(currentDateFilter);
-  //   this.setState(
-  //     {
-  //       currentDateFilter,
-  //       startDate,
-  //       endDate
-  //     },
-  //     () => this.handleSubmit()
-  //   );
-  // };
 
   handleGraphView = e => {
     const graphView = e.target.value;

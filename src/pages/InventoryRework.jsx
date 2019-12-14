@@ -94,10 +94,10 @@ export default class InventoryRework extends Component {
     const purchase_and_crushing_analysis = await axios.get(`${this.state.baseURL}/v1/supplies/purchasing-and-crushing-analysis?${this.getRequestQueryParams()}`)
     const {datasets,labels} = purchase_and_crushing_analysis.data;
     const quantity_remaining = [];
-    const total_price = [];
+    const inventory_value = [];
     labels.forEach(element=>{
       quantity_remaining.push(datasets[element].total_p2_remaining)
-      total_price.push(datasets[element].total_price)
+      inventory_value.push(datasets[element].inventory_value)
     })
     const P2Accumulated = {
       labels,
@@ -144,7 +144,7 @@ export default class InventoryRework extends Component {
           pointHoverBorderWidth: 2,
           pointRadius: 1,
           pointHitRadius: 10,
-          data: total_price
+          data: inventory_value
         }
       ]
     };

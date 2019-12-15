@@ -98,8 +98,6 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData,extras={}) => {
     return true;
   });
 
-  // console.log("pkcAccumulated",pkcAccumulated)
-
   const P2Data = {
     labels: p2labels,
     datasets: [

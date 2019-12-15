@@ -34,6 +34,7 @@ export default class InventoryRework extends Component {
     PkoData: {},
     PkcData: {},
     P2Accumulated: {},
+    productionAndSalesAnalysis: {},
     pkcAccumulated: {},
     P2AvgProduction: {},
     PkoAvgProduction: {},
@@ -90,69 +91,136 @@ export default class InventoryRework extends Component {
       PkoAvgProduction,
       PkcAvgProduction
     } = getGraphValues(P2ApiData, PkoApiData, PkcApiData,extras);
+    let P2Accumulated = {};
+    let productionAndSalesAnalysis = {};
+    if(this.state.currentView === "accumulated"){
+      if(this.state.currentScreen === "p2"){
+        const purchase_and_crushing_analysis = await axios.get(`${this.state.baseURL}/v1/supplies/purchasing-and-crushing-analysis?${this.getRequestQueryParams()}`)
+        const {datasets,labels} = purchase_and_crushing_analysis.data;
+        const quantity_remaining = [];
+        const inventory_value = [];
+        labels.forEach(element=>{
+          quantity_remaining.push(datasets[element].total_p2_remaining)
+          inventory_value.push(datasets[element].inventory_value)
+        })
+        P2Accumulated = {
+          labels,
+          datasets: [
+            {
+              yAxisID: "A",
+              label: "P2 current inventory",
+              fill: false,
+              lineTension: 0.1,
+              backgroundColor: "rgba(75,192,192,0.4)",
+              borderColor: "rgba(75,192,192,1)",
+              borderCapStyle: "butt",
+              borderDash: [],
+              borderDashOffset: 0.0,
+              borderJoinStyle: "miter",
+              pointBorderColor: "rgba(75,192,192,1)",
+              pointBackgroundColor: "#fff",
+              pointBorderWidth: 1,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: "rgba(75,192,192,1)",
+              pointHoverBorderColor: "rgba(220,220,220,1)",
+              pointHoverBorderWidth: 2,
+              pointRadius: 1,
+              pointHitRadius: 10,
+              data: quantity_remaining
+            },
+            {
+              yAxisID: "B",
+              label: "P2 current inventory value",
+              fill: false,
+              lineTension: 0.1,
+              backgroundColor: "#de6866",
+              borderColor: "#de6866",
+              borderCapStyle: "butt",
+              borderDash: [],
+              borderDashOffset: 0.0,
+              borderJoinStyle: "miter",
+              pointBorderColor: "#de6866",
+              pointBackgroundColor: "#fff",
+              pointBorderWidth: 1,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: "#de6866",
+              pointHoverBorderColor: "#fe6866",
+              pointHoverBorderWidth: 2,
+              pointRadius: 1,
+              pointHitRadius: 10,
+              data: inventory_value
+            }
+          ]
+        };
+      }else{
+        const production_and_sales_analysis = await axios.get(`${this.state.baseURL}/v1/supplies/production-and-sales-analysis?${this.getRequestQueryParams()}&currentScreen=${this.state.currentScreen}`)
+        const {datasets,labels} = production_and_sales_analysis.data;
 
-    const purchase_and_crushing_analysis = await axios.get(`${this.state.baseURL}/v1/supplies/purchasing-and-crushing-analysis?${this.getRequestQueryParams()}`)
-    const {datasets,labels} = purchase_and_crushing_analysis.data;
-    const quantity_remaining = [];
-    const inventory_value = [];
-    labels.forEach(element=>{
-      quantity_remaining.push(datasets[element].total_p2_remaining)
-      inventory_value.push(datasets[element].inventory_value)
-    })
-    const P2Accumulated = {
-      labels,
-      datasets: [
-        {
-          yAxisID: "A",
-          label: "P2 current inventory",
-          fill: false,
-          lineTension: 0.1,
-          backgroundColor: "rgba(75,192,192,0.4)",
-          borderColor: "rgba(75,192,192,1)",
-          borderCapStyle: "butt",
-          borderDash: [],
-          borderDashOffset: 0.0,
-          borderJoinStyle: "miter",
-          pointBorderColor: "rgba(75,192,192,1)",
-          pointBackgroundColor: "#fff",
-          pointBorderWidth: 1,
-          pointHoverRadius: 5,
-          pointHoverBackgroundColor: "rgba(75,192,192,1)",
-          pointHoverBorderColor: "rgba(220,220,220,1)",
-          pointHoverBorderWidth: 2,
-          pointRadius: 1,
-          pointHitRadius: 10,
-          data: quantity_remaining
-        },
-        {
-          yAxisID: "B",
-          label: "P2 current inventory value",
-          fill: false,
-          lineTension: 0.1,
-          backgroundColor: "#de6866",
-          borderColor: "#de6866",
-          borderCapStyle: "butt",
-          borderDash: [],
-          borderDashOffset: 0.0,
-          borderJoinStyle: "miter",
-          pointBorderColor: "#de6866",
-          pointBackgroundColor: "#fff",
-          pointBorderWidth: 1,
-          pointHoverRadius: 5,
-          pointHoverBackgroundColor: "#de6866",
-          pointHoverBorderColor: "#fe6866",
-          pointHoverBorderWidth: 2,
-          pointRadius: 1,
-          pointHitRadius: 10,
-          data: inventory_value
-        }
-      ]
-    };
+        const quantity_remaining = [];
+        const inventory_values = [];
+        labels.forEach(element=>{
+          quantity_remaining.push(datasets[element].total_product_produced_remaining)
+          inventory_values.push(datasets[element].inventory_value)
+        })
+        productionAndSalesAnalysis = {
+          labels,
+          datasets: [
+            {
+              yAxisID: "A",
+              label: "Pko current inventory",
+              fill: false,
+              lineTension: 0.1,
+              backgroundColor: "rgba(75,192,192,0.4)",
+              borderColor: "rgba(75,192,192,1)",
+              borderCapStyle: "butt",
+              borderDash: [],
+              borderDashOffset: 0.0,
+              borderJoinStyle: "miter",
+              pointBorderColor: "rgba(75,192,192,1)",
+              pointBackgroundColor: "#fff",
+              pointBorderWidth: 1,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: "rgba(75,192,192,1)",
+              pointHoverBorderColor: "rgba(220,220,220,1)",
+              pointHoverBorderWidth: 2,
+              pointRadius: 1,
+              pointHitRadius: 10,
+              data: quantity_remaining
+            },
+            {
+              yAxisID: "B",
+              label: "Pko current inventory value",
+              fill: false,
+              lineTension: 0.1,
+              backgroundColor: "#de6866",
+              borderColor: "#de6866",
+              borderCapStyle: "butt",
+              borderDash: [],
+              borderDashOffset: 0.0,
+              borderJoinStyle: "miter",
+              pointBorderColor: "#de6866",
+              pointBackgroundColor: "#fff",
+              pointBorderWidth: 1,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: "#de6866",
+              pointHoverBorderColor: "#fe6866",
+              pointHoverBorderWidth: 2,
+              pointRadius: 1,
+              pointHitRadius: 10,
+              data: inventory_values
+            }
+          ]
+        };
+      }
+      
+    }
+    
+
     this.setState({
       P2Data,
       P2Accumulated,
       PkoData,
-      PkoAccumulated,
+      productionAndSalesAnalysis,
       PkcData,
       PkcAccumulated,
       P2AvgProduction,
@@ -286,8 +354,7 @@ export default class InventoryRework extends Component {
       loading,
       currentView,
       P2Accumulated,
-      PkoAccumulated,
-      PkcAccumulated,
+      productionAndSalesAnalysis,
       currentDateFilter,
       graphView,
       currency
@@ -479,14 +546,7 @@ export default class InventoryRework extends Component {
             )}
             {currentView === "accumulated" && (
               <div>
-                {currentScreen === "pko" &&(
-                  <Line
-                    data={PkoAccumulated}
-                    options={options}
-                    height={400}
-                    width={800}
-                  />
-                )}
+                
                 {currentScreen === "p2" && (
                   <Line
                     data={P2Accumulated}
@@ -495,9 +555,9 @@ export default class InventoryRework extends Component {
                     width={800}
                   />
                 )}
-                {currentScreen === "pkc" && (
+                {(currentScreen === "pkc" ||  currentScreen === "pko") && (
                   <Line
-                    data={PkcAccumulated}
+                    data={productionAndSalesAnalysis}
                     options={options}
                     height={400}
                     width={800}

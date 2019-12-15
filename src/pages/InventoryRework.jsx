@@ -167,7 +167,7 @@ export default class InventoryRework extends Component {
           datasets: [
             {
               yAxisID: "A",
-              label: "Pko current inventory",
+              label: `${this.state.currentScreen === "pko" ? "Pko":"Pkc"} current inventory`,
               fill: false,
               lineTension: 0.1,
               backgroundColor: "rgba(75,192,192,0.4)",
@@ -189,7 +189,7 @@ export default class InventoryRework extends Component {
             },
             {
               yAxisID: "B",
-              label: "Pko current inventory value",
+              label: `${this.state.currentScreen === "pko" ? "Pko":"Pkc"} current inventory value`,
               fill: false,
               lineTension: 0.1,
               backgroundColor: "#de6866",

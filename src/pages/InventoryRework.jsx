@@ -569,27 +569,6 @@ export default class InventoryRework extends Component {
           }
         />
       </Col>
-      {/* <Col md={12} lg={12}>
-        <Card
-          statsIcon="fa fa-history"
-          id="chartHours"
-          title="Average Crushed Per Hour"
-          category="Average Crushed Per Hour Inventory Metrics Breakdown"
-          stats="Averaged Crushed Inventory Metrics"
-          content={
-            <div className="ct-chart" style={{height:"100%",width:"100%"}}>
-               {currentScreen === "p2" && <Bar data={P2AvgProduction} />
-                }
-                {currentScreen === "pko" && <Bar data={PkoAvgProduction} />
-                }
-                {currentScreen === "pkc" && <Bar data={PkcAvgProduction} />}
-            </div>
-          }
-          // legend={
-          //   <div className="legend">{this.createLegend(legendSales)}</div>
-          // }
-        />
-      </Col> */}
     </Row>
   </Grid>
 </div>

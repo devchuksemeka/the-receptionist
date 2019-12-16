@@ -7,7 +7,7 @@ import { Grid,
 } from "react-bootstrap";
 import Button from "components/CustomButton/CustomButton.jsx";
 import { getDateFilter } from "../common";
-import {toTitleCase} from '../helpers/index'
+import {toTitleCase,toMoneyFormat} from '../helpers/index'
 
 import { Card } from "components/Card/Card.jsx";
 import { StatsCard } from "components/StatsCard/StatsCard.jsx";
@@ -44,6 +44,7 @@ class Overview extends Component {
     gross_margin:0,
     gross_margin_computation:{},
     total_downtime:0,
+    annual_run_rate:0,
     downtime_computation:{},
     total_utilization_rate:0,
     utilization_rate_computation:{},
@@ -56,6 +57,7 @@ class Overview extends Component {
     graphView: "day",
     salesCyclesAvg: "N/A",
     currency: "naira",
+
     target_info:{},
     target_loading:false,
     target_setting:{}
@@ -115,6 +117,15 @@ class Overview extends Component {
     this.getProductSales("PKO");
     this.getProductSales("PKC");
     this.getProductSales("PKSL");
+    this.getAnnualRunRate();
+  }
+  
+  getAnnualRunRate = async () => {
+    const annual_run_rate_res = await axios.get(`${this.state.baseURL}/v1/overview/annual-run-rate?${this.getRequestQueryParams()}&date_filter=${this.state.currentDateFilter}`)
+    const {annual_run_rate} = annual_run_rate_res.data
+    this.setState({
+      annual_run_rate:toMoneyFormat(annual_run_rate)
+    })
   }
 
   getStartDate = () =>{
@@ -449,13 +460,8 @@ class Overview extends Component {
               <StatsCard
                 bigIcon={<i className="pe-7s-up-arrow text-secondary" />}
                 statsText="Annual Run Rate"
-                statsValue={`${this.state.gross_margin}%`}
-                // statsIcon={<i className={getProgressiveLabelStatIcon(this.state.gross_margin_computation.percentage,this.state.gross_margin_computation.status)} />}
-                // statsIconText={<span className={getProgressiveLabelStatTextColor(this.state.gross_margin_computation.percentage,this.state.gross_margin_computation.status)} style={{fontWeight:"bold"}}>{this.state.gross_margin_computation.percentage}% {toTitleCase(this.state.gross_margin_computation.status || "")} target</span>}
+                statsValue={this.state.annual_run_rate}
                 statsIconText={`ARR`}
-                // statsIconText={<span className={getProgressiveLabelStatTextColor(this.state.gross_margin_computation.percentage,this.state.gross_margin_computation.status)} style={{fontWeight:"bold"}}>{this.state.gross_margin_computation.percentage}% {toTitleCase(this.state.gross_margin_computation.status || "")} target</span>}
-                // progressLabel={<i className={getProgressiveLabelStatIcon(this.state.gross_margin_computation.percentage,this.state.gross_margin_computation.status)}></i>}
-              
               />
             </Col>
           </Row>

@@ -502,28 +502,28 @@ class Overview extends Component {
               <Col lg={12} md={4} sm={6}>
                   <StatsCard
                     bigIcon={<i className="pe-7s-paper-plane text-info" />}
-                    statsText="PKO Sold (Tons)"
-                    statsValue={this.state.pko_product_sales.pko_total_sales}
+                    statsText="PKO Produced (Tons)"
+                    statsValue={this.state.pko_product_sales.pko_total_left}
                     statsIcon={<i className="fa fa-refresh" />}
-                    statsIconText={`PKO produced ${this.state.pko_product_sales.pko_total_left} (tons)`}
+                    statsIconText={`PKO Sold ${this.state.pko_product_sales.pko_total_sales} (tons)`}
                   />
                 </Col>
                 <Col lg={12} md={4} sm={6}>
                   <StatsCard
                     bigIcon={<i className="pe-7s-star text-danger" />}
-                    statsText="PKC Sold (Tons)"
-                    statsValue={this.state.pkc_product_sales.pkc_total_sales}
+                    statsText="PKC Produced (Tons)"
+                    statsValue={this.state.pkc_product_sales.pkc_total_left}
                     statsIcon={<i className="fa fa-clock-o" />}
-                    statsIconText={`PKC produced ${this.state.pkc_product_sales.pkc_total_left} (tons)`}
+                    statsIconText={`PKC Sold ${this.state.pkc_product_sales.pkc_total_sales} (tons)`}
                   />
                 </Col>
                 <Col lg={12} md={4} sm={6} >
                   <StatsCard
                     bigIcon={<i className="pe-7s-attention text-warning" />}
-                    statsText="P2 Purchased (Tons)"
-                    statsValue={this.state.p2_product.p2_total_purchased}
+                    statsText="P2 Crushed (Tons)"
+                    statsValue={this.state.p2_product.p2_total_crushed}
                     statsIcon={<i className="pe-7s-server" />}
-                    statsIconText={`P2 Crushed ${this.state.p2_product.p2_total_crushed} (tons)`}
+                    statsIconText={`P2 Purchased ${this.state.p2_product.p2_total_purchased} (tons)`}
                   />
                 </Col>
                 {/* <Col lg={12} sm={12}>

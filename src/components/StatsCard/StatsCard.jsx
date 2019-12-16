@@ -7,6 +7,15 @@ export class StatsCard extends Component {
       <div className="card card-stats">
         <div className="content">
           <Row>
+            {/* {
+              this.props.flipStats === "up" && (<div className="footer">
+              
+              <div className="stats">
+                {this.props.statsIcon} {this.props.statsIconText}
+              </div>
+              <hr />
+            </div>)
+            } */}
             <Col xs={2}>
               <div className="icon-big text-center icon-warning">
                 {this.props.bigIcon}
@@ -23,11 +32,19 @@ export class StatsCard extends Component {
             </Col>
           </Row>
           <div className="footer">
-            <hr />
-            <div className="stats">
-              {this.props.statsIcon} {this.props.statsIconText}
+              <hr />
+              <div className="stats">
+                {this.props.statsIcon} {this.props.statsIconText}
+              </div>
             </div>
-          </div>
+            {/* {
+                this.props.flipStats === "down" && (<div className="footer">
+                <hr />
+                <div className="stats">
+                  {this.props.statsIcon} {this.props.statsIconText}
+                </div>
+              </div>)
+              } */}
         </div>
       </div>
     );

@@ -16,7 +16,7 @@ export class StatsCard extends Component {
               <div className="numbers">
                 <p>{this.props.statsText}</p>
                 <div>
-                  <span style={{fontSize:"2.5rem"}}>{this.props.statsValue}</span>
+                  <span style={{fontSize:"2rem"}}>{this.props.statsValue}</span>
                   <span style={{fontSize:"1.7rem"}}>{this.props.progressLabel}</span>
                 </div>
               </div>

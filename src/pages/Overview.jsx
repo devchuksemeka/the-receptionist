@@ -466,7 +466,7 @@ class Overview extends Component {
             </Col>
           </Row>
           <Row>
-            <Col md={9}>
+            <Col lg={9} md={12} sm={12}>
               <div className="row" style={{marginBottom:"0.5rem"}}>
                 <div className="col-md-3 block pull-right">
                 <select 
@@ -497,9 +497,9 @@ class Overview extends Component {
                 }
               />
             </Col>
-            <Col md={3}>
+            <Col lg={3} md={12} sm={12}>
               <Row>
-              <Col lg={12} sm={12}>
+              <Col lg={12} md={4} sm={6}>
                   <StatsCard
                     bigIcon={<i className="pe-7s-paper-plane text-info" />}
                     statsText="PKO Sold (Tons)"
@@ -508,7 +508,7 @@ class Overview extends Component {
                     statsIconText={`PKO produced ${this.state.pko_product_sales.pko_total_left} (tons)`}
                   />
                 </Col>
-                <Col lg={12} sm={12}>
+                <Col lg={12} md={4} sm={6}>
                   <StatsCard
                     bigIcon={<i className="pe-7s-star text-danger" />}
                     statsText="PKC Sold (Tons)"
@@ -517,7 +517,7 @@ class Overview extends Component {
                     statsIconText={`PKC produced ${this.state.pkc_product_sales.pkc_total_left} (tons)`}
                   />
                 </Col>
-                <Col lg={12} sm={12} >
+                <Col lg={12} md={4} sm={6} >
                   <StatsCard
                     bigIcon={<i className="pe-7s-attention text-warning" />}
                     statsText="P2 Purchased (Tons)"

@@ -21,6 +21,7 @@ class Overview extends Component {
     this.downtimeEl = React.createRef();
     this.grossMarginEL = React.createRef();
     this.pkoEL = React.createRef();
+    this.arrEL = React.createRef();
 }
 
   state = {
@@ -43,6 +44,7 @@ class Overview extends Component {
     pksl_all_time_sale:0,
     gross_margin:0,
     gross_margin_computation:{},
+    arr_computation:{},
     total_downtime:0,
     annual_run_rate:0,
     downtime_computation:{},
@@ -77,7 +79,8 @@ class Overview extends Component {
       utilization_rate:this.utitlizationRateEl.current.value || this.state.target_setting.utilization_rate || 0,
       downtime:this.downtimeEl.current.value  || this.state.target_setting.downtime || 0,
       gross_margin:this.grossMarginEL.current.value || this.state.target_setting.gross_margin || 0,
-      pko:this.pkoEL.current.value || this.state.target_setting.pko || 0,
+      // pko:this.pkoEL.current.value || this.state.target_setting.pko || 0,
+      arr:this.arrEL.current.value || this.state.target_setting.arr || 0,
     }
     try{
       const response = await axios.post(`${this.state.baseURL}/v1/settings/update-target`, form_data);
@@ -122,9 +125,10 @@ class Overview extends Component {
   
   getAnnualRunRate = async () => {
     const annual_run_rate_res = await axios.get(`${this.state.baseURL}/v1/overview/annual-run-rate?${this.getRequestQueryParams()}&date_filter=${this.state.currentDateFilter}`)
-    const {annual_run_rate} = annual_run_rate_res.data
+    const {annual_run_rate,target_setting} = annual_run_rate_res.data
     this.setState({
-      annual_run_rate:toMoneyFormat(annual_run_rate)
+      annual_run_rate:toMoneyFormat(annual_run_rate),
+      arr_computation:target_setting
     })
   }
 
@@ -461,7 +465,10 @@ class Overview extends Component {
                 bigIcon={<i className="pe-7s-up-arrow text-secondary" />}
                 statsText="Annual Run Rate"
                 statsValue={this.state.annual_run_rate}
-                statsIconText={`ARR`}
+                statsIcon={<i className={getProgressiveLabelStatIcon(this.state.arr_computation.percentage,this.state.arr_computation.status)} />}
+                statsIconText={<span className={getProgressiveLabelStatTextColor(this.state.arr_computation.percentage,this.state.arr_computation.status)} style={{fontWeight:"bold"}}>{toMoneyFormat(this.state.arr_computation.percentage || 0)} {toTitleCase(this.state.arr_computation.status || "")} target</span>}
+                progressLabel={<i className={getProgressiveLabelStatIcon(this.state.arr_computation.percentage,this.state.arr_computation.status)}></i>}
+              
               />
             </Col>
           </Row>
@@ -551,7 +558,7 @@ class Overview extends Component {
                         <input 
                           type="number" 
                           className="form-control" 
-                          id="exampleInputEmail1" 
+                          id="utilization_rate" 
                           ref={this.utitlizationRateEl}
                           placeholder="Utilization Rate"
                           >
@@ -581,7 +588,7 @@ class Overview extends Component {
                           >
                         </input>
                       </div>
-                      <div className="col-md-6 col-xs-12">
+                      {/* <div className="col-md-6 col-xs-12">
                         <label htmlFor="pko">PKO (tons) | <strong>Current Value: {this.state.target_setting.pko} (tons)</strong></label>
                         <input 
                           type="number" 
@@ -589,6 +596,17 @@ class Overview extends Component {
                           id="pko" 
                           ref={this.pkoEL}
                           placeholder="PKO"
+                          >
+                        </input>
+                      </div> */}
+                      <div className="col-md-6 col-xs-12">
+                        <label htmlFor="arr">Annual Run Rate (Naira) | <strong>Current Value: {this.state.target_setting.arr || 0} (naira)</strong></label>
+                        <input 
+                          type="number" 
+                          className="form-control" 
+                          id="arr" 
+                          ref={this.arrEL}
+                          placeholder="Annual Run Rate"
                           >
                         </input>
                       </div>

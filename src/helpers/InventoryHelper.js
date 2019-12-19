@@ -76,21 +76,28 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData) => {
     return true;
   });
 
-  // console.log("pkoaccumulatedInventory",pkoaccumulatedInventory)
 
   PkcApiData.map((dta,index) => {
+    let averageUnitMarketPrice = dta.currency_type === "naira" ? dta.averageUnitMarketPrice : dta.usd_averageUnitMarketPrice
+
     let quantity = Math.abs(dta.currentQuantity);
     const quantity_sold = dta.quantitySold;
     pkc_total_quantity += quantity;
     pkc_total_quantity -= quantity_sold;
 
-    pkclabels.push(convertDate(dta._id));
+    let convert_date = convertDate(dta._id)
+    pkclabels.push(convert_date);
+    
+    extra_tooltip_data[convert_date] = {
+      shift_hours:dta.shift_hours
+    };
+
     pkcQuantityData.push(convertTo2Dp(dta.quantity || 0));
-    pkcMarketPriceData.push(convertTo2Dp(dta.averageUnitMarketPrice));
+    pkcMarketPriceData.push(convertTo2Dp(averageUnitMarketPrice));
     pkcAccumulated.push(convertTo2Dp(pkc_total_quantity));
     pkcAvgProduction.push(convertTo2Dp(dta.productionPerHour));
     pkcInventoryValue.push(
-      convertTo2Dp(quantity * dta.averageUnitMarketPrice)
+      convertTo2Dp(quantity * averageUnitMarketPrice)
     );
     return true;
   });

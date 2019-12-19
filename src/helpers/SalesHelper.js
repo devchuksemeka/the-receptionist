@@ -61,6 +61,7 @@ export const getChartData = (PkoApiData, PkcApiData, P2ApiData) => {
 
   P2ApiData.map(dta => {
     const total = dta.averageUnitMarketPrice;
+
     accumulatedSalesObject[convertDate(dta._id)] = {
       p2: total,
       ...accumulatedSalesObject[convertDate(dta._id)]

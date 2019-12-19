@@ -55,6 +55,7 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData) => {
 
   PkoApiData.map((dta,index) => {
     
+    let averageUnitMarketPrice = dta.currency_type === "naira" ? dta.averageUnitMarketPrice : dta.usd_averageUnitMarketPrice
     let quantity = Math.abs(dta.currentQuantity);
     const quantity_sold = dta.quantitySold;
     pko_total_quantity += quantity;
@@ -67,10 +68,10 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData) => {
       shift_hours:dta.shift_hours
     };
     pkoQuantityData.push(convertTo2Dp(dta.quantity || 0));
-    pkoMarketPriceData.push(convertTo2Dp(dta.averageUnitMarketPrice));
+    pkoMarketPriceData.push(convertTo2Dp(averageUnitMarketPrice));
     pkoaccumulatedInventory.push(convertTo2Dp(pko_total_quantity));
     pkoInventoryValue.push(
-      convertTo2Dp(quantity * dta.averageUnitMarketPrice)
+      convertTo2Dp(quantity * averageUnitMarketPrice)
     );
     return true;
   });
@@ -474,7 +475,6 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData) => {
     ]
   };
 
-  console.log(extra_tooltip_data)
   return {
     P2Data,
     P2Accumulated,

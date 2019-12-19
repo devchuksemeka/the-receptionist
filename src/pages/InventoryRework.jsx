@@ -26,6 +26,7 @@ export default class InventoryRework extends Component {
   }
   state = {
     baseURL:process.env.REACT_APP_SERVER_ENDPOINT,
+    extra_tooltip_data: {},
     loading: true,
     currentScreen: "p2",
     currentView: "dailyPurchase",
@@ -84,15 +85,16 @@ export default class InventoryRework extends Component {
     const {
       P2Data,
       PkoData,
-      PkoAccumulated,
       PkcData,
       PkcAccumulated,
       P2AvgProduction,
       PkoAvgProduction,
-      PkcAvgProduction
+      PkcAvgProduction,
+      extra_tooltip_data
     } = getGraphValues(P2ApiData, PkoApiData, PkcApiData,extras);
     let P2Accumulated = {};
     let productionAndSalesAnalysis = {};
+
     if(this.state.currentView === "accumulated"){
       if(this.state.currentScreen === "p2"){
         const purchase_and_crushing_analysis = await axios.get(`${this.state.baseURL}/v1/supplies/purchasing-and-crushing-analysis?${this.getRequestQueryParams()}`)
@@ -214,7 +216,7 @@ export default class InventoryRework extends Component {
       }
       
     }
-    
+
 
     this.setState({
       P2Data,
@@ -226,7 +228,8 @@ export default class InventoryRework extends Component {
       P2AvgProduction,
       PkoAvgProduction,
       PkcAvgProduction,
-      loading: false
+      loading: false,
+      extra_tooltip_data
     });
   };
 
@@ -357,7 +360,8 @@ export default class InventoryRework extends Component {
       productionAndSalesAnalysis,
       currentDateFilter,
       graphView,
-      currency
+      currency,
+      extra_tooltip_data
     } = this.state;
 
     const options = { maintainAspectRatio: true, responsive: true };
@@ -368,13 +372,17 @@ export default class InventoryRework extends Component {
             // console.log(`datasets`,data.datasets);
             const key = data.datasets[tooltipItem.datasetIndex].label;
             const yAxis = data.datasets[tooltipItem.datasetIndex].yAxisID;
-            const val =
-              data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-            if (val && yAxis === "A") return key + ": " +val.toLocaleString() +" tons";
+            const val = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+           
+            // console.log(`data.datasets`,data.datasets);
+            if (val && yAxis === "A") return key + ": " +val.toLocaleString() +" ton";
             if (val && yAxis === "B") return key + ` : ${currency === "naira" ? "₦":"$"}`+ val.toLocaleString();
-          }
+        
+          },
+          afterBody: function(tooltipItem, d) {
+            return `Total Hours : ${extra_tooltip_data[tooltipItem[0].label].shift_hours} Hours`;
+         }
         }
-    
     }
     options.scales = {};
     options.scales.xAxes = [

@@ -2,7 +2,7 @@ import { convertDate } from "../common";
 
 const convertTo2Dp = number => (number ? +number.toFixed(2) : 0);
 
-export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData,extras={}) => {
+export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData) => {
   const p2labels = [];
   const p2QuantityData = [];
   const p2PriceData = [];
@@ -33,9 +33,6 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData,extras={}) => {
   P2ApiData.map((dta,index) => {
    
     let quantity = Math.abs(dta.quantitypurchased);
-    if(index < 1){
-      quantity += extras.total_p2_remaining
-    }
     
     const crushed_quantity = dta.crushed;
     p2_accumulated_total_purchased_quantity += quantity;
@@ -54,18 +51,21 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData,extras={}) => {
   });
 
   // console.log("p2AccumulatedInventory",p2AccumulatedInventory)
+  const extra_tooltip_data = {};
+
   PkoApiData.map((dta,index) => {
     
     let quantity = Math.abs(dta.currentQuantity);
-    if(index < 1){
-      quantity += extras.total_pko_remaining
-    }
-
     const quantity_sold = dta.quantitySold;
     pko_total_quantity += quantity;
     pko_total_quantity -= quantity_sold;
 
-    pkolabels.push(convertDate(dta._id));
+    let convert_date = convertDate(dta._id)
+
+    pkolabels.push(convert_date);
+    extra_tooltip_data[convert_date] = {
+      shift_hours:dta.shift_hours
+    };
     pkoQuantityData.push(convertTo2Dp(dta.quantity || 0));
     pkoMarketPriceData.push(convertTo2Dp(dta.averageUnitMarketPrice));
     pkoaccumulatedInventory.push(convertTo2Dp(pko_total_quantity));
@@ -79,10 +79,6 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData,extras={}) => {
 
   PkcApiData.map((dta,index) => {
     let quantity = Math.abs(dta.currentQuantity);
-    if(index < 1){
-      quantity += extras.total_pko_remaining
-    }
-
     const quantity_sold = dta.quantitySold;
     pkc_total_quantity += quantity;
     pkc_total_quantity -= quantity_sold;
@@ -197,6 +193,7 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData,extras={}) => {
       }
     ]
   };
+
   const PkoData = {
     labels: pkolabels,
     datasets: [
@@ -476,6 +473,8 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData,extras={}) => {
       }
     ]
   };
+
+  console.log(extra_tooltip_data)
   return {
     P2Data,
     P2Accumulated,
@@ -485,6 +484,7 @@ export const getGraphValues = (P2ApiData, PkoApiData, PkcApiData,extras={}) => {
     PkcAccumulated,
     P2AvgProduction,
     PkoAvgProduction,
-    PkcAvgProduction
+    PkcAvgProduction,
+    extra_tooltip_data
   };
 };

@@ -14,15 +14,11 @@ export const getChartData = (PkoApiData, PkcApiData, P2ApiData) => {
 
   const accumulatedSalesObject = {};
 
-  let accumulated_pko = 0;
-  let accumulated_pkc = 0;
-  let accumulated_p2 = 0;
-
   const salesDates = [];
   PkoApiData.map(dta => {
 
     const sale_amount = dta.quantitySold * dta.unitPriceSold;
-    accumulated_pko += sale_amount;
+
 
     pkolabels.push(convertDate(dta._id));
     pkoSalesQuantityData.push(convertTo2Dp(dta.quantitySold || 0));
@@ -53,7 +49,6 @@ export const getChartData = (PkoApiData, PkcApiData, P2ApiData) => {
 
   PkcApiData.map(dta => {
     const sale_amount = dta.quantitySold * dta.unitPriceSold
-    accumulated_pkc += sale_amount;
     pkclabels.push(convertDate(dta._id));
     pkcSalesQuantityData.push(convertTo2Dp(dta.quantitySold || 0));
     pkcSalesPriceData.push(convertTo2Dp(dta.unitPriceSold || 0));
@@ -66,8 +61,6 @@ export const getChartData = (PkoApiData, PkcApiData, P2ApiData) => {
 
   P2ApiData.map(dta => {
     const total = dta.averageUnitMarketPrice;
-    // const total = dta.averageUnitMarketPrice * dta.crushed;
-    accumulated_p2 += total;
     accumulatedSalesObject[convertDate(dta._id)] = {
       p2: total,
       ...accumulatedSalesObject[convertDate(dta._id)]

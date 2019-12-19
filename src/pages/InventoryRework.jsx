@@ -380,7 +380,7 @@ export default class InventoryRework extends Component {
         
           },
           afterBody: function(tooltipItem, d) {
-            return `Total Hours : ${extra_tooltip_data[tooltipItem[0].label].shift_hours} Hours`;
+            if(currentScreen === "pko" && currentView === "dailyPurchase") return `Total Hours : ${extra_tooltip_data[tooltipItem[0].label].shift_hours} Hours`;
          }
         }
     }

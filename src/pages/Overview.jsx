@@ -7,7 +7,7 @@ import { Grid,
 } from "react-bootstrap";
 import Button from "components/CustomButton/CustomButton.jsx";
 import { getDateFilter } from "../common";
-import {toTitleCase,toMoneyFormat} from '../helpers/index'
+import {toTitleCase,toMoneyFormatDynamic} from '../helpers/index'
 
 import { Card } from "components/Card/Card.jsx";
 import { StatsCard } from "components/StatsCard/StatsCard.jsx";
@@ -124,10 +124,10 @@ class Overview extends Component {
   }
   
   getAnnualRunRate = async () => {
-    const annual_run_rate_res = await axios.get(`${this.state.baseURL}/v1/overview/annual-run-rate?${this.getRequestQueryParams()}&date_filter=${this.state.currentDateFilter}`)
+    const annual_run_rate_res = await axios.get(`${this.state.baseURL}/v1/overview/annual-run-rate?${this.getRequestQueryParamsForGraph()}&date_filter=${this.state.currentDateFilter}`)
     const {annual_run_rate,target_setting} = annual_run_rate_res.data
     this.setState({
-      annual_run_rate:toMoneyFormat(annual_run_rate),
+      annual_run_rate:toMoneyFormatDynamic(annual_run_rate,this.state.currency === "naira"? "NGN":"USD"),
       arr_computation:target_setting
     })
   }
@@ -335,7 +335,10 @@ class Overview extends Component {
       {
         currency
       },
-      () => this.getAccumulatedRevenue()
+      () => {
+        this.getAccumulatedRevenue()
+        this.getAnnualRunRate()
+      }
     );
   };
 
@@ -466,8 +469,9 @@ class Overview extends Component {
                 statsText="Annual Run Rate"
                 statsValue={this.state.annual_run_rate}
                 statsIcon={<i className={getProgressiveLabelStatIcon(this.state.arr_computation.percentage,this.state.arr_computation.status)} />}
-                statsIconText={<span className={getProgressiveLabelStatTextColor(this.state.arr_computation.percentage,this.state.arr_computation.status)} style={{fontWeight:"bold"}}>{toMoneyFormat(this.state.arr_computation.percentage || 0)} {toTitleCase(this.state.arr_computation.status || "")} target</span>}
-                progressLabel={<i className={getProgressiveLabelStatIcon(this.state.arr_computation.percentage,this.state.arr_computation.status)}></i>}
+                statsIconText={`ARR`}
+                // statsIconText={<span className={getProgressiveLabelStatTextColor(this.state.arr_computation.percentage,this.state.arr_computation.status)} style={{fontWeight:"bold"}}>{toMoneyFormat(this.state.arr_computation.percentage || 0)} {toTitleCase(this.state.arr_computation.status || "")} target</span>}
+                // progressLabel={<i className={getProgressiveLabelStatIcon(this.state.arr_computation.percentage,this.state.arr_computation.status)}></i>}
               
               />
             </Col>

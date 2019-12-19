@@ -22,6 +22,16 @@ exports.toMoneyFormat = (number) =>{
   return formatter.format(number)
 
 }
+exports.toMoneyFormatDynamic = (number,currency) =>{
+  let lng = currency === "USD" ? "en-US" : "en-NG"
+  const formatter = new Intl.NumberFormat(lng, {
+    style: 'currency',
+    currency,
+  });
+
+  return formatter.format(number)
+
+}
 
 exports.numberOfDays = (date1,date2) => {
   const oneDay = 24 * 60 * 60 * 1000; 

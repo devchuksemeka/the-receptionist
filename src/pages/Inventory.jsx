@@ -13,7 +13,7 @@ import {
 } from "../actions/sheetActions";
 import axios from 'axios'
 
-export default class InventoryRework extends Component {
+export default class Inventory extends Component {
   createLegend(json) {
     var legend = [];
     for (var i = 0; i < json["names"].length; i++) {
@@ -31,7 +31,7 @@ export default class InventoryRework extends Component {
     currentScreen: "p2",
     currentView: "dailyPurchase",
     currentViewMessage: "Daily Purchase",
-    P2Data: {},
+    dataWarehouse: {},
     PkoData: {},
     PkcData: {},
     P2Accumulated: {},
@@ -76,7 +76,7 @@ export default class InventoryRework extends Component {
   }
 
   getRequestQueryParams = () =>{
-    let query = `graphView=${this.getGraphView()}&startDate=${this.getStartDate()}&endDate=${this.getEndDate()}&product=${this.state.currentScreen}`;
+    let query = `graphView=${this.getGraphView()}&startDate=${this.getStartDate()}&endDate=${this.getEndDate()}&product=${this.state.currentScreen}&currency=${this.state.currency}&currentView=${this.state.currentView}`;
     return query;
   }
 
@@ -94,6 +94,7 @@ export default class InventoryRework extends Component {
     } = getGraphValues(P2ApiData, PkoApiData, PkcApiData,extras);
     let P2Accumulated = {};
     let productionAndSalesAnalysis = {};
+    let dataWarehouse = {};
 
     if(this.state.currentView === "accumulated"){
       if(this.state.currentScreen === "p2"){
@@ -214,15 +215,74 @@ export default class InventoryRework extends Component {
           ]
         };
       }
-      
     }
-
-
+    else if(this.state.currentView === "dailyPurchase"){
+      if(this.state.currentScreen === "p2"){
+        const product_purchases = await axios.get(`${this.state.baseURL}/v1/supplies/purchases?${this.getRequestQueryParams()}`)
+        const {datasets,labels} = product_purchases.data;
+        const quantity_purchased = [];
+        const avg_product_unit_price = [];
+        labels.forEach(element=>{
+          quantity_purchased.push(datasets[element].total_quantity)
+          avg_product_unit_price.push(datasets[element].avg_product_unit_price)
+        })
+        dataWarehouse = {
+          labels,
+          datasets: [
+            {
+              yAxisID: "A",
+              label: "P2 Quantity Purchased",
+              fill: false,
+              lineTension: 0.1,
+              backgroundColor: "rgba(75,192,192,0.4)",
+              borderColor: "rgba(75,192,192,1)",
+              borderCapStyle: "butt",
+              borderDash: [],
+              borderDashOffset: 0.0,
+              borderJoinStyle: "miter",
+              pointBorderColor: "rgba(75,192,192,1)",
+              pointBackgroundColor: "#fff",
+              pointBorderWidth: 1,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: "rgba(75,192,192,1)",
+              pointHoverBorderColor: "rgba(220,220,220,1)",
+              pointHoverBorderWidth: 2,
+              pointRadius: 1,
+              pointHitRadius: 10,
+              data: quantity_purchased
+            },
+            {
+              yAxisID: "B",
+              label: "Average P2 Unit Cost Price",
+              fill: false,
+              lineTension: 0.1,
+              backgroundColor: "#de6866",
+              borderColor: "#de6866",
+              borderCapStyle: "butt",
+              borderDash: [],
+              borderDashOffset: 0.0,
+              borderJoinStyle: "miter",
+              pointBorderColor: "#de6866",
+              pointBackgroundColor: "#fff",
+              pointBorderWidth: 1,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: "#de6866",
+              pointHoverBorderColor: "#fe6866",
+              pointHoverBorderWidth: 2,
+              pointRadius: 1,
+              pointHitRadius: 10,
+              data: avg_product_unit_price
+            }
+          ]
+        };
+      }
+    }
     this.setState({
       P2Data,
       P2Accumulated,
       PkoData,
       productionAndSalesAnalysis,
+      dataWarehouse,
       PkcData,
       PkcAccumulated,
       P2AvgProduction,
@@ -314,12 +374,14 @@ export default class InventoryRework extends Component {
     this.setState({
       loading: true
     });
-    const {p2Data:P2ApiData,total_p2_remaining} = (await getP2Inventory(
-      startDate.toISOString(),
-      endDate.toISOString(),
-      graphView,
-      this.state.currency
-    ));
+
+    // const {p2Data:P2ApiData,total_p2_remaining} = (await getP2Inventory(
+    //   startDate.toISOString(),
+    //   endDate.toISOString(),
+    //   graphView,
+    //   this.state.currency
+    // ));
+
     const {pkoData:PkoApiData,total_pko_remaining} = (await getPkoInventory(
       startDate.toISOString(),
       endDate.toISOString(),
@@ -334,11 +396,9 @@ export default class InventoryRework extends Component {
     ));
     this.setState(
       {
-        P2ApiData,
         PkoApiData,
         PkcApiData,
         extras:{
-          total_p2_remaining,
           total_pko_remaining,
           total_pkc_remaining,
         },
@@ -350,7 +410,7 @@ export default class InventoryRework extends Component {
 
   render() {
     const {
-      P2Data,
+      dataWarehouse,
       PkoData,
       currentScreen,
       PkcData,
@@ -537,7 +597,7 @@ export default class InventoryRework extends Component {
                   <Line
                     height={400}
                     width={800}
-                    data={P2Data}
+                    data={dataWarehouse}
                     options={options}
                   />
                 )}

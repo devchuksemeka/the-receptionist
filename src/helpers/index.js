@@ -1,6 +1,6 @@
 const moment = require('moment')
 
-exports.getWeekInMonth = (date) => {
+const getWeekInMonth = (date) => {
     const date_v = moment(new Date(date))
     let week = Math.ceil(date_v.date()/7);
 
@@ -13,7 +13,7 @@ exports.getWeekInMonth = (date) => {
 
 }
 
-exports.toMoneyFormat = (number) =>{
+const toMoneyFormat = (number) =>{
   const formatter = new Intl.NumberFormat('en-NG', {
     style: 'currency',
     currency: 'NGN',
@@ -22,7 +22,7 @@ exports.toMoneyFormat = (number) =>{
   return formatter.format(number)
 
 }
-exports.toMoneyFormatDynamic = (number,currency) =>{
+const toMoneyFormatDynamic = (number,currency) =>{
   let lng = currency === "USD" ? "en-US" : "en-NG"
   const formatter = new Intl.NumberFormat(lng, {
     style: 'currency',
@@ -33,7 +33,7 @@ exports.toMoneyFormatDynamic = (number,currency) =>{
 
 }
 
-exports.numberOfDays = (date1,date2) => {
+const numberOfDays = (date1,date2) => {
   const oneDay = 24 * 60 * 60 * 1000; 
   const firstDate = new Date(date1);
   const secondDate = new Date(date2);
@@ -41,21 +41,21 @@ exports.numberOfDays = (date1,date2) => {
   return Math.round(Math.abs((firstDate - secondDate) / oneDay));
 }
 
-exports.differenceOfDateInHours = (date1,date2) => {
+const differenceOfDateInHours = (date1,date2) => {
   var a = moment(new Date(date1));
   var b = moment(new Date(date2));
   let hours = Math.abs(b.diff(a, 'hours'));
   return hours;
 }
 
-exports.numberOfWeeks = (date1,date2) => {
+const numberOfWeeks = (date1,date2) => {
   var a = moment(new Date(date1));
   var b = moment(new Date(date2));
   let weeeks = b.diff(a, 'weeks');
   return weeeks;
 }
 
-exports.numberOfMonths = (date1,date2) => {
+const numberOfMonths = (date1,date2) => {
   var a = moment(new Date(date1));
   var b = moment(new Date(date2));
   let month = b.diff(a, 'month');
@@ -66,53 +66,126 @@ const convertToDate = (value) =>{
   return moment(new Date(value))
 }
 
-exports.getDateInISO = (str) => {
+const getDateInISO = (str) => {
   return convertToDate(str).toISOString()
 }
 
-exports.toTitleCase = (str) => str.split(" ").map(item=>item.substring(0,1).toUpperCase()+item.substring(1)).join(" ")
+const toTitleCase = (str) => str.split(" ").map(item=>item.substring(0,1).toUpperCase()+item.substring(1)).join(" ")
 
-// exports.toCurrency = (amount,amount_currency,conversion) => str.split(" ").map(item=>item.substring(0,1).toUpperCase()+item.substring(1)).join(" ")
-exports.getWeek = (datetime)=> {
+// const toCurrency = (amount,amount_currency,conversion) => str.split(" ").map(item=>item.substring(0,1).toUpperCase()+item.substring(1)).join(" ")
+const getWeek = (datetime)=> {
     const date = moment(new Date(datetime)).format("YYYY MM ww")
     return date;
 }
-exports.getMonth = (datetime)=> {
+const getMonth = (datetime)=> {
     const date = moment(new Date(datetime)).format("MMM YYYY")
     return date;
 }
 
-exports.getDate = (datetime)=> {
+const getDate = (datetime)=> {
     const date = moment(new Date(datetime)).format("Do MMM")
     return date;
 }
 
-exports.dateAddDays = (date,add) => {
+const dateAddDays = (date,add) => {
     const date_v = moment(new Date(date)).add(add,"d")
     return date_v;
 }
 
-exports.dateAddWeeks = (date,add) => {
+const dateAddWeeks = (date,add) => {
     const date_v = moment(new Date(date)).add(add,"w")
     return date_v;
 }
 
-exports.dateAddMonths = (date,add) => {
+const dateAddMonths = (date,add) => {
     const date_v = moment(new Date(date)).add(add,"M")
     return date_v;
 }
 
-exports.formatDateDay = (day) => {
+const formatDateDay = (day) => {
     return day < 10 ? `0${day}` : day
 }
 
-exports.formatDateMonth = (month) => {
+const formatDateMonth = (month) => {
     return month < 10 ?  `0${month}` : month
 }
 
+
+const graph_A_B_YAxisDatasets = (labels,a_options,b_options) => {
+  return {
+    labels,
+    datasets:[
+      {
+        yAxisID: "A",
+        label: a_options.label,
+        fill: false,
+        lineTension: 0.1,
+        backgroundColor: "rgba(75,192,192,0.4)",
+        borderColor: "rgba(75,192,192,1)",
+        borderCapStyle: "butt",
+        borderDash: [],
+        borderDashOffset: 0.0,
+        borderJoinStyle: "miter",
+        pointBorderColor: "rgba(75,192,192,1)",
+        pointBackgroundColor: "#fff",
+        pointBorderWidth: 1,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: "rgba(75,192,192,1)",
+        pointHoverBorderColor: "rgba(220,220,220,1)",
+        pointHoverBorderWidth: 2,
+        pointRadius: 1,
+        pointHitRadius: 10,
+        data: a_options.data
+      },
+      {
+        yAxisID: "B",
+        label: b_options.label,
+        fill: false,
+        lineTension: 0.1,
+        backgroundColor: "#de6866",
+        borderColor: "#de6866",
+        borderCapStyle: "butt",
+        borderDash: [],
+        borderDashOffset: 0.0,
+        borderJoinStyle: "miter",
+        pointBorderColor: "#de6866",
+        pointBackgroundColor: "#fff",
+        pointBorderWidth: 1,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: "#de6866",
+        pointHoverBorderColor: "#fe6866",
+        pointHoverBorderWidth: 2,
+        pointRadius: 1,
+        pointHitRadius: 10,
+        data: b_options.data
+      }
+    ]
+  }
+};
 
 const CONSTANT = {
   USD_TO_NAIRA_CONV_RATE:362.5
 }
 
-exports.CONSTANT = CONSTANT;
+module.exports= {
+  graph_A_B_YAxisDatasets,
+  getWeekInMonth,
+  toMoneyFormat,
+  toMoneyFormatDynamic,
+  numberOfDays,
+  differenceOfDateInHours,
+  numberOfWeeks,
+  convertToDate,
+  numberOfMonths,
+  toTitleCase,
+  getDateInISO,
+  getWeek,
+  getMonth,
+  getDate,
+  dateAddDays,
+  CONSTANT,
+  formatDateMonth,
+  formatDateDay,
+  dateAddMonths,
+  dateAddWeeks,
+}

@@ -1,16 +1,11 @@
 import React, { Component } from "react";
 import { Grid, Row, Col } from "react-bootstrap";
 import { Card } from "components/Card/Card.jsx";
-import { Line, 
-} from "react-chartjs-2";
+import { Line, } from "react-chartjs-2";
 import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
 import { getGraphValues } from "../helpers/InventoryHelper";
-import {
-  getP2Inventory,
-  getPkoInventory,
-  getPkcInventory
-} from "../actions/sheetActions";
+import { graph_A_B_YAxisDatasets } from "../helpers";
 import axios from 'axios'
 
 export default class Inventory extends Component {
@@ -81,20 +76,10 @@ export default class Inventory extends Component {
   }
 
   setGraphValues = async () => {
-    const { P2ApiData, PkoApiData, PkcApiData,extras } = this.state;
-    const {
-      P2Data,
-      PkoData,
-      PkcData,
-      PkcAccumulated,
-      P2AvgProduction,
-      PkoAvgProduction,
-      PkcAvgProduction,
-      extra_tooltip_data
-    } = getGraphValues(P2ApiData, PkoApiData, PkcApiData,extras);
     let P2Accumulated = {};
     let productionAndSalesAnalysis = {};
     let dataWarehouse = {};
+    let extra_tooltip_data = {};
 
     if(this.state.currentView === "accumulated"){
       if(this.state.currentScreen === "p2"){
@@ -226,68 +211,41 @@ export default class Inventory extends Component {
           quantity_purchased.push(datasets[element].total_quantity)
           avg_product_unit_price.push(datasets[element].avg_product_unit_price)
         })
-        dataWarehouse = {
-          labels,
-          datasets: [
-            {
-              yAxisID: "A",
-              label: "P2 Quantity Purchased",
-              fill: false,
-              lineTension: 0.1,
-              backgroundColor: "rgba(75,192,192,0.4)",
-              borderColor: "rgba(75,192,192,1)",
-              borderCapStyle: "butt",
-              borderDash: [],
-              borderDashOffset: 0.0,
-              borderJoinStyle: "miter",
-              pointBorderColor: "rgba(75,192,192,1)",
-              pointBackgroundColor: "#fff",
-              pointBorderWidth: 1,
-              pointHoverRadius: 5,
-              pointHoverBackgroundColor: "rgba(75,192,192,1)",
-              pointHoverBorderColor: "rgba(220,220,220,1)",
-              pointHoverBorderWidth: 2,
-              pointRadius: 1,
-              pointHitRadius: 10,
-              data: quantity_purchased
-            },
-            {
-              yAxisID: "B",
-              label: "Average P2 Unit Cost Price",
-              fill: false,
-              lineTension: 0.1,
-              backgroundColor: "#de6866",
-              borderColor: "#de6866",
-              borderCapStyle: "butt",
-              borderDash: [],
-              borderDashOffset: 0.0,
-              borderJoinStyle: "miter",
-              pointBorderColor: "#de6866",
-              pointBackgroundColor: "#fff",
-              pointBorderWidth: 1,
-              pointHoverRadius: 5,
-              pointHoverBackgroundColor: "#de6866",
-              pointHoverBorderColor: "#fe6866",
-              pointHoverBorderWidth: 2,
-              pointRadius: 1,
-              pointHitRadius: 10,
-              data: avg_product_unit_price
-            }
-          ]
-        };
+        dataWarehouse = graph_A_B_YAxisDatasets(labels,
+          {
+            label:"P2 Quantity Purchased",
+            data:quantity_purchased,
+          },{
+            label:"Average P2 Unit Cost Price",
+            data:avg_product_unit_price,
+          }
+        )
+      }
+      else if(this.state.currentScreen === "pkc" || this.state.currentScreen === "pko"){
+        const product_purchases = await axios.get(`${this.state.baseURL}/v1/supplies/productions?${this.getRequestQueryParams()}`)
+        const {datasets,labels} = product_purchases.data;
+        extra_tooltip_data = datasets;
+        const quantity_produced = [];
+        const avg_market_unit_price = [];
+        labels.forEach(element=>{
+          quantity_produced.push(datasets[element].total_quantity_produced)
+          avg_market_unit_price.push(datasets[element].avg_market_unit_price)
+        })
+        dataWarehouse = graph_A_B_YAxisDatasets(labels,
+          {
+            label:"P2 Quantity Produced",
+            data:quantity_produced,
+          },{
+            label:"Average Market Unit Price",
+            data:avg_market_unit_price,
+          }
+        )
       }
     }
     this.setState({
-      P2Data,
       P2Accumulated,
-      PkoData,
       productionAndSalesAnalysis,
       dataWarehouse,
-      PkcData,
-      PkcAccumulated,
-      P2AvgProduction,
-      PkoAvgProduction,
-      PkcAvgProduction,
       loading: false,
       extra_tooltip_data
     });
@@ -370,38 +328,11 @@ export default class Inventory extends Component {
   };
 
   handleSubmit = async () => {  
-    const { startDate, endDate, graphView } = this.state;
     this.setState({
       loading: true
     });
-
-    // const {p2Data:P2ApiData,total_p2_remaining} = (await getP2Inventory(
-    //   startDate.toISOString(),
-    //   endDate.toISOString(),
-    //   graphView,
-    //   this.state.currency
-    // ));
-
-    const {pkoData:PkoApiData,total_pko_remaining} = (await getPkoInventory(
-      startDate.toISOString(),
-      endDate.toISOString(),
-      graphView,
-      this.state.currency
-    ));
-    const {pkcData:PkcApiData,total_pkc_remaining} = (await getPkcInventory(
-      startDate.toISOString(),
-      endDate.toISOString(),
-      graphView,
-      this.state.currency
-    ));
     this.setState(
       {
-        PkoApiData,
-        PkcApiData,
-        extras:{
-          total_pko_remaining,
-          total_pkc_remaining,
-        },
         loading: false
       },
       () => this.setGraphValues()
@@ -411,9 +342,7 @@ export default class Inventory extends Component {
   render() {
     const {
       dataWarehouse,
-      PkoData,
       currentScreen,
-      PkcData,
       loading,
       currentView,
       P2Accumulated,
@@ -440,6 +369,7 @@ export default class Inventory extends Component {
         
           },
           afterBody: function(tooltipItem, d) {
+            // console.log(extra_tooltip_data)
             if((currentScreen === "pko" || currentScreen === "pkc") && currentView === "dailyPurchase") return `Total Hours : ${extra_tooltip_data[tooltipItem[0].label].shift_hours} Hours`;
          }
         }
@@ -585,31 +515,12 @@ export default class Inventory extends Component {
             <div className="ct-chart" style={{height:"100%",width:"100%"}}>
                {currentView === "dailyPurchase" && (
               <div>
-                {currentScreen === "pko" && (
-                  <Line
-                    height={400}
-                    width={800}
-                    data={PkoData}
-                    options={options}
-                  />
-                )}
-                {currentScreen === "p2" && (
                   <Line
                     height={400}
                     width={800}
                     data={dataWarehouse}
                     options={options}
                   />
-                )}
-                {currentScreen === "pkc" && (
-                  <Line
-                    height={400}
-                    width={800}
-                    data={PkcData}
-                    options={options}
-                  />
-                )}
-                
               </div>
             )}
             {currentView === "accumulated" && (

@@ -4,21 +4,10 @@ import { Card } from "components/Card/Card.jsx";
 import { Line, } from "react-chartjs-2";
 import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
-import { getGraphValues } from "../helpers/InventoryHelper";
 import { graph_A_B_YAxisDatasets } from "../helpers";
 import axios from 'axios'
 
 export default class Inventory extends Component {
-  createLegend(json) {
-    var legend = [];
-    for (var i = 0; i < json["names"].length; i++) {
-      var type = "fa fa-circle text-" + json["types"][i];
-      legend.push(<i className={type} key={i} />);
-      legend.push(" ");
-      legend.push(json["names"][i]);
-    }
-    return legend;
-  }
   state = {
     baseURL:process.env.REACT_APP_SERVER_ENDPOINT,
     extra_tooltip_data: {},
@@ -358,18 +347,15 @@ export default class Inventory extends Component {
         mode: "label",
         callbacks: {
           label: function(tooltipItem, data) {
-            // console.log(`datasets`,data.datasets);
             const key = data.datasets[tooltipItem.datasetIndex].label;
             const yAxis = data.datasets[tooltipItem.datasetIndex].yAxisID;
             const val = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
            
-            // console.log(`data.datasets`,data.datasets);
             if (val && yAxis === "A") return key + ": " +val.toLocaleString() +" ton";
             if (val && yAxis === "B") return key + ` : ${currency === "naira" ? "₦":"$"}`+ val.toLocaleString();
         
           },
           afterBody: function(tooltipItem, d) {
-            // console.log(extra_tooltip_data)
             if((currentScreen === "pko" || currentScreen === "pkc") && currentView === "dailyPurchase") return `Total Hours : ${extra_tooltip_data[tooltipItem[0].label].shift_hours} Hours`;
          }
         }

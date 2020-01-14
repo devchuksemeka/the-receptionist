@@ -5,6 +5,7 @@ import { Line, Bar } from "react-chartjs-2";
 import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
 import { getChartData } from "../helpers/SalesHelper";
+import { graph_A_B_YAxisDatasets } from "../helpers";
 import {
   getP2Inventory,
   getPkoInventory,
@@ -21,6 +22,7 @@ export default class SalesRework extends Component {
     currentView: "dailySales",
     PkoData: {},
     PkcData: {},
+    dataWarehouse:{},
     P2ApiData: {},
     pkcAccumulated: {},
     accumulatedData: {},
@@ -69,150 +71,134 @@ export default class SalesRework extends Component {
   }
 
   getRequestQueryParams = () =>{
-    let query = `graphView=${this.getGraphView()}&startDate=${this.getStartDate()}&endDate=${this.getEndDate()}&product=${this.state.currentScreen}`;
+    let query = `graphView=${this.getGraphView()}&startDate=${this.getStartDate()}&endDate=${this.getEndDate()}&product=${this.state.currentScreen}&currency=${this.state.currency}`;
     return query;
   }
 
   
   handleSubmit = async () => {
-    const { startDate, endDate, graphView } = this.state;
-    const PkoApiData = (await getPkoInventory(
-      startDate.toISOString(),
-      endDate.toISOString(),
-      graphView,
-      this.state.currency
-    )).pkoData;
-
-    const PkcApiData = (await getPkcInventory(
-      startDate.toISOString(),
-      endDate.toISOString(),
-      graphView,
-      this.state.currency
-    )).pkcData;
-
-    const P2ApiData = (await getP2Inventory(
-      startDate.toISOString(),
-      endDate.toISOString(),
-      graphView,
-      this.state.currency
-    )).p2Data;
-
-    this.setState(
-      {
-        PkoApiData,
-        PkcApiData,
-        P2ApiData
-      },
-      () => this.setGraphValues()
-    );
+    this.setGraphValues()
   };
 
   setGraphValues = async () => {
 
-
-    const { PkoApiData, PkcApiData, P2ApiData } = this.state;
-
-    const { PkoData, PkcData, salesCyclesAvg } = getChartData(
-    // const { PkoData, PkcData,accumulatedData, salesCyclesAvg } = getChartData(
-      PkoApiData,
-      PkcApiData,
-      P2ApiData
-    );
+    let accumulatedData = {};
+    let dataWarehouse = {};
     
-    const combined_sale_res = await axios.get(`${this.state.baseURL}/v1/sales/combined-sales?${this.getRequestQueryParams()}`)
+    if(this.state.currentView === "accumulated"){
+      const combined_sale_res = await axios.get(`${this.state.baseURL}/v1/sales/combined-sales?${this.getRequestQueryParams()}`)
+      const {datasets,labels} = combined_sale_res.data;
+  
+      const pkoAccumulated = [];
+      const pkcAccumulated = [];
+      const p2CrushedValue = [];
+  
+      labels.forEach((element)=>{
+        pkoAccumulated.push(datasets[element].PKO.total_price)
+        pkcAccumulated.push(datasets[element].PKC.total_price)
+        p2CrushedValue.push(datasets[element].crushed_payload.total_cost_price)
+      })
+  
+      accumulatedData = {
+        labels,
+        datasets: [
+          {
+            label: "Pko sales",
+            stack: "Stack 0",
+            fill: false,
+            lineTension: 0.1,
+            backgroundColor: "#de6866",
+            borderColor: "#de6866",
+            borderCapStyle: "butt",
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: "miter",
+            pointBorderColor: "#de6866",
+            pointBackgroundColor: "#fff",
+            pointBorderWidth: 1,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: "#de6866",
+            pointHoverBorderColor: "#fe6866",
+            pointHoverBorderWidth: 2,
+            pointRadius: 1,
+            pointHitRadius: 10,
+            data: pkoAccumulated
+          },
+          {
+            label: "Pkc sales",
+            stack: "Stack 0",
+            fill: false,
+            lineTension: 0.1,
+            backgroundColor: "rgba(75,192,192,0.4)",
+            borderColor: "rgba(75,192,192,1)",
+            borderCapStyle: "butt",
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: "miter",
+            pointBorderColor: "rgba(75,192,192,1)",
+            pointBackgroundColor: "#fff",
+            pointBorderWidth: 1,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: "rgba(75,192,192,1)",
+            pointHoverBorderColor: "rgba(220,220,220,1)",
+            pointHoverBorderWidth: 2,
+            pointRadius: 1,
+            pointHitRadius: 10,
+            data: pkcAccumulated
+          },
+          {
+            label: "P2 crushed till date value",
+            stack: "Stack 1",
+            fill: false,
+            lineTension: 0.1,
+            backgroundColor: "#ffaa1d",
+            borderColor: "#ffaa1d",
+            borderCapStyle: "butt",
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: "miter",
+            pointBorderColor: "#ffaa1d",
+            pointBackgroundColor: "#fff",
+            pointBorderWidth: 1,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: "#ffaa1d",
+            pointHoverBorderColor: "#ffaa1d",
+            pointHoverBorderWidth: 2,
+            pointRadius: 1,
+            pointHitRadius: 10,
+            data: p2CrushedValue
+          }
+        ]
+      };
+    }
+   else if(this.state.currentView === "dailySales"){
+    const combined_sale_res = await axios.get(`${this.state.baseURL}/v1/sales/daily-sales?${this.getRequestQueryParams()}`)
     const {datasets,labels} = combined_sale_res.data;
 
-    const pkoAccumulated = [];
-    const pkcAccumulated = [];
-    const p2CrushedValue = [];
+    const total_quantity = [];
+    const avg_product_unit_price = [];
 
     labels.forEach((element)=>{
-      pkoAccumulated.push(datasets[element].PKO.total_price)
-      pkcAccumulated.push(datasets[element].PKC.total_price)
-      p2CrushedValue.push(datasets[element].crushed_payload.total_cost_price)
+      total_quantity.push(datasets[element].total_quantity)
+      avg_product_unit_price.push(datasets[element].avg_product_unit_price)
     })
 
-    const accumulatedData = {
-      labels,
-      datasets: [
-        {
-          label: "Pko sales",
-          stack: "Stack 0",
-          fill: false,
-          lineTension: 0.1,
-          backgroundColor: "#de6866",
-          borderColor: "#de6866",
-          borderCapStyle: "butt",
-          borderDash: [],
-          borderDashOffset: 0.0,
-          borderJoinStyle: "miter",
-          pointBorderColor: "#de6866",
-          pointBackgroundColor: "#fff",
-          pointBorderWidth: 1,
-          pointHoverRadius: 5,
-          pointHoverBackgroundColor: "#de6866",
-          pointHoverBorderColor: "#fe6866",
-          pointHoverBorderWidth: 2,
-          pointRadius: 1,
-          pointHitRadius: 10,
-          data: pkoAccumulated
-        },
-        {
-          label: "Pkc sales",
-          stack: "Stack 0",
-          fill: false,
-          lineTension: 0.1,
-          backgroundColor: "rgba(75,192,192,0.4)",
-          borderColor: "rgba(75,192,192,1)",
-          borderCapStyle: "butt",
-          borderDash: [],
-          borderDashOffset: 0.0,
-          borderJoinStyle: "miter",
-          pointBorderColor: "rgba(75,192,192,1)",
-          pointBackgroundColor: "#fff",
-          pointBorderWidth: 1,
-          pointHoverRadius: 5,
-          pointHoverBackgroundColor: "rgba(75,192,192,1)",
-          pointHoverBorderColor: "rgba(220,220,220,1)",
-          pointHoverBorderWidth: 2,
-          pointRadius: 1,
-          pointHitRadius: 10,
-          data: pkcAccumulated
-        },
-        {
-          label: "P2 crushed till date value",
-          stack: "Stack 1",
-          fill: false,
-          lineTension: 0.1,
-          backgroundColor: "#ffaa1d",
-          borderColor: "#ffaa1d",
-          borderCapStyle: "butt",
-          borderDash: [],
-          borderDashOffset: 0.0,
-          borderJoinStyle: "miter",
-          pointBorderColor: "#ffaa1d",
-          pointBackgroundColor: "#fff",
-          pointBorderWidth: 1,
-          pointHoverRadius: 5,
-          pointHoverBackgroundColor: "#ffaa1d",
-          pointHoverBorderColor: "#ffaa1d",
-          pointHoverBorderWidth: 2,
-          pointRadius: 1,
-          pointHitRadius: 10,
-          data: p2CrushedValue
-        }
-      ]
-    };
+    dataWarehouse = graph_A_B_YAxisDatasets(labels,
+      {
+        label:`${this.state.currentScreen.toUpperCase()} Quantity Sold`,
+        data:total_quantity,
+      },{
+        label:"Average Product Unit Sales Price",
+        data:avg_product_unit_price,
+      }
+    )
+   }
 
     this.setState({
-      PkoData,
-      PkcData,
       loading: false,
-      PkoApiData,
-      PkcApiData,
       accumulatedData,
-      P2ApiData,
-      salesCyclesAvg
+      salesCyclesAvg:10,
+      dataWarehouse,
     });
   };
 
@@ -270,9 +256,8 @@ export default class SalesRework extends Component {
 
   render() {
     const {
-      PkoData,
+      dataWarehouse,
       currentScreen,
-      PkcData,
       loading,
       currentView,
       accumulatedData,
@@ -473,23 +458,13 @@ export default class SalesRework extends Component {
             <div className="ct-chart" style={{height:"100%",width:"100%"}}>
                {currentView === "dailySales" && (
               <div>
-                {currentScreen === "pko" && (
-                  <Line
-                    height={400}
-                    width={800}
-                    data={PkoData}
-                    options={options}
-                  />
-                )}
-                {currentScreen === "pkc" && (
-                  <Line
-                    height={400}
-                    width={800}
-                    data={PkcData}
-                    options={options}
-                  />
-                )}
                 
+                  <Line
+                    height={400}
+                    width={800}
+                    data={dataWarehouse}
+                    options={options}
+                  />
               </div>
             )}
             {currentView === "accumulated" && (

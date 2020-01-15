@@ -4,13 +4,8 @@ import { Card } from "components/Card/Card.jsx";
 import { Line, Bar } from "react-chartjs-2";
 import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
-import { getChartData } from "../helpers/SalesHelper";
 import { graph_A_B_YAxisDatasets } from "../helpers";
-import {
-  getP2Inventory,
-  getPkoInventory,
-  getPkcInventory
-} from "../actions/sheetActions";
+
 import axios from 'axios'
 
 export default class SalesRework extends Component {
@@ -443,8 +438,10 @@ export default class SalesRework extends Component {
       </React.Fragment> 
       )}
     </div>
+    
 
     <Row>
+
       <Col md={12} lg={12}>
         <Card
           statsIcon="fa fa-history"

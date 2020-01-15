@@ -5,6 +5,7 @@ import { Line, } from "react-chartjs-2";
 import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
 import { graph_A_B_YAxisDatasets } from "../helpers";
+import { StatsCard } from "components/StatsCard/StatsCard.jsx";
 import axios from 'axios'
 
 export default class Inventory extends Component {
@@ -29,6 +30,7 @@ export default class Inventory extends Component {
     P2ApiData: [],
     PkoApiData: [],
     PkcApiData: [],
+    avg_production_rate_per_hour:0,
     extras: {
       total_p2_remaining:0,
       total_pkc_remaining:0,
@@ -69,6 +71,7 @@ export default class Inventory extends Component {
     let productionAndSalesAnalysis = {};
     let dataWarehouse = {};
     let extra_tooltip_data = {};
+    let avg_production_rate_per_hour = 0;
 
     if(this.state.currentView === "accumulated"){
       if(this.state.currentScreen === "p2"){
@@ -213,6 +216,7 @@ export default class Inventory extends Component {
       else if(this.state.currentScreen === "pkc" || this.state.currentScreen === "pko"){
         const product_purchases = await axios.get(`${this.state.baseURL}/v1/supplies/productions?${this.getRequestQueryParams()}`)
         const {datasets,labels} = product_purchases.data;
+        avg_production_rate_per_hour = product_purchases.data.extras.avg_production_rate_per_hour
         extra_tooltip_data = datasets;
         const quantity_produced = [];
         const avg_market_unit_price = [];
@@ -222,7 +226,7 @@ export default class Inventory extends Component {
         })
         dataWarehouse = graph_A_B_YAxisDatasets(labels,
           {
-            label:"P2 Quantity Produced",
+            label:`${this.state.currentScreen.toUpperCase()} Quantity Produced`,
             data:quantity_produced,
           },{
             label:"Average Market Unit Price",
@@ -236,7 +240,8 @@ export default class Inventory extends Component {
       productionAndSalesAnalysis,
       dataWarehouse,
       loading: false,
-      extra_tooltip_data
+      extra_tooltip_data,
+      avg_production_rate_per_hour
     });
   };
 
@@ -407,136 +412,146 @@ export default class Inventory extends Component {
     return (
       <React.Fragment>
          <div className="content">
-  
-  <Grid fluid>
-    <div className="row" style={{marginBottom:"0.5rem"}}>
-      <div className="col-md-3 block">
-        <select 
-          className="form-control form-control-lg"
-          value={currentDateFilter}
-          onChange={this.handleDateFilter}>
-            <option value="currentWeek">Current Week</option>
-            <option value="lastWeek">Last Week</option>
-            <option value="last2Weeks">Last 2 Weeks</option>
-            <option value="lastMonth">Last Month</option>
-            <option value="custom">Custom</option>
-        </select>
-      </div>
+            <Grid fluid>
+              <div className="row" style={{marginBottom:"0.5rem"}}>
+                <div className="col-md-3 block">
+                  <select 
+                    className="form-control form-control-lg"
+                    value={currentDateFilter}
+                    onChange={this.handleDateFilter}>
+                      <option value="currentWeek">Current Week</option>
+                      <option value="lastWeek">Last Week</option>
+                      <option value="last2Weeks">Last 2 Weeks</option>
+                      <option value="lastMonth">Last Month</option>
+                      <option value="custom">Custom</option>
+                  </select>
+                </div>
 
-      <div className="col-md-2 block">
-        <select 
-          className="form-control form-control-lg"
-          value={currentScreen}
-          onChange={this.setCurrentScreen}
-        >
-         <option value="p2">P2</option>
-          <option value="pko">PKO</option>
-          <option value="pkc">PKC</option>
-        </select>
-      </div>
-      <div className="col-md-2 block">
-        <select 
-          className="form-control form-control-lg"
-          value={graphView}
-          onChange={this.handleGraphView}>
-         <option value="day">Day</option>
-          <option value="week">Week</option>
-          <option value="month">Month</option>
-        </select>
-      </div>
-      <div className="col-md-2 block">
-        <select 
-          value={currency}
-          onChange={this.handleCurrencyChange}
-          className="form-control form-control-lg">
-         <option value="naira">Naira</option>
-          <option value="usd">US Dollar</option>
-        </select>
-      </div>
-      <div className="col-md-3 block">
-        <select 
-          className="form-control form-control-lg"
-          value={currentView}
-          onChange={this.setCurrentView}>
-         <option value="dailyPurchase">{this.state.currentViewMessage}</option>
-          <option value="accumulated">Accumulated</option>
-        </select>
-      </div>
+                <div className="col-md-2 block">
+                  <select 
+                    className="form-control form-control-lg"
+                    value={currentScreen}
+                    onChange={this.setCurrentScreen}
+                  >
+                  <option value="p2">P2</option>
+                    <option value="pko">PKO</option>
+                    <option value="pkc">PKC</option>
+                  </select>
+                </div>
+                <div className="col-md-2 block">
+                  <select 
+                    className="form-control form-control-lg"
+                    value={graphView}
+                    onChange={this.handleGraphView}>
+                  <option value="day">Day</option>
+                    <option value="week">Week</option>
+                    <option value="month">Month</option>
+                  </select>
+                </div>
+                <div className="col-md-2 block">
+                  <select 
+                    value={currency}
+                    onChange={this.handleCurrencyChange}
+                    className="form-control form-control-lg">
+                  <option value="naira">Naira</option>
+                    <option value="usd">US Dollar</option>
+                  </select>
+                </div>
+                <div className="col-md-3 block">
+                  <select 
+                    className="form-control form-control-lg"
+                    value={currentView}
+                    onChange={this.setCurrentView}>
+                  <option value="dailyPurchase">{this.state.currentViewMessage}</option>
+                    <option value="accumulated">Accumulated</option>
+                  </select>
+                </div>
 
-    </div>
-    <div className="row" style={{marginBottom:"0.5rem"}}>
-      {currentDateFilter === "custom"  && (<React.Fragment>
-        <div className="col-md-3 block">
-          <div className="form-group row">
-            <label htmlFor="custom_date_from" className="col-sm-2 col-form-label">From</label>
-            <div className="col-sm-10">
-              <input type="date" onChange={this.handleStartDateChange} className="form-control" id="custom_date_from"></input>
-            </div>
-          </div>
-        </div>
-        <div className="col-md-3 block">
-          <div className="form-group row">
-            <label htmlFor="custom_date_to" className="col-sm-2 col-form-label">To</label>
-            <div className="col-sm-10">
-              <input type="date" onChange={this.handleEndDateChange} className="form-control" id="custom_date_to"></input>
-            </div>
-          </div>
-        </div>
-        <div className="col-md-2">
-          <button className="btn btn-primary" onClick={this.handleSubmit}>Go</button>
-        </div>
-      </React.Fragment> 
-      )}
-    </div>
-
-    <Row>
-      <Col md={12} lg={12}>
-        <Card
-          statsIcon="fa fa-history"
-          id="chartHours"
-          title="Inventory Metrics"
-          category="All Products Inventory Metrics Breakdown"
-          stats="Inventory Metrics"
-          content={
-            <div className="ct-chart" style={{height:"100%",width:"100%"}}>
-               {currentView === "dailyPurchase" && (
-              <div>
-                  <Line
-                    height={400}
-                    width={800}
-                    data={dataWarehouse}
-                    options={options}
-                  />
               </div>
-            )}
-            {currentView === "accumulated" && (
-              <div>
-                
-                {currentScreen === "p2" && (
-                  <Line
-                    data={P2Accumulated}
-                    options={options}
-                    height={400}
-                    width={800}
-                  />
-                )}
-                {(currentScreen === "pkc" ||  currentScreen === "pko") && (
-                  <Line
-                    data={productionAndSalesAnalysis}
-                    options={options}
-                    height={400}
-                    width={800}
-                  />
+              <div className="row" style={{marginBottom:"0.5rem"}}>
+                {currentDateFilter === "custom"  && (<React.Fragment>
+                  <div className="col-md-3 block">
+                    <div className="form-group row">
+                      <label htmlFor="custom_date_from" className="col-sm-2 col-form-label">From</label>
+                      <div className="col-sm-10">
+                        <input type="date" onChange={this.handleStartDateChange} className="form-control" id="custom_date_from"></input>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-3 block">
+                    <div className="form-group row">
+                      <label htmlFor="custom_date_to" className="col-sm-2 col-form-label">To</label>
+                      <div className="col-sm-10">
+                        <input type="date" onChange={this.handleEndDateChange} className="form-control" id="custom_date_to"></input>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-2">
+                    <button className="btn btn-primary" onClick={this.handleSubmit}>Go</button>
+                  </div>
+                </React.Fragment> 
                 )}
               </div>
-            )}
-            </div>
-          }
-        />
-      </Col>
-    </Row>
-  </Grid>
-</div>
+              {currentScreen !== "p2" && currentView === "dailyPurchase" && (
+                <Row>
+                <Col lg={3} sm={6}>
+                  <StatsCard
+                    bigIcon={<i className="pe-7s-up-arrow text-secondary" />}
+                    statsText="Production Rate/Hr"
+                    statsValue={this.state.avg_production_rate_per_hour}
+                    statsIconText={`Avg Production Rate/Hr`}
+                  />
+                </Col>
+              </Row>
+              )}
+              <Row>
+                <Col md={12} lg={12}>
+                  <Card
+                    statsIcon="fa fa-history"
+                    id="chartHours"
+                    title="Inventory Metrics"
+                    category="All Products Inventory Metrics Breakdown"
+                    stats="Inventory Metrics"
+                    content={
+                      <div className="ct-chart" style={{height:"100%",width:"100%"}}>
+                        {currentView === "dailyPurchase" && (
+                        <div>
+                            <Line
+                              height={400}
+                              width={800}
+                              data={dataWarehouse}
+                              options={options}
+                            />
+                        </div>
+                      )}
+                      {currentView === "accumulated" && (
+                        <div>
+                          
+                          {currentScreen === "p2" && (
+                            <Line
+                              data={P2Accumulated}
+                              options={options}
+                              height={400}
+                              width={800}
+                            />
+                          )}
+                          {(currentScreen === "pkc" ||  currentScreen === "pko") && (
+                            <Line
+                              data={productionAndSalesAnalysis}
+                              options={options}
+                              height={400}
+                              width={800}
+                            />
+                          )}
+                        </div>
+                      )}
+                      </div>
+                    }
+                  />
+                </Col>
+              </Row>
+            </Grid>
+          </div>
       </React.Fragment>
       
     );

@@ -282,12 +282,12 @@ class Overview extends Component {
   getAllTimePurchases = async ()=>{
     try{
       const all_time_purchases_response = await axios.get(`${this.state.baseURL}/v1/overview/product-purchases-info?${this.getRequestQueryParams()}`)
-      const {p2,total_crushed} = all_time_purchases_response.data.data
+      const {P2,total_crushed} = all_time_purchases_response.data.data
       // console.log({p2,total_crushed})
 
       this.setState({
         p2_product:{
-          p2_total_purchased:p2 || 0,
+          p2_total_purchased:P2 || 0,
           p2_total_crushed: total_crushed || 0
         }
       })

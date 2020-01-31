@@ -72,6 +72,7 @@ export default class Inventory extends Component {
     let dataWarehouse = {};
     let extra_tooltip_data = {};
     let avg_production_rate_per_hour = 0;
+    let avg_crushing_rate_per_hour = 0;
 
     if(this.state.currentView === "accumulated"){
       if(this.state.currentScreen === "p2"){
@@ -197,6 +198,7 @@ export default class Inventory extends Component {
       if(this.state.currentScreen === "p2"){
         const product_purchases = await axios.get(`${this.state.baseURL}/v1/supplies/purchases?${this.getRequestQueryParams()}`)
         const {datasets,labels} = product_purchases.data;
+        avg_crushing_rate_per_hour = product_purchases.data.extras.avg_crushing_rate_per_hour
         const quantity_purchased = [];
         const avg_product_unit_price = [];
         labels.forEach(element=>{
@@ -241,7 +243,8 @@ export default class Inventory extends Component {
       dataWarehouse,
       loading: false,
       extra_tooltip_data,
-      avg_production_rate_per_hour
+      avg_production_rate_per_hour,
+      avg_crushing_rate_per_hour,
     });
   };
 
@@ -492,18 +495,19 @@ export default class Inventory extends Component {
                 </React.Fragment> 
                 )}
               </div>
-              {currentScreen !== "p2" && currentView === "dailyPurchase" && (
+              {currentView === "dailyPurchase" && (
                 <Row>
                 <Col lg={3} sm={6}>
                   <StatsCard
                     bigIcon={<i className="pe-7s-up-arrow text-secondary" />}
-                    statsText="Production Rate/Hr"
-                    statsValue={this.state.avg_production_rate_per_hour}
-                    statsIconText={`Avg Production Rate/Hr`}
+                    statsText={`${currentScreen === "p2" ? 'Crushing':'Production'} Rate/Hr`}
+                    statsValue={currentScreen === "p2" ? this.state.avg_crushing_rate_per_hour: this.state.avg_production_rate_per_hour}
+                    statsIconText={`Avg ${currentScreen === "p2" ? 'Crushing':'Production'} Rate/Hr`}
                   />
                 </Col>
               </Row>
               )}
+              
               <Row>
                 <Col md={12} lg={12}>
                   <Card

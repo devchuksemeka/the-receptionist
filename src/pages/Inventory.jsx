@@ -199,6 +199,7 @@ export default class Inventory extends Component {
         const product_purchases = await axios.get(`${this.state.baseURL}/v1/supplies/purchases?${this.getRequestQueryParams()}`)
         const {datasets,labels} = product_purchases.data;
         avg_crushing_rate_per_hour = product_purchases.data.extras.avg_crushing_rate_per_hour
+        extra_tooltip_data = datasets;
         const quantity_purchased = [];
         const avg_product_unit_price = [];
         labels.forEach(element=>{
@@ -365,7 +366,7 @@ export default class Inventory extends Component {
           },
           afterBody: function(tooltipItem, d) {
             if((currentScreen === "pko" || currentScreen === "pkc") && currentView === "dailyPurchase") return `Production rate/hr : ${extra_tooltip_data[tooltipItem[0].label].shift_hours}`;
-            // if((currentScreen === "p2") && currentView === "dailyPurchase") return `Crushing rate/hr  : ${extra_tooltip_data[tooltipItem[0].label].shift_hours}`;
+            if((currentScreen === "p2") && currentView === "dailyPurchase") return `Crushing rate/hr  : ${extra_tooltip_data[tooltipItem[0].label].shift_hours}`;
          }
         }
     }

@@ -207,10 +207,10 @@ export default class Inventory extends Component {
         })
         dataWarehouse = graph_A_B_YAxisDatasets(labels,
           {
-            label:"P2 Quantity Purchased",
+            label:"P2 Purchased",
             data:quantity_purchased,
           },{
-            label:"Average P2 Unit Cost Price",
+            label:"Average P2 Price",
             data:avg_product_unit_price,
           }
         )
@@ -228,10 +228,10 @@ export default class Inventory extends Component {
         })
         dataWarehouse = graph_A_B_YAxisDatasets(labels,
           {
-            label:`${this.state.currentScreen.toUpperCase()} Quantity Produced`,
+            label:`${this.state.currentScreen.toUpperCase()}  Produced`,
             data:quantity_produced,
           },{
-            label:"Average Market Unit Price",
+            label:`Average ${this.state.currentScreen.toUpperCase()} Price`,
             data:avg_market_unit_price,
           }
         )

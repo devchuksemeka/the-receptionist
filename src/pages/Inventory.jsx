@@ -502,9 +502,9 @@ export default class Inventory extends Component {
                 <Col lg={3} sm={6}>
                   <StatsCard
                     bigIcon={<i className="pe-7s-up-arrow text-secondary" />}
-                    statsText={`${currentScreen === "p2" ? 'Crushing':'Production'} Rate/Hr`}
+                    statsText={`${currentScreen === "p2" ? 'Crushing':'Production'} Rate (Ton/hr)`}
                     statsValue={currentScreen === "p2" ? this.state.avg_crushing_rate_per_hour: this.state.avg_production_rate_per_hour}
-                    statsIconText={`Avg ${currentScreen === "p2" ? 'Crushing':'Production'} Rate/Hr`}
+                    statsIconText={`Avg ${currentScreen === "p2" ? 'Crushing':'Production'} Rate (Ton/hr)`}
                   />
                 </Col>
               </Row>

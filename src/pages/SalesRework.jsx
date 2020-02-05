@@ -374,7 +374,8 @@ export default class SalesRework extends Component {
         </select>
       </div>
 
-      <div className="col-md-2 block">
+      {currentView === "dailySales" && (
+        <div className="col-md-2 block">
         <select 
           className="form-control form-control-lg"
           value={currentScreen}
@@ -384,6 +385,8 @@ export default class SalesRework extends Component {
           <option value="pkc">PKC</option>
         </select>
       </div>
+      )}
+      
       <div className="col-md-2 block">
         <select 
           className="form-control form-control-lg"

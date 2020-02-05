@@ -365,8 +365,8 @@ export default class Inventory extends Component {
         
           },
           afterBody: function(tooltipItem, d) {
-            if((currentScreen === "pko" || currentScreen === "pkc") && currentView === "dailyPurchase") return `Production rate/hr : ${extra_tooltip_data[tooltipItem[0].label].shift_hours}`;
-            if((currentScreen === "p2") && currentView === "dailyPurchase") return `Crushing rate/hr  : ${extra_tooltip_data[tooltipItem[0].label].shift_hours}`;
+            if((currentScreen === "pko" || currentScreen === "pkc") && currentView === "dailyPurchase") return `Production rate: ${extra_tooltip_data[tooltipItem[0].label].shift_hours}T/hr`;
+            if((currentScreen === "p2") && currentView === "dailyPurchase") return `Crushing rate: ${extra_tooltip_data[tooltipItem[0].label].shift_hours}T/hr`;
          }
         }
     }

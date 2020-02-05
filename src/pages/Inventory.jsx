@@ -369,7 +369,7 @@ export default class Inventory extends Component {
               return `Production rate: ${extra_tooltip_data[tooltipItem[0].label].production_rate_per_hour}T/hr\nShift hours: ${extra_tooltip_data[tooltipItem[0].label].shift_hours}hrs`;
             }
             if((currentScreen === "p2") && currentView === "dailyPurchase") {
-              return `Crushing rate: ${extra_tooltip_data[tooltipItem[0].label].shift_hours}T/hr`
+              return `Crushing rate: ${extra_tooltip_data[tooltipItem[0].label].crushing_rate_hr}T/hr\nShift hours: ${extra_tooltip_data[tooltipItem[0].label].shift_hours}hrs`
             };
          }
         }

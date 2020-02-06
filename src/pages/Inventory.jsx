@@ -4,7 +4,7 @@ import { Card } from "components/Card/Card.jsx";
 import { Line, } from "react-chartjs-2";
 import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
-import { graph_A_B_YAxisDatasets } from "../helpers";
+import { graph_A_B_YAxisDatasets ,toMoneyFormatDynamic} from "../helpers";
 import { StatsCard } from "components/StatsCard/StatsCard.jsx";
 import axios from 'axios'
 
@@ -514,14 +514,24 @@ export default class Inventory extends Component {
                 </Col>
               )}
               {currentView === "dailyPurchase" &&  currentScreen === "p2" && (
-                <Col lg={3} sm={6}>
-                  <StatsCard
-                    bigIcon={<i className="pe-7s-shield text-info" />}
-                    statsText="P2 Total Crushed (Ton)"
-                    statsValue={this.state.extras.total_product_crushed}
-                    statsIconText={`Total P2 Crushed (Ton)`}
-                  />
-                </Col>
+                <React.Fragment>
+                  <Col lg={3} sm={6}>
+                    <StatsCard
+                      bigIcon={<i className="pe-7s-shield text-info" />}
+                      statsText="P2 Total Crushed (Ton)"
+                      statsValue={this.state.extras.total_product_crushed}
+                      statsIconText={`Total P2 Crushed (Ton)`}
+                    />
+                  </Col>
+                  <Col lg={3} sm={6}>
+                    <StatsCard
+                      bigIcon={<i className="pe-7s-magnet text-warning" />}
+                      statsText="P2 Quantity Purchased (Ton)"
+                      statsValue={this.state.extras.total_product_purchased || 0}
+                      statsIconText={`P2 Purchased Cost: ${toMoneyFormatDynamic(this.state.extras.total_purchased_cost,this.state.currency === "naira"? "NGN":"USD") || 0}`}
+                    />
+                  </Col>
+                </React.Fragment>
               )}
               </Row>   
               <Row>

@@ -541,7 +541,7 @@ export default class Inventory extends Component {
                   </Col>
                 </React.Fragment>
               )}
-              {currentView === "dailyPurchase" &&  currentScreen != "p2" && (
+              {currentView === "dailyPurchase" &&  currentScreen !== "p2" && (
                 <React.Fragment>
                   <Col lg={3} sm={6}>
                     <StatsCard

@@ -4,7 +4,8 @@ import { Card } from "components/Card/Card.jsx";
 import { Line, Bar } from "react-chartjs-2";
 import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
-import { graph_A_B_YAxisDatasets } from "../helpers";
+import { graph_A_B_YAxisDatasets,toMoneyFormatDynamic } from "../helpers";
+import { StatsCard } from "components/StatsCard/StatsCard.jsx";
 
 import axios from 'axios'
 
@@ -441,10 +442,17 @@ export default class SalesRework extends Component {
       </React.Fragment> 
       )}
     </div>
-    
-
+    <Row> 
+      <Col lg={3} sm={6}>
+        <StatsCard
+          bigIcon={<i className="pe-7s-magnet text-warning" />}
+          statsText="Average Sales Circle"
+          statsValue={salesCyclesAvg || 0}
+          statsIconText={`Average Sales Circle`}
+        />
+      </Col>
+    </Row> 
     <Row>
-
       <Col md={12} lg={12}>
         <Card
           statsIcon="fa fa-history"
@@ -452,19 +460,16 @@ export default class SalesRework extends Component {
           title="Sales Metrics"
           category="All Products Sales Metrics Breakdown"
           stats="Sales Metrics"
-          avg_sale_cycle={salesCyclesAvg}
-
           content={
             <div className="ct-chart" style={{height:"100%",width:"100%"}}>
                {currentView === "dailySales" && (
               <div>
-                
-                  <Line
-                    height={400}
-                    width={800}
-                    data={dataWarehouse}
-                    options={options}
-                  />
+                <Line
+                  height={400}
+                  width={800}
+                  data={dataWarehouse}
+                  options={options}
+                />
               </div>
             )}
             {currentView === "accumulated" && (
@@ -479,9 +484,6 @@ export default class SalesRework extends Component {
             )}
             </div>
           }
-          // legend={
-          //   <div className="legend">{this.createLegend(legendSales)}</div>
-          // }
         />
       </Col>
     </Row>

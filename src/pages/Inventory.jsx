@@ -75,6 +75,7 @@ export default class Inventory extends Component {
       if(this.state.currentScreen === "p2"){
         const purchase_and_crushing_analysis = await axios.get(`${this.state.baseURL}/v1/supplies/purchasing-and-crushing-analysis?${this.getRequestQueryParams()}`)
         const {datasets,labels} = purchase_and_crushing_analysis.data;
+        extras = purchase_and_crushing_analysis.data.extras
         const quantity_remaining = [];
         const inventory_value = [];
         labels.forEach(element=>{
@@ -512,6 +513,34 @@ export default class Inventory extends Component {
                     statsIconText={`Avg ${currentScreen === "p2" ? 'Crushing':'Production'} Rate (Ton/hr)`}
                   />
                 </Col>
+              )}
+              {currentView === "accumulated" &&  currentScreen === "p2" && (
+                <React.Fragment>
+                  <Col lg={3} sm={6}>
+                    <StatsCard
+                      bigIcon={<i className="pe-7s-shield text-info" />}
+                      statsText="P2 Total Crushed (Ton)"
+                      statsValue={this.state.extras.total_product_crushed || 0}
+                      statsIconText={`Total P2 Available ${this.state.extras.total_product_remaining || 0}Ton`}
+                    />
+                  </Col>
+                  {/* <Col lg={3} sm={6}>
+                    <StatsCard
+                      bigIcon={<i className="pe-7s-magnet text-warning" />}
+                      statsText="P2 Quantity Purchased (Ton)"
+                      statsValue={this.state.extras.total_product_purchased || 0}
+                      statsIconText={`P2 Purchased Cost: ${toMoneyFormatDynamic(this.state.extras.total_purchased_cost,this.state.currency === "naira"? "NGN":"USD") || 0}`}
+                    />
+                  </Col>
+                  <Col lg={3} sm={6}>
+                    <StatsCard
+                      bigIcon={<i className="pe-7s-graph2 text-danger" />}
+                      statsText="P2 Crushing Shift Hours"
+                      statsValue={`${this.state.extras.total_crush_shift_hours || 0}hrs`}
+                      statsIconText={`P2 Crushing Shift Hours`}
+                    />
+                  </Col> */}
+                </React.Fragment>
               )}
               {currentView === "dailyPurchase" &&  currentScreen === "p2" && (
                 <React.Fragment>

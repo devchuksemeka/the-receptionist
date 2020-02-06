@@ -531,6 +531,14 @@ export default class Inventory extends Component {
                       statsIconText={`P2 Purchased Cost: ${toMoneyFormatDynamic(this.state.extras.total_purchased_cost,this.state.currency === "naira"? "NGN":"USD") || 0}`}
                     />
                   </Col>
+                  <Col lg={3} sm={6}>
+                    <StatsCard
+                      bigIcon={<i className="pe-7s-graph2 text-danger" />}
+                      statsText="P2 Crushing Shift Hours"
+                      statsValue={`${this.state.extras.total_crush_shift_hours || 0}hrs`}
+                      statsIconText={`P2 Crushing Shift Hours`}
+                    />
+                  </Col>
                 </React.Fragment>
               )}
               </Row>   

@@ -541,6 +541,26 @@ export default class Inventory extends Component {
                   </Col>
                 </React.Fragment>
               )}
+              {currentView === "dailyPurchase" &&  currentScreen != "p2" && (
+                <React.Fragment>
+                  <Col lg={3} sm={6}>
+                    <StatsCard
+                      bigIcon={<i className="pe-7s-shield text-info" />}
+                      statsText={`${currentScreen.toUpperCase()} Total Produced (Tons)`}
+                      statsValue={this.state.extras.total_product_produced || 0}
+                      statsIconText={`${currentScreen.toUpperCase()} Total Produced (Tons)`}
+                    />
+                  </Col>
+                  <Col lg={3} sm={6}>
+                    <StatsCard
+                      bigIcon={<i className="pe-7s-magnet text-warning" />}
+                      statsText={`${currentScreen.toUpperCase()} Production Shift Hours`}
+                      statsValue={this.state.extras.total_production_shift_hours || 0}
+                      statsIconText={`${currentScreen.toUpperCase()} Production Shift Hours`}
+                    />
+                  </Col>
+                </React.Fragment>
+              )}
               </Row>   
               <Row>
                 <Col md={12} lg={12}>

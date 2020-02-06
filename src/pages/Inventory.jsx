@@ -31,11 +31,7 @@ export default class Inventory extends Component {
     PkoApiData: [],
     PkcApiData: [],
     avg_production_rate_per_hour:0,
-    extras: {
-      total_p2_remaining:0,
-      total_pkc_remaining:0,
-      total_pko_remaining:0,
-    },
+    extras: {},
     total_p2_remaining: 0,
     currentDateFilter: "currentWeek",
     graphView: "day",
@@ -73,6 +69,7 @@ export default class Inventory extends Component {
     let extra_tooltip_data = {};
     let avg_production_rate_per_hour = 0;
     let avg_crushing_rate_per_hour = 0;
+    let extras = {};
 
     if(this.state.currentView === "accumulated"){
       if(this.state.currentScreen === "p2"){
@@ -198,6 +195,7 @@ export default class Inventory extends Component {
       if(this.state.currentScreen === "p2"){
         const product_purchases = await axios.get(`${this.state.baseURL}/v1/supplies/purchases?${this.getRequestQueryParams()}`)
         const {datasets,labels} = product_purchases.data;
+        extras = product_purchases.data.extras
         avg_crushing_rate_per_hour = product_purchases.data.extras.avg_crushing_rate_per_hour
         extra_tooltip_data = datasets;
         const quantity_purchased = [];
@@ -219,6 +217,7 @@ export default class Inventory extends Component {
       else if(this.state.currentScreen === "pkc" || this.state.currentScreen === "pko"){
         const product_purchases = await axios.get(`${this.state.baseURL}/v1/supplies/productions?${this.getRequestQueryParams()}`)
         const {datasets,labels} = product_purchases.data;
+        extras = product_purchases.data.extras
         avg_production_rate_per_hour = product_purchases.data.extras.avg_production_rate_per_hour
         extra_tooltip_data = datasets;
         const quantity_produced = [];
@@ -240,6 +239,7 @@ export default class Inventory extends Component {
     }
     this.setState({
       P2Accumulated,
+      extras,
       productionAndSalesAnalysis,
       dataWarehouse,
       loading: false,
@@ -501,8 +501,9 @@ export default class Inventory extends Component {
                 </React.Fragment> 
                 )}
               </div>
+              <Row>
               {currentView === "dailyPurchase" && (
-                <Row>
+               
                 <Col lg={3} sm={6}>
                   <StatsCard
                     bigIcon={<i className="pe-7s-up-arrow text-secondary" />}
@@ -511,9 +512,18 @@ export default class Inventory extends Component {
                     statsIconText={`Avg ${currentScreen === "p2" ? 'Crushing':'Production'} Rate (Ton/hr)`}
                   />
                 </Col>
-              </Row>
               )}
-              
+              {currentView === "dailyPurchase" &&  currentScreen === "p2" && (
+                <Col lg={3} sm={6}>
+                  <StatsCard
+                    bigIcon={<i className="pe-7s-shield text-info" />}
+                    statsText="P2 Total Crushed (Ton)"
+                    statsValue={this.state.extras.total_product_crushed}
+                    statsIconText={`Total P2 Crushed (Ton)`}
+                  />
+                </Col>
+              )}
+              </Row>   
               <Row>
                 <Col md={12} lg={12}>
                   <Card

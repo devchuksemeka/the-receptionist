@@ -537,7 +537,7 @@ export default class Inventory extends Component {
                       bigIcon={<i className="pe-7s-magnet text-warning" />}
                       statsText="P2 Procurement Rate"
                       statsValue={this.state.extras.procurement_rate || 0}
-                      statsIconText={`P2 Procurement Rate`}
+                      statsIconText={`Procurement Date Interval: ${this.state.extras.procurement_date_interval || 0}`}
                     />
                   </Col>
                   

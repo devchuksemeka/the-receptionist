@@ -184,10 +184,10 @@ export default class SalesRework extends Component {
 
     dataWarehouse = graph_A_B_YAxisDatasets(labels,
       {
-        label:`${this.state.currentScreen.toUpperCase()} Quantity Sold`,
+        label:`${this.state.currentScreen.toUpperCase()} Sold`,
         data:total_quantity,
       },{
-        label:"Average Product Unit Sales Price",
+        label:"Average Sales Price",
         data:avg_product_unit_price,
       }
     )
@@ -455,22 +455,26 @@ export default class SalesRework extends Component {
           statsIconText={`Average Sales Circle`}
         />
       </Col>
-      <Col lg={3} sm={6}>
-        <StatsCard
-          bigIcon={<i className="pe-7s-bookmarks text-info" />}
-          statsText={`Total ${currentScreen.toUpperCase()} Sold (Ton)`}
-          statsValue={this.state.extras.total_product_sold || 0}
-          statsIconText={`Total ${currentScreen.toUpperCase()} Quantity Sold (Ton)`}
-        />
-      </Col>
-      <Col lg={3} sm={6}>
-        <StatsCard
-          bigIcon={<i className="pe-7s-bell text-danger" />}
-          statsText={`Total ${currentScreen.toUpperCase()} Sold Price`}
-          statsValue={toMoneyFormatDynamic(this.state.extras.total_product_sold_price,this.state.currency === "naira"? "NGN":"USD") || 0}
-          statsIconText={`Total ${currentScreen.toUpperCase()} Sold Price`}
-        />
-      </Col>
+      {currentView === "dailySales" && (
+          <React.Fragment>
+            <Col lg={3} sm={6}>
+              <StatsCard
+                bigIcon={<i className="pe-7s-bookmarks text-info" />}
+                statsText={`Total ${currentScreen.toUpperCase()} Sold (Ton)`}
+                statsValue={this.state.extras.total_product_sold || 0}
+                statsIconText={`Total ${currentScreen.toUpperCase()} Quantity Sold (Ton)`}
+              />
+            </Col>
+            <Col lg={3} sm={6}>
+              <StatsCard
+                bigIcon={<i className="pe-7s-bell text-danger" />}
+                statsText={`Total ${currentScreen.toUpperCase()} Sold Price`}
+                statsValue={toMoneyFormatDynamic(this.state.extras.total_product_sold_price,this.state.currency === "naira"? "NGN":"USD") || 0}
+                statsIconText={`Total ${currentScreen.toUpperCase()} Sold Price`}
+              />
+            </Col>
+          </React.Fragment>
+      )}
     </Row> 
     <Row>
       <Col md={12} lg={12}>

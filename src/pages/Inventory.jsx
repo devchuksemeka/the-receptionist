@@ -532,14 +532,14 @@ export default class Inventory extends Component {
                       statsIconText={`Total P2 remaining (Ton)`}
                     />
                   </Col>
-                  {/* <Col lg={3} sm={6}>
+                  <Col lg={3} sm={6}>
                     <StatsCard
                       bigIcon={<i className="pe-7s-magnet text-warning" />}
                       statsText="P2 Procurement Rate"
-                      statsValue={this.state.extras.total_product_purchased || 0}
+                      statsValue={this.state.extras.procurement_rate || 0}
                       statsIconText={`P2 Procurement Rate`}
                     />
-                  </Col> */}
+                  </Col>
                   
                 </React.Fragment>
               )}

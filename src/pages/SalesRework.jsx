@@ -17,6 +17,7 @@ export default class SalesRework extends Component {
     currentScreen: "pko",
     currentView: "dailySales",
     PkoData: {},
+    extras:{},
     PkcData: {},
     dataWarehouse:{},
     P2ApiData: {},
@@ -80,6 +81,7 @@ export default class SalesRework extends Component {
 
     let accumulatedData = {};
     let dataWarehouse = {};
+    let extras = {};
     
     if(this.state.currentView === "accumulated"){
       const combined_sale_res = await axios.get(`${this.state.baseURL}/v1/sales/combined-sales?${this.getRequestQueryParams()}`)
@@ -170,6 +172,7 @@ export default class SalesRework extends Component {
    else if(this.state.currentView === "dailySales"){
     const combined_sale_res = await axios.get(`${this.state.baseURL}/v1/sales/daily-sales?${this.getRequestQueryParams()}`)
     const {datasets,labels} = combined_sale_res.data;
+    extras = combined_sale_res.data.extras;
 
     const total_quantity = [];
     const avg_product_unit_price = [];
@@ -195,6 +198,7 @@ export default class SalesRework extends Component {
       accumulatedData,
       salesCyclesAvg:10,
       dataWarehouse,
+      extras
     });
   };
 
@@ -449,6 +453,22 @@ export default class SalesRework extends Component {
           statsText="Average Sales Circle"
           statsValue={salesCyclesAvg || 0}
           statsIconText={`Average Sales Circle`}
+        />
+      </Col>
+      <Col lg={3} sm={6}>
+        <StatsCard
+          bigIcon={<i className="pe-7s-bookmarks text-info" />}
+          statsText={`Total ${currentScreen.toUpperCase()} Sold (Ton)`}
+          statsValue={this.state.extras.total_product_sold || 0}
+          statsIconText={`Total ${currentScreen.toUpperCase()} Quantity Sold (Ton)`}
+        />
+      </Col>
+      <Col lg={3} sm={6}>
+        <StatsCard
+          bigIcon={<i className="pe-7s-bell text-danger" />}
+          statsText={`Total ${currentScreen.toUpperCase()} Sold Price`}
+          statsValue={toMoneyFormatDynamic(this.state.extras.total_product_sold_price,this.state.currency === "naira"? "NGN":"USD") || 0}
+          statsIconText={`Total ${currentScreen.toUpperCase()} Sold Price`}
         />
       </Col>
     </Row> 

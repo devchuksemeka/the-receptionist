@@ -42,6 +42,7 @@ class Overview extends Component {
       p2_total_crushed:0
     },
     pksl_all_time_sale:0,
+    extraction_rate:0,
     gross_margin:0,
     gross_margin_computation:{},
     arr_computation:{},
@@ -121,6 +122,7 @@ class Overview extends Component {
     this.getProductSales("PKC");
     this.getProductSales("PKSL");
     this.getAnnualRunRate();
+    this.getExtractionRate();
   }
   
   getAnnualRunRate = async () => {
@@ -129,6 +131,14 @@ class Overview extends Component {
     this.setState({
       annual_run_rate:toMoneyFormatDynamic(annual_run_rate,this.state.currency === "naira"? "NGN":"USD"),
       arr_computation:target_setting
+    })
+  }
+
+  getExtractionRate = async () => {
+    const extraction_rate_data = await axios.get(`${this.state.baseURL}/v1/overview/extraction-rate?${this.getRequestQueryParamsForGraph()}&date_filter=${this.state.currentDateFilter}`)
+    const {extraction_rate} = extraction_rate_data.data
+    this.setState({
+      extraction_rate
     })
   }
 
@@ -510,12 +520,21 @@ class Overview extends Component {
             </Col>
             <Col lg={3} md={12} sm={12}>
               <Row>
-              <Col lg={12} md={4} sm={6}>
+                <Col lg={12} md={4} sm={6}>
+                  <StatsCard
+                    bigIcon={<i className="pe-7s-attention text-primary" />}
+                    statsText="Extraction rate (%)"
+                    statsValue={this.state.extraction_rate || 0}
+                    statsIcon={<i className="fa fa-refresh" />}
+                    statsIconText={`Extraction rate percentage`}
+                  />
+                </Col>
+                <Col lg={12} md={4} sm={6}>
                   <StatsCard
                     bigIcon={<i className="pe-7s-paper-plane text-info" />}
                     statsText="PKO Produced (Tons)"
                     statsValue={this.state.pko_product_sales.pko_total_left}
-                    statsIcon={<i className="fa fa-refresh" />}
+                    statsIcon={<i className="pe-7s-server" />}
                     statsIconText={`PKO Sold ${this.state.pko_product_sales.pko_total_sales} (tons)`}
                   />
                 </Col>

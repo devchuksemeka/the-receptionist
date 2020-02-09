@@ -1,7 +1,7 @@
 import Overview from "pages/Overview";
 import Maintenance from "pages/Maintenance";
-import SalesRework from "pages/SalesRework";
 import Inventory from "pages/Inventory";
+import Sales from "pages/Sales";
 
 const dashboardRoutes = [
   {
@@ -22,7 +22,7 @@ const dashboardRoutes = [
     path: "/sales",
     name: "Sales",
     icon: "pe-7s-cash",
-    component: SalesRework,
+    component: Sales,
     layout: "/admin"
   },
   {

@@ -9,7 +9,7 @@ import { StatsCard } from "components/StatsCard/StatsCard.jsx";
 
 import axios from 'axios'
 
-export default class SalesRework extends Component {
+export default class Sales extends Component {
   
   state = {
     baseURL:process.env.REACT_APP_SERVER_ENDPOINT,

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Grid, Row, Col } from "react-bootstrap";
 import { Card } from "components/Card/Card.jsx";
-import { Line} from "react-chartjs-2";
+import { Line, Bar} from "react-chartjs-2";
 import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
 import { graph_A_B_YAxisDatasets } from "../helpers";
@@ -96,10 +96,12 @@ export default class ProcurementCost extends Component {
           {
             label:`Total Amount Supplied`,
             data:total_amount,
+            color:""
           },{
             label:"Total Qty Supplied",
             data:total_quantities,
-          }
+            color:""
+          },
         )
       }
       this.setState(
@@ -336,7 +338,7 @@ export default class ProcurementCost extends Component {
                   content={
                     <div className="ct-chart" style={{height:"100%",width:"100%"}}>
                       <div>
-                      <Line
+                      <Bar
                         height={400}
                         width={800}
                         data={this.state.accumulatedData}

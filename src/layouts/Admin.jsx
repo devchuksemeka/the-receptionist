@@ -109,7 +109,8 @@ class Admin extends Component {
   componentDidMount() {
     this.setState({ _notificationSystem: this.refs.notificationSystem });
     var _notificationSystem = this.refs.notificationSystem;
-    var color = Math.floor(Math.random() * 4 + 1);
+    var color = 4;
+    // var color = Math.floor(Math.random() * 4 + 1);
     var level;
     switch (color) {
       case 1:

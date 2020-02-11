@@ -3,6 +3,7 @@ import Maintenance from "pages/Maintenance";
 import Inventory from "pages/Inventory";
 import Sales from "pages/Sales";
 import ProcurementCost from "pages/ProcurementCost";
+import MachineData from "pages/MachineData";
 
 const dashboardRoutes = [
   {
@@ -17,6 +18,13 @@ const dashboardRoutes = [
     name: "Inventory",
     icon: "pe-7s-note2",
     component: Inventory,
+    layout: "/admin"
+  },
+  {
+    path: "/machine-data",
+    name: "Machine Data",
+    icon: "pe-7s-target",
+    component: MachineData,
     layout: "/admin"
   },
   {

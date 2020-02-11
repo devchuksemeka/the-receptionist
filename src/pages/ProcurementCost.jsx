@@ -61,13 +61,7 @@ export default class ProcurementCost extends Component {
   }
 
   getRequestQueryParams = () =>{
-    let query = `graphView=${this.getGraphView()}&startDate=${this.getStartDate()}&endDate=${this.getEndDate()}`;
-    // if(this.state.maintenance_level === "machine_level"){
-    //   query = `${query}&machine=${this.state.machine}`
-    // }
-    // if(this.state.maintenance_level === "maintenance_action_level"){
-    //   query = `${query}&maintenance_action=${this.state.maintenance_action}`
-    // }
+    let query = `graphView=${this.getGraphView()}&startDate=${this.getStartDate()}&endDate=${this.getEndDate()}&currency=${this.state.currency}`;
     return query;
   }
 
@@ -128,6 +122,16 @@ export default class ProcurementCost extends Component {
     this.setState({
       startDate: new Date(date)
     });
+  };
+
+  handleCurrencyChange = e => {
+    const currency = e.target.value;
+    this.setState(
+      {
+        currency
+      },
+      () => this.handleSubmit()
+    );
   };
 
   handleEndDateChange = e => {
@@ -235,7 +239,7 @@ export default class ProcurementCost extends Component {
             ticks: {
               callback: value => ` ${currency === "naira" ? "₦":"$"} ` + value.toLocaleString(),
               beginAtZero: true,
-              stepSize: 15000
+              stepSize: currency === "naira" ? 15000: 400
             }
           },
           {
@@ -275,6 +279,15 @@ export default class ProcurementCost extends Component {
                     <option value="last2Weeks">Last 2 Weeks</option>
                     <option value="lastMonth">Last Month</option>
                     <option value="custom">Custom</option>
+                </select>
+              </div>
+              <div className="col-md-2 block">
+                <select 
+                  value={this.currency}
+                  onChange={this.handleCurrencyChange}
+                  className="form-control form-control-lg">
+                <option value="naira">Naira</option>
+                  <option value="usd">US Dollar</option>
                 </select>
               </div>
               {/* <div className="col-md-2 block">

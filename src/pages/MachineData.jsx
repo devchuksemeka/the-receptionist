@@ -367,9 +367,9 @@ export default class MachineData extends Component {
                 <Card
                   statsIcon="fa fa-history"
                   id="chartHours"
-                  title={`Supply Analysis`}
-                  category={`Procurement Cost Supply Analysis`}
-                  stats={`Supply Analysis`}
+                  title={`RM Crushing`}
+                  category={`Machine Data RM Crushing`}
+                  stats={`RM Crushing`}
                   content={
                     <div className="ct-chart" style={{height:"100%",width:"100%"}}>
                       <div>

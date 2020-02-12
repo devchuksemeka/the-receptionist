@@ -23,6 +23,8 @@ export default class MachineData extends Component {
     currentDateFilter: "currentWeek",
     graphView: "day",
     currency: "naira",
+    shift: "1",
+    expeller_number: "EX 2",
   };
 
   async componentDidMount() {
@@ -40,9 +42,10 @@ export default class MachineData extends Component {
     });
   }
 
-  getText = string =>{
-    if(string === CONSTANT.MACHINE_DATA_MAINTENANCE) return "Maintenance";
-    if(string === CONSTANT.MACHINE_DATA_RM_CRUSHING) return "Raw Material Crushing";
+  getText = () =>{
+    if(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_MAINTENANCE) return "Maintenance";
+    if(this.state.machine_stats_level  === CONSTANT.MACHINE_DATA_RM_CRUSHING) return "Raw Material Crushing";
+    if(this.state.machine_stats_level  === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME) return "Uptime/Downtime";
     return "";
   }
 
@@ -62,7 +65,10 @@ export default class MachineData extends Component {
   }
 
   getRequestQueryParams = () =>{
-    let query = `graphView=${this.getGraphView()}&startDate=${this.getStartDate()}&endDate=${this.getEndDate()}&currency=${this.state.currency}&raw_material=${this.state.machine_raw_material}`;
+    let query = `graphView=${this.getGraphView()}&startDate=${this.getStartDate()}&endDate=${this.getEndDate()}&currency=${this.state.currency}`;
+    if(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME){
+      query = `${query}&expeller_number=${this.state.expeller_number}&shift=${this.state.shift}`
+    }
     return query;
   }
 
@@ -120,6 +126,26 @@ export default class MachineData extends Component {
           },
         )
       }
+      if(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME){
+      
+        const uptime = [];
+        const downtime = [];
+        labels.forEach(date => {
+          downtime.push(datasets[date].downtime)
+          uptime.push(datasets[date].uptime)
+        })
+
+        datasetAccumulated = graph_A_B_YAxisDatasets(labels,
+          {
+            label:`${this.state.expeller_number} Uptime`,
+            data:uptime,
+          },
+          {
+            label:`${this.state.expeller_number} Downtime`,
+            data:downtime,
+          },
+        )
+      }
       this.setState(
         {
           accumulatedData:datasetAccumulated,
@@ -146,12 +172,28 @@ export default class MachineData extends Component {
       startDate: new Date(date)
     });
   };
+  handleExpellerNumberChange = e => {
+    const expeller_number = e.target.value;
+    this.setState({
+      expeller_number
+    },
+    () => this.handleSubmit());
+  };
 
   handleCurrencyChange = e => {
     const currency = e.target.value;
     this.setState(
       {
         currency
+      },
+      () => this.handleSubmit()
+    );
+  };
+  handleShiftChange = e => {
+    const shift = e.target.value;
+    this.setState(
+      {
+        shift
       },
       () => this.handleSubmit()
     );
@@ -365,9 +407,71 @@ export default class MachineData extends Component {
       }
     };
 
+    const uptime_and_downtime_options = { 
+      maintainAspectRatio: true, 
+      responsive: true,
+      tooltips : {
+        mode: "label",
+        callbacks: {
+          label: function(tooltipItem, data) {
+            const key = data.datasets[tooltipItem.datasetIndex].label;
+            const yAxis = data.datasets[tooltipItem.datasetIndex].yAxisID;
+            const val =
+              data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+            if (val && yAxis === "B") return key + ": " +val.toLocaleString() +" hours";
+            if (val && yAxis === "A") return key + ": " +val.toLocaleString() +" hours";
+            // if (val && yAxis === "A") return key + ` : ${currency === "naira" ? "₦":"$"}` + val.toLocaleString();
+          }
+        }
+      },
+      scales:{
+        xAxes:[
+          {
+            scaleLabel: {
+              display: true,
+              labelString: ""
+            }
+          }
+        ],
+        yAxes :[
+          {
+            type: "linear",
+            display: true,
+            position: "left",
+            id: "A",
+            scaleLabel: {
+              display: true,
+              labelString: ""
+            },
+            ticks: {
+              callback: value => value + " hours",
+              beginAtZero: true,
+              stepSize: 2
+            }
+          },
+          {
+            type: "linear",
+            display: true,
+            position: "right",
+            id: "B",
+            scaleLabel: {
+              display: true,
+              labelString: ""
+            },
+            ticks: {
+              callback: value => value + " hours",
+              beginAtZero: true,
+              stepSize: 2
+            }
+          }
+        ]
+      }
+    };
+
     const options = () =>{
       if(machine_stats_level === "rm_crushing") return rm_crushed_options;
       if(machine_stats_level === CONSTANT.MACHINE_DATA_MAINTENANCE) return maintenance_options;
+      if(machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME) return uptime_and_downtime_options;
       return rm_crushed_options;
     }
 
@@ -421,12 +525,38 @@ export default class MachineData extends Component {
               </div> */}
               <div className="col-md-3 block">
               <select className="form-control form-control-lg"
-                  value={this.state.machine_stats} onChange={this.handleMachineStatsChange}>
+                  value={this.state.machine_stats_level} onChange={this.handleMachineStatsChange}>
                   <option value="rm_crushing">RM Crushing</option>
                   <option value="maintenance">Maintenance</option>
+                  <option value="uptime_and_downtime">Uptime/Downtime</option>
                 </select>
               </div>
+              {this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME &&(
+                <React.Fragment>
+                  <div className="col-md-2 block">
+                    <select 
+                      className="form-control form-control-lg"
+                      value={this.state.shift}
+                      onChange={this.handleShiftChange}>
+                    <option value="1">Shift 1</option>
+                      <option value="2">Shift 2</option>
+                    </select>
+                  </div>
+                  <div className="col-md-2 block">
+                    <select 
+                      className="form-control form-control-lg"
+                      value={this.state.expeller_number}
+                      onChange={this.handleExpellerNumberChange}>
+                    <option value="EX 1">Expeller 1</option>
+                      <option value="EX 2">Expeller 2</option>
+                      <option value="EX 3">Expeller 3</option>
+                      <option value="EX 4">Expeller 4</option>
+                    </select>
+                  </div>
+                </React.Fragment>
+              )}
             </div>
+
             <div className="row" style={{marginBottom:"0.5rem"}}>
               {this.state.currentDateFilter === "custom"  && (<React.Fragment>
                 <div className="col-md-3 block">
@@ -459,9 +589,9 @@ export default class MachineData extends Component {
                 <Card
                   statsIcon="fa fa-history"
                   id="chartHours"
-                  title={`RM Crushing`}
-                  category={`Machine Data RM Crushing`}
-                  stats={`RM Crushing`}
+                  title={this.getText()}
+                  category={`Machine Data ${this.getText()}`}
+                  stats={this.getText()}
                   content={
                     <div className="ct-chart" style={{height:"100%",width:"100%"}}>
                       <div>

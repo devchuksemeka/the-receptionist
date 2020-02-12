@@ -196,6 +196,7 @@ const CONSTANT = {
   // machine data stats levels
   MACHINE_DATA_RM_CRUSHING:"rm_crushing",
   MACHINE_DATA_MAINTENANCE:"maintenance",
+  MACHINE_DATA_UPTIME_AND_DOWNTIME:"uptime_and_downtime",
 }
 
 module.exports= {

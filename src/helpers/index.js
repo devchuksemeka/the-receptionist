@@ -164,7 +164,38 @@ const graph_A_B_YAxisDatasets = (labels,a_options,b_options) => {
 };
 
 const CONSTANT = {
-  USD_TO_NAIRA_CONV_RATE:362.5
+  USD_TO_NAIRA_CONV_RATE:362.82,
+  DAY:"day",
+  WEEK:"week",
+  MONTH:"month",
+  DAILY_SALES:"dailySales",
+  ACCUMULATED_SALES:"accumulated",
+  DAILY_PURCHASE_PRODUCTION:"dailyPurchase",
+  ACCUMULATED_PURCHASE_PRODUCTION:"accumulated",
+
+  INVENTORY_PURCHASES:"purchases",
+  INVENTORY_PRODUCTIONS:"productions",
+
+  PKO:"PKO",
+  PKC:"PKC",
+  P2:"P2",
+
+  NAIRA_CURRENCY:"naira",
+  USD_CURRENCY:"usd",
+
+
+  // maintenance levels
+  MACHINE_LEVEL:"machine_level",
+  FACTORY_LEVEL:"factory_level",
+  FACTORY_LEVEL_MACHINE:"factory_level_machine",
+  MAINTENANCE_ACTION_LEVEL:"maintenance_action_level",
+
+  // procurement cost levels
+  SUPPLY_ANALYSIS:"supply_analysis",
+
+  // machine data stats levels
+  MACHINE_DATA_RM_CRUSHING:"rm_crushing",
+  MACHINE_DATA_MAINTENANCE:"maintenance",
 }
 
 module.exports= {

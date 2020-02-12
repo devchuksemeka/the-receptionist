@@ -4,7 +4,7 @@ import { Card } from "components/Card/Card.jsx";
 import { Line, Bar} from "react-chartjs-2";
 import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
-import { graph_A_B_YAxisDatasets } from "../helpers";
+import { graph_A_B_YAxisDatasets,CONSTANT } from "../helpers";
 
 import axios from 'axios'
 
@@ -12,10 +12,10 @@ export default class MachineData extends Component {
 
   state = {
     baseURL:process.env.REACT_APP_SERVER_ENDPOINT,
-    machine_stats_level:"rm_crushing",
+    machine_stats_level:CONSTANT.MACHINE_DATA_RM_CRUSHING,
     machine_raw_material:"p2",
-    machine_daya:[],
-    
+    machine_data:[],
+    extra_tooltip_data:{},
     loading: true,
     startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
     endDate: new Date(),
@@ -39,12 +39,11 @@ export default class MachineData extends Component {
     });
   }
 
-  // getText = string =>{
-  //   if(string === "machine_level") return "Machine Level";
-  //   if(string === "maintenance_action_level") return "Maintenance Action Level";
-  //   if(string === "factory_level") return "Factory Level";
-  //   return "";
-  // }
+  getText = string =>{
+    if(string === CONSTANT.MACHINE_DATA_MAINTENANCE) return "Maintenance";
+    if(string === CONSTANT.MACHINE_DATA_RM_CRUSHING) return "Raw Material Crushing";
+    return "";
+  }
 
   getStartDate = () =>{
     const start_date = this.state.startDate.toISOString();
@@ -70,15 +69,17 @@ export default class MachineData extends Component {
 
 
   handleSubmit = async () => {
+    let extra_tooltip_data = {};
     try{
       const res_data = await axios.get(`
         ${this.state.baseURL}/v1/supplies/machine-data/${this.state.machine_stats_level}?${this.getRequestQueryParams()}`)
       const {datasets,labels} = res_data.data
+      extra_tooltip_data = datasets;
 
       // const result_keys = Object.keys(datasets);
       let datasetAccumulated = {};
 
-      if(this.state.machine_stats_level === "rm_crushing"){
+      if(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_RM_CRUSHING){
       
         const total_p2 = [];
         const total_pkc1 = [];
@@ -98,9 +99,30 @@ export default class MachineData extends Component {
           },
         )
       }
+      if(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_MAINTENANCE){
+      
+        const total_maintenance_cost = [];
+        const total_maintenance_duration_in_hours = [];
+        labels.forEach(date => {
+          total_maintenance_cost.push(datasets[date].total_maintenance_cost)
+          total_maintenance_duration_in_hours.push(datasets[date].total_maintenance_duration_in_hours)
+        })
+
+        datasetAccumulated = graph_A_B_YAxisDatasets(labels,
+          {
+            label:`Maintenance Hours`,
+            data:total_maintenance_duration_in_hours,
+          },
+          {
+            label:"Maintenance Cost",
+            data:total_maintenance_cost,
+          },
+        )
+      }
       this.setState(
         {
-          accumulatedData:datasetAccumulated
+          accumulatedData:datasetAccumulated,
+          extra_tooltip_data
         },
         ()=>this.setGraphValues()
       )
@@ -214,10 +236,11 @@ export default class MachineData extends Component {
   render() {
     const {
       currency,
-      machine_raw_material
+      machine_stats_level,
+      extra_tooltip_data
     } = this.state;
 
-    const options = { 
+    const rm_crushed_options = { 
       maintainAspectRatio: true, 
       responsive: true,
       tooltips : {
@@ -278,6 +301,75 @@ export default class MachineData extends Component {
       }
     };
 
+    const maintenance_options = { 
+      maintainAspectRatio: true, 
+      responsive: true,
+      tooltips : {
+        mode: "label",
+        callbacks: {
+          label: function(tooltipItem, data) {
+            const key = data.datasets[tooltipItem.datasetIndex].label;
+            const yAxis = data.datasets[tooltipItem.datasetIndex].yAxisID;
+            const val = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+            if (val && yAxis === "A") return key + ": " +val.toLocaleString() +" hours";
+            if (val && yAxis === "B") return key + ` : ${currency === "naira" ? "₦":"$"}` + val.toLocaleString();
+          },
+
+          afterBody: function(tooltipItem, d) {
+            return `Equipment: ${extra_tooltip_data[tooltipItem[0].label].equipment}\nTime Of Issue: ${extra_tooltip_data[tooltipItem[0].label].time_of_issue}\nTime Of Completion: ${extra_tooltip_data[tooltipItem[0].label].time_of_completion}\nMaintenance Duration: ${extra_tooltip_data[tooltipItem[0].label].total_maintenance_duration}`;
+         }
+        }
+      },
+      scales:{
+        xAxes:[
+          {
+            scaleLabel: {
+              display: true,
+              labelString: ""
+            }
+          }
+        ],
+        yAxes :[
+          {
+            type: "linear",
+            display: true,
+            position: "left",
+            id: "A",
+            scaleLabel: {
+              display: true,
+              labelString: ""
+            },
+            ticks: {
+              callback: value => value + " hours",
+              beginAtZero: true,
+              stepSize: 2
+            }
+          },
+          {
+            type: "linear",
+            display: true,
+            position: "right",
+            id: "B",
+            scaleLabel: {
+              display: true,
+              labelString: ""
+            },
+            ticks: {
+              callback: value => `${currency === "naira" ? "₦":"$"}` + value.toLocaleString(),
+              beginAtZero: true,
+              stepSize: 5000
+            }
+          }
+        ]
+      }
+    };
+
+    const options = () =>{
+      if(machine_stats_level === "rm_crushing") return rm_crushed_options;
+      if(machine_stats_level === CONSTANT.MACHINE_DATA_MAINTENANCE) return maintenance_options;
+      return rm_crushed_options;
+    }
+
     if (this.state.loading) {
       return <Loader />;
     }
@@ -327,11 +419,10 @@ export default class MachineData extends Component {
                 </select>
               </div> */}
               <div className="col-md-3 block">
-              <select 
-                  className="form-control form-control-lg"
-                  value={this.state.machine_stats}
-                  onChange={this.handleMachineStatsChange}>
-                <option value="rm_crushing">RM Crushing</option>
+              <select className="form-control form-control-lg"
+                  value={this.state.machine_stats} onChange={this.handleMachineStatsChange}>
+                  <option value="rm_crushing">RM Crushing</option>
+                  <option value="maintenance">Maintenance</option>
                 </select>
               </div>
             </div>
@@ -377,7 +468,7 @@ export default class MachineData extends Component {
                         height={400}
                         width={800}
                         data={this.state.accumulatedData}
-                        options={options}
+                        options={options()}
                       />
                       </div>
                     </div>

@@ -474,6 +474,7 @@ export default class MachineData extends Component {
       if(machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME) return uptime_and_downtime_options;
       return rm_crushed_options;
     }
+    
 
     if (this.state.loading) {
       return <Loader />;
@@ -595,12 +596,31 @@ export default class MachineData extends Component {
                   content={
                     <div className="ct-chart" style={{height:"100%",width:"100%"}}>
                       <div>
-                      <Bar
+                      {machine_stats_level === CONSTANT.MACHINE_DATA_RM_CRUSHING && (
+                        <Bar
                         height={400}
                         width={800}
                         data={this.state.accumulatedData}
-                        options={options()}
+                        options={rm_crushed_options}
                       />
+                      )}
+                      {machine_stats_level === CONSTANT.MACHINE_DATA_MAINTENANCE && (
+                        <Bar
+                        height={400}
+                        width={800}
+                        data={this.state.accumulatedData}
+                        options={maintenance_options}
+                      />
+                      )}
+                      {machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME && (
+                        <Bar
+                        height={400}
+                        width={800}
+                        data={this.state.accumulatedData}
+                        options={uptime_and_downtime_options}
+                      />
+                      )}
+                      
                       </div>
                     </div>
                   }

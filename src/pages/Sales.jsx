@@ -6,7 +6,7 @@ import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
 import { graph_A_B_YAxisDatasets,toMoneyFormatDynamic } from "../helpers";
 import { StatsCard } from "components/StatsCard/StatsCard.jsx";
-
+import moment from 'moment'
 import axios from 'axios'
 
 export default class Sales extends Component {
@@ -23,8 +23,8 @@ export default class Sales extends Component {
     P2ApiData: {},
     pkcAccumulated: {},
     accumulatedData: {},
-    startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-    endDate: new Date(),
+    startDate: moment().startOf("week").toDate(),
+    endDate: moment().endOf("week").toDate(),
     currentDateFilter: "currentWeek",
     graphView: "day",
     salesCyclesAvg: "N/A",

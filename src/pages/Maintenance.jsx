@@ -6,6 +6,7 @@ import {
   Bar } from "react-chartjs-2";
 import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
+import moment from 'moment'
 
 import axios from 'axios'
 
@@ -30,8 +31,8 @@ export default class Maintenance extends Component {
     PkoData: {},
     PkcData: {},
     P2ApiData: {},
-    startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-    endDate: new Date(),
+    startDate: moment().startOf("week").toDate(),
+    endDate: moment().endOf("week").toDate(),
     currentDateFilter: "currentWeek",
     graphView: "day",
     accumulatedData: {}

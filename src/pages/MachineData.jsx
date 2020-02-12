@@ -5,6 +5,7 @@ import { Line, Bar} from "react-chartjs-2";
 import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
 import { graph_A_B_YAxisDatasets,CONSTANT } from "../helpers";
+import moment from 'moment'
 
 import axios from 'axios'
 
@@ -17,8 +18,8 @@ export default class MachineData extends Component {
     machine_data:[],
     extra_tooltip_data:{},
     loading: true,
-    startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-    endDate: new Date(),
+    startDate: moment().startOf("week").toDate(),
+    endDate: moment().endOf("week").toDate(),
     currentDateFilter: "currentWeek",
     graphView: "day",
     currency: "naira",

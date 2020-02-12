@@ -7,6 +7,7 @@ import { getDateFilter } from "../common";
 import { graph_A_B_YAxisDatasets ,toMoneyFormatDynamic} from "../helpers";
 import { StatsCard } from "components/StatsCard/StatsCard.jsx";
 import axios from 'axios'
+import moment from 'moment'
 
 export default class Inventory extends Component {
   state = {
@@ -25,8 +26,8 @@ export default class Inventory extends Component {
     P2AvgProduction: {},
     PkoAvgProduction: {},
     PkcAvgProduction: {},
-    startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-    endDate: new Date(),
+    startDate: moment().startOf("week").toDate(),
+    endDate: moment().endOf("week").toDate(),
     P2ApiData: [],
     PkoApiData: [],
     PkcApiData: [],

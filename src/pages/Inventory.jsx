@@ -88,7 +88,7 @@ export default class Inventory extends Component {
           datasets: [
             {
               yAxisID: "A",
-              label: "P2 current inventory",
+              label: "P2 inventory",
               fill: false,
               lineTension: 0.1,
               backgroundColor: "rgba(75,192,192,0.4)",
@@ -110,7 +110,7 @@ export default class Inventory extends Component {
             },
             {
               yAxisID: "B",
-              label: "P2 current inventory value",
+              label: "P2 inventory value",
               fill: false,
               lineTension: 0.1,
               backgroundColor: "#de6866",
@@ -147,7 +147,7 @@ export default class Inventory extends Component {
           datasets: [
             {
               yAxisID: "A",
-              label: `${this.state.currentScreen === "pko" ? "Pko":"Pkc"} current inventory`,
+              label: `${this.state.currentScreen === "pko" ? "Pko":"Pkc"} inventory`,
               fill: false,
               lineTension: 0.1,
               backgroundColor: "rgba(75,192,192,0.4)",
@@ -169,7 +169,7 @@ export default class Inventory extends Component {
             },
             {
               yAxisID: "B",
-              label: `${this.state.currentScreen === "pko" ? "Pko":"Pkc"} current inventory value`,
+              label: `${this.state.currentScreen === "pko" ? "Pko":"Pkc"} inventory value`,
               fill: false,
               lineTension: 0.1,
               backgroundColor: "#de6866",
@@ -370,9 +370,9 @@ export default class Inventory extends Component {
             if((currentScreen === "pko" || currentScreen === "pkc") && currentView === "dailyPurchase") {
               return `Production rate: ${extra_tooltip_data[tooltipItem[0].label].production_rate_per_hour}T/hr\nShift hours: ${extra_tooltip_data[tooltipItem[0].label].shift_hours}hrs`;
             }
-            // if((currentScreen === "p2") && currentView === "dailyPurchase") {
-            //   return `Crushing rate: ${extra_tooltip_data[tooltipItem[0].label].crushing_rate_hr}T/hr\nShift hours: ${extra_tooltip_data[tooltipItem[0].label].shift_hours}hrs`
-            // };
+            if((currentScreen === "p2") && currentView === "dailyPurchase") {
+              return `P2 Available: ${extra_tooltip_data[tooltipItem[0].label].product_available} (Tons)`
+            };
          }
         }
     }

@@ -191,7 +191,8 @@ export default class Maintenance extends Component {
             pointRadius: 1,
             pointHitRadius: 10,
             data: utilization
-          })
+          }
+        )
         
       }else{
         for(let j=0;j<labels.length;j++){
@@ -224,6 +225,8 @@ export default class Maintenance extends Component {
           })
         }
       }
+
+  
       
       this.setState(
         {

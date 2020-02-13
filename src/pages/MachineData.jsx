@@ -14,7 +14,7 @@ export default class MachineData extends Component {
   state = {
     baseURL:process.env.REACT_APP_SERVER_ENDPOINT,
     machine_stats_level:CONSTANT.MACHINE_DATA_RM_CRUSHING,
-    machine_raw_material:"p2",
+    machine_raw_material:CONSTANT.MACHINE_P2_RM,
     machine_data:[],
     extra_tooltip_data:{},
     loading: true,
@@ -46,6 +46,7 @@ export default class MachineData extends Component {
     if(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_MAINTENANCE) return "Maintenance";
     if(this.state.machine_stats_level  === CONSTANT.MACHINE_DATA_RM_CRUSHING) return "Raw Material Crushing";
     if(this.state.machine_stats_level  === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME) return "Uptime/Downtime";
+    if(this.state.machine_stats_level  === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY) return "Crushing Efficiency";
     return "";
   }
 
@@ -66,8 +67,11 @@ export default class MachineData extends Component {
 
   getRequestQueryParams = () =>{
     let query = `graphView=${this.getGraphView()}&startDate=${this.getStartDate()}&endDate=${this.getEndDate()}&currency=${this.state.currency}`;
-    if(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME){
+    if(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME || this.state.machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY){
       query = `${query}&expeller_number=${this.state.expeller_number}&shift=${this.state.shift}`
+      if(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY){
+        query = `${query}&raw_material=${this.state.machine_raw_material}`
+      }
     }
     return query;
   }
@@ -146,6 +150,45 @@ export default class MachineData extends Component {
           },
         )
       }
+      if(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY){
+      
+        const crushing_efficiency = [];
+        labels.forEach(date => {
+          crushing_efficiency.push(datasets[date].crushing_efficiency)
+          // uptime.push(datasets[date].uptime)
+        })
+
+        datasetAccumulated = {
+          labels,
+          datasets: [
+            {
+              label: `${this.state.expeller_number} Crushing Efficiency`,
+              stack: "Stack 0",
+              fill: false,
+              lineTension: 0.1,
+              backgroundColor: "#ffaa1d",
+              borderColor: "#ffaa1d",
+              borderCapStyle: "butt",
+              borderDash: [],
+              borderDashOffset: 0.0,
+              borderJoinStyle: "miter",
+              pointBorderColor: "#ffaa1d",
+              pointBackgroundColor: "#fff",
+              pointBorderWidth: 1,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: "#ffaa1d",
+              pointHoverBorderColor: "#ffaa1d",
+              pointHoverBorderWidth: 2,
+              pointRadius: 1,
+              pointHitRadius: 10,
+              data: crushing_efficiency
+            }
+          ]
+        };
+      }
+
+      console.log(datasetAccumulated)
+
       this.setState(
         {
           accumulatedData:datasetAccumulated,
@@ -280,7 +323,8 @@ export default class MachineData extends Component {
     const {
       currency,
       machine_stats_level,
-      extra_tooltip_data
+      extra_tooltip_data,
+      machine_raw_material
     } = this.state;
 
     const rm_crushed_options = { 
@@ -468,12 +512,69 @@ export default class MachineData extends Component {
       }
     };
 
-    const options = () =>{
-      if(machine_stats_level === "rm_crushing") return rm_crushed_options;
-      if(machine_stats_level === CONSTANT.MACHINE_DATA_MAINTENANCE) return maintenance_options;
-      if(machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME) return uptime_and_downtime_options;
-      return rm_crushed_options;
-    }
+    const crushed_efficiency_options = { 
+      maintainAspectRatio: true, 
+      responsive: true,
+      tooltips : {
+        mode: "label",
+        callbacks: {
+          label: function(tooltipItem, data) {
+            const key = data.datasets[tooltipItem.datasetIndex].label;
+            const yAxis = data.datasets[tooltipItem.datasetIndex].yAxisID;
+            const val =
+              data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+            if (val) return key + ": " +val.toLocaleString() +"%";
+           },
+           afterBody: function(tooltipItem, d) {
+            return `Date: ${extra_tooltip_data[tooltipItem[0].label].date}\nExpeller: ${extra_tooltip_data[tooltipItem[0].label].expeller_number}\nRaw Material: ${extra_tooltip_data[tooltipItem[0].label].raw_material}\nShift: ${extra_tooltip_data[tooltipItem[0].label].shift}`;
+         }
+        }
+      },
+      scales:{
+        xAxes:[
+          {
+            scaleLabel: {
+              display: true,
+              labelString: ""
+            }
+          }
+        ],
+        yAxes :[
+          {
+            type: "linear",
+            display: true,
+            position: "left",
+            id: "A",
+            scaleLabel: {
+              display: true,
+              labelString: ""
+            },
+            ticks: {
+              callback: value => value + "%",
+              beginAtZero: true,
+              stepSize: 2
+            }
+          },
+          {
+            type: "linear",
+            display: false,
+            position: "right",
+            id: "B",
+            scaleLabel: {
+              display: true,
+              labelString: ""
+            },
+            ticks: {
+              callback: value => value + "%",
+              beginAtZero: true,
+              stepSize: 2
+            }
+          }
+        ]
+      }
+    };
+
+   
     
 
     if (this.state.loading) {
@@ -484,7 +585,7 @@ export default class MachineData extends Component {
         <div className="content">
           <Grid fluid>
             <div className="row" style={{marginBottom:"0.5rem"}}>
-              <div className="col-md-3 block">
+              <div className="col-md-2 block">
                 <select 
                   className="form-control form-control-lg"
                   value={this.state.currentDateFilter}
@@ -508,15 +609,6 @@ export default class MachineData extends Component {
               </div>
               {/* <div className="col-md-2 block">
                 <select 
-                  value={machine_raw_material}
-                  onChange={this.handleMachineRawMaterialChange}
-                  className="form-control form-control-lg">
-                <option value="p2">P2</option>
-                  <option value="pkc1">PKC1</option>
-                </select>
-              </div> */}
-              {/* <div className="col-md-2 block">
-                <select 
                   value={currency}
                   onChange={this.handleCurrencyChange}
                   className="form-control form-control-lg">
@@ -524,15 +616,16 @@ export default class MachineData extends Component {
                   <option value="usd">US Dollar</option>
                 </select>
               </div> */}
-              <div className="col-md-3 block">
+              <div className="col-md-2 block">
               <select className="form-control form-control-lg"
                   value={this.state.machine_stats_level} onChange={this.handleMachineStatsChange}>
                   <option value="rm_crushing">RM Crushing</option>
                   <option value="maintenance">Maintenance</option>
                   <option value="uptime_and_downtime">Uptime/Downtime</option>
+                  <option value={CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY}>Crushing Efficiency</option>
                 </select>
               </div>
-              {this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME &&(
+              {(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME || this.state.machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY) &&(
                 <React.Fragment>
                   <div className="col-md-2 block">
                     <select 
@@ -554,6 +647,19 @@ export default class MachineData extends Component {
                       <option value="EX 4">Expeller 4</option>
                     </select>
                   </div>
+                </React.Fragment>
+              )}
+              {(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY) &&(
+                <React.Fragment>
+                  <div className="col-md-2 block">
+                  <select 
+                    value={machine_raw_material}
+                    onChange={this.handleMachineRawMaterialChange}
+                    className="form-control form-control-lg">
+                  <option value={CONSTANT.MACHINE_P2_RM}>P2</option>
+                  <option value={CONSTANT.MACHINE_PKC1_RM}>PKC1</option>
+                </select>
+              </div>
                 </React.Fragment>
               )}
             </div>
@@ -620,7 +726,14 @@ export default class MachineData extends Component {
                         options={uptime_and_downtime_options}
                       />
                       )}
-                      
+                      {machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY && (
+                        <Bar
+                        height={400}
+                        width={800}
+                        data={this.state.accumulatedData}
+                        options={crushed_efficiency_options}
+                      />
+                      )}
                       </div>
                     </div>
                   }

@@ -197,6 +197,11 @@ const CONSTANT = {
   MACHINE_DATA_RM_CRUSHING:"rm_crushing",
   MACHINE_DATA_MAINTENANCE:"maintenance",
   MACHINE_DATA_UPTIME_AND_DOWNTIME:"uptime_and_downtime",
+  MACHINE_DATA_CRUSHING_EFFICIENCY:"crushing_efficiency",
+
+  // CRUSHING RM
+  MACHINE_P2_RM: "P2",
+  MACHINE_PKC1_RM: "PKC1"
 }
 
 module.exports= {

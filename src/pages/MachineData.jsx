@@ -526,7 +526,7 @@ export default class MachineData extends Component {
             if (val) return key + ": " +val.toLocaleString() +"%";
            },
            afterBody: function(tooltipItem, d) {
-            return `Date: ${extra_tooltip_data[tooltipItem[0].label].date}\nExpeller: ${extra_tooltip_data[tooltipItem[0].label].expeller_number}\nRaw Material: ${extra_tooltip_data[tooltipItem[0].label].raw_material}\nShift: ${extra_tooltip_data[tooltipItem[0].label].shift}`;
+            return `Expeller: ${extra_tooltip_data[tooltipItem[0].label].expeller_number}\nRaw Material: ${extra_tooltip_data[tooltipItem[0].label].raw_material}\nShift: ${extra_tooltip_data[tooltipItem[0].label].shift}`;
          }
         }
       },
@@ -573,9 +573,6 @@ export default class MachineData extends Component {
         ]
       }
     };
-
-   
-    
 
     if (this.state.loading) {
       return <Loader />;

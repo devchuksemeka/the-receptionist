@@ -198,6 +198,7 @@ const CONSTANT = {
   MACHINE_DATA_MAINTENANCE:"maintenance",
   MACHINE_DATA_UPTIME_AND_DOWNTIME:"uptime_and_downtime",
   MACHINE_DATA_CRUSHING_EFFICIENCY:"crushing_efficiency",
+  MACHINE_DATA_UTILIZATION:"utilization",
 
   // CRUSHING RM
   MACHINE_P2_RM: "P2",

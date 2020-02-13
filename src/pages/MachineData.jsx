@@ -67,9 +67,12 @@ export default class MachineData extends Component {
 
   getRequestQueryParams = () =>{
     let query = `graphView=${this.getGraphView()}&startDate=${this.getStartDate()}&endDate=${this.getEndDate()}&currency=${this.state.currency}`;
-    if(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME || this.state.machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY){
+    if(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME || 
+        this.state.machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY ||
+        this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UTILIZATION){
       query = `${query}&expeller_number=${this.state.expeller_number}&shift=${this.state.shift}`
-      if(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY){
+      if(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY ||
+        this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UTILIZATION){
         query = `${query}&raw_material=${this.state.machine_raw_material}`
       }
     }
@@ -182,6 +185,43 @@ export default class MachineData extends Component {
               pointRadius: 1,
               pointHitRadius: 10,
               data: crushing_efficiency
+            }
+          ]
+        };
+      }
+
+      if(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UTILIZATION){
+      
+        const utilization_rate = [];
+        labels.forEach(date => {
+          utilization_rate.push(datasets[date].utilization_rate)
+          // uptime.push(datasets[date].uptime)
+        })
+
+        datasetAccumulated = {
+          labels,
+          datasets: [
+            {
+              label: `${this.state.expeller_number} Utilization Efficiency`,
+              stack: "Stack 0",
+              fill: false,
+              lineTension: 0.1,
+              backgroundColor: "#ffaa1d",
+              borderColor: "#ffaa1d",
+              borderCapStyle: "butt",
+              borderDash: [],
+              borderDashOffset: 0.0,
+              borderJoinStyle: "miter",
+              pointBorderColor: "#ffaa1d",
+              pointBackgroundColor: "#fff",
+              pointBorderWidth: 1,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: "#ffaa1d",
+              pointHoverBorderColor: "#ffaa1d",
+              pointHoverBorderWidth: 2,
+              pointRadius: 1,
+              pointHitRadius: 10,
+              data: utilization_rate
             }
           ]
         };
@@ -574,6 +614,68 @@ export default class MachineData extends Component {
       }
     };
 
+    const utilization_options = { 
+      maintainAspectRatio: true, 
+      responsive: true,
+      tooltips : {
+        mode: "label",
+        callbacks: {
+          label: function(tooltipItem, data) {
+            const key = data.datasets[tooltipItem.datasetIndex].label;
+            const yAxis = data.datasets[tooltipItem.datasetIndex].yAxisID;
+            const val =
+              data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+            if (val) return key + ": " +val.toLocaleString() +"%";
+           },
+           afterBody: function(tooltipItem, d) {
+            return `Expeller: ${extra_tooltip_data[tooltipItem[0].label].expeller_number}\nRaw Material: ${extra_tooltip_data[tooltipItem[0].label].raw_material}\nShift: ${extra_tooltip_data[tooltipItem[0].label].shift}`;
+         }
+        }
+      },
+      scales:{
+        xAxes:[
+          {
+            scaleLabel: {
+              display: true,
+              labelString: ""
+            }
+          }
+        ],
+        yAxes :[
+          {
+            type: "linear",
+            display: true,
+            position: "left",
+            id: "A",
+            scaleLabel: {
+              display: true,
+              labelString: ""
+            },
+            ticks: {
+              callback: value => value + "%",
+              beginAtZero: true,
+              stepSize: 2
+            }
+          },
+          {
+            type: "linear",
+            display: false,
+            position: "right",
+            id: "B",
+            scaleLabel: {
+              display: true,
+              labelString: ""
+            },
+            ticks: {
+              callback: value => value + "%",
+              beginAtZero: true,
+              stepSize: 2
+            }
+          }
+        ]
+      }
+    };
+
     if (this.state.loading) {
       return <Loader />;
     }
@@ -620,9 +722,12 @@ export default class MachineData extends Component {
                   <option value="maintenance">Maintenance</option>
                   <option value="uptime_and_downtime">Uptime/Downtime</option>
                   <option value={CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY}>Crushing Efficiency</option>
+                  <option value={CONSTANT.MACHINE_DATA_UTILIZATION}>Utilization</option>
                 </select>
               </div>
-              {(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME || this.state.machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY) &&(
+              {(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME || 
+                this.state.machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY  || 
+                this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UTILIZATION) &&(
                 <React.Fragment>
                   <div className="col-md-2 block">
                     <select 
@@ -646,7 +751,7 @@ export default class MachineData extends Component {
                   </div>
                 </React.Fragment>
               )}
-              {(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY) &&(
+              {(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY || this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UTILIZATION) &&(
                 <React.Fragment>
                   <div className="col-md-2 block">
                   <select 
@@ -729,6 +834,14 @@ export default class MachineData extends Component {
                         width={800}
                         data={this.state.accumulatedData}
                         options={crushed_efficiency_options}
+                      />
+                      )}
+                      {machine_stats_level === CONSTANT.MACHINE_DATA_UTILIZATION && (
+                        <Bar
+                        height={400}
+                        width={800}
+                        data={this.state.accumulatedData}
+                        options={utilization_options}
                       />
                       )}
                       </div>

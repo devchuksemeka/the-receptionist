@@ -474,7 +474,7 @@ export default class Inventory extends Component {
                     value={currentView}
                     onChange={this.setCurrentView}>
                   <option value="dailyPurchase">{this.state.currentViewMessage}</option>
-                    <option value="accumulated">Accumulated</option>
+                    <option value="accumulated">Processing</option>
                   </select>
                 </div>
 
@@ -533,15 +533,6 @@ export default class Inventory extends Component {
                       statsIconText={`Total P2 remaining (Ton)`}
                     />
                   </Col>
-                  <Col lg={3} sm={6}>
-                    <StatsCard
-                      bigIcon={<i className="pe-7s-magnet text-warning" />}
-                      statsText="P2 Procurement Rate"
-                      statsValue={this.state.extras.procurement_rate || 0}
-                      statsIconText={`Procurement Date Interval: ${this.state.extras.procurement_date_interval || 0}`}
-                    />
-                  </Col>
-                  
                 </React.Fragment>
               )}
               {currentView === "dailyPurchase" &&  currentScreen === "p2" && (
@@ -551,7 +542,7 @@ export default class Inventory extends Component {
                       bigIcon={<i className="pe-7s-shield text-info" />}
                       statsText="P2 Total Crushed (Ton)"
                       statsValue={this.state.extras.total_product_crushed}
-                      statsIconText={`Total P2 Crushed (Ton)`}
+                      statsIconText={`Total P2 Available: ${this.state.extras.total_p2_available || 0}(Ton)`}
                     />
                   </Col>
                   <Col lg={3} sm={6}>
@@ -565,11 +556,19 @@ export default class Inventory extends Component {
                   <Col lg={3} sm={6}>
                     <StatsCard
                       bigIcon={<i className="pe-7s-graph2 text-danger" />}
+                      statsText="P2 Procurement Rate"
+                      statsValue={this.state.extras.procurement_rate || 0}
+                      statsIconText={`Procurement Date Interval: ${this.state.extras.procurement_date_interval || 0}`}
+                    />
+                  </Col>
+                  {/* <Col lg={3} sm={6}>
+                    <StatsCard
+                      bigIcon={<i className="pe-7s-graph2 text-danger" />}
                       statsText="P2 Crushing Shift Hours"
                       statsValue={`${this.state.extras.total_crush_shift_hours || 0}hrs`}
                       statsIconText={`P2 Crushing Shift Hours`}
                     />
-                  </Col>
+                  </Col> */}
                 </React.Fragment>
               )}
               {currentView === "dailyPurchase" &&  currentScreen !== "p2" && (

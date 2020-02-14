@@ -66,16 +66,7 @@ export default class MachineData extends Component {
   }
 
   getRequestQueryParams = () =>{
-    let query = `graphView=${this.getGraphView()}&startDate=${this.getStartDate()}&endDate=${this.getEndDate()}&currency=${this.state.currency}`;
-    if(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME || 
-        this.state.machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY ||
-        this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UTILIZATION){
-      query = `${query}&expeller_number=${this.state.expeller_number}&shift=${this.state.shift}`
-      if(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY ||
-        this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UTILIZATION){
-        query = `${query}&raw_material=${this.state.machine_raw_material}`
-      }
-    }
+    let query = `graphView=${this.getGraphView()}&startDate=${this.getStartDate()}&endDate=${this.getEndDate()}&currency=${this.state.currency}&expeller_number=${this.state.expeller_number}&shift=${this.state.shift}&raw_material=${this.state.machine_raw_material}`;
     return query;
   }
 
@@ -725,6 +716,21 @@ export default class MachineData extends Component {
                   <option value={CONSTANT.MACHINE_DATA_UTILIZATION}>Utilization</option>
                 </select>
               </div>
+              {(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_RM_CRUSHING) &&(
+                <React.Fragment>
+                  <div className="col-md-2 block">
+                    <select 
+                      className="form-control form-control-lg"
+                      value={this.state.expeller_number}
+                      onChange={this.handleExpellerNumberChange}>
+                    <option value="EX 1">Expeller 1</option>
+                      <option value="EX 2">Expeller 2</option>
+                      <option value="EX 3">Expeller 3</option>
+                      <option value="EX 4">Expeller 4</option>
+                    </select>
+                  </div>
+                </React.Fragment>
+              )}
               {(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME || 
                 this.state.machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY  || 
                 this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UTILIZATION) &&(

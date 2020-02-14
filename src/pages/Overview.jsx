@@ -59,7 +59,8 @@ class Overview extends Component {
     // currentDateFilter: "currentWeek",
     graphView: "day",
     salesCyclesAvg: "N/A",
-    currency: "naira",
+    currency: "usd",
+    // currency: "naira",
 
     target_info:{},
     target_loading:false,
@@ -491,10 +492,10 @@ class Overview extends Component {
               <div className="row" style={{marginBottom:"0.5rem"}}>
                 <div className="col-md-3 block pull-right">
                 <select 
-                    value={this.currency}
+                    value={currency}
                     onChange={this.handleCurrencyChange}
                     className="form-control form-control-lg">
-                  <option value="naira">Nigeria Naira (NGN)</option>
+                    <option value="naira">Nigeria Naira (NGN)</option>
                     <option value="usd">US Dollar (USD)</option>
                   </select>
                   

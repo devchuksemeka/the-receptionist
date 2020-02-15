@@ -88,32 +88,20 @@ export default class MachineData extends Component {
       
         const total_p2 = [];
         const total_pkc1 = [];
+        const pkc1_uptimes = [];
+        const p2_uptimes = [];
         labels.forEach(date => {
           total_p2.push(datasets[date].P2.rm_crushed_in_ton)
+          p2_uptimes.push(datasets[date].P2.uptime)
           total_pkc1.push(datasets[date].PKC1.rm_crushed_in_ton)
-        })
-
-        // datasetAccumulated = graph_A_B_YAxisDatasets(labels,
-        //   {
-        //     label:"PKC1 Crushed",
-        //     data:total_pkc1,
-        //   },
-        //   {
-        //     label:`P2 Crushed`,
-        //     data:total_p2,
-        //   },
-        // )
-
-        const utilization_rate = [];
-        labels.forEach(date => {
-          utilization_rate.push(datasets[date].utilization_rate)
-          // uptime.push(datasets[date].uptime)
+          pkc1_uptimes.push(datasets[date].PKC1.uptime)
         })
 
         datasetAccumulated = {
           labels,
           datasets: [
             {
+              yAxisID: "A",
               label: `P2 Crushed`,
               stack: "Stack 0",
               fill: false,
@@ -136,6 +124,7 @@ export default class MachineData extends Component {
               data: total_p2
             },
             {
+              yAxisID: "A",
               label: `PKC1 Crushed`,
               stack: "Stack 0",
               fill: false,
@@ -158,6 +147,7 @@ export default class MachineData extends Component {
               data: total_pkc1
             },
             {
+              yAxisID: "B",
               label: `P2 Uptime`,
               stack: "Stack 1",
               fill: false,
@@ -177,9 +167,10 @@ export default class MachineData extends Component {
               pointHoverBorderWidth: 2,
               pointRadius: 1,
               pointHitRadius: 10,
-              data: total_pkc1
+              data: p2_uptimes
             },
             {
+              yAxisID: "B",
               label: `PKC1 Uptime`,
               stack: "Stack 1",
               fill: false,
@@ -199,7 +190,7 @@ export default class MachineData extends Component {
               pointHoverBorderWidth: 2,
               pointRadius: 1,
               pointHitRadius: 10,
-              data: total_pkc1
+              data: pkc1_uptimes
             },
           ]
         };
@@ -469,6 +460,7 @@ export default class MachineData extends Component {
             const yAxis = data.datasets[tooltipItem.datasetIndex].yAxisID;
             const val =
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+            // return key + ": " +val.toLocaleString() +" hours";
             if (val && yAxis === "B") return key + ": " +val.toLocaleString() +" hours";
             if (val && yAxis === "A") return key + ": " +val.toLocaleString() +" tons";
             // if (val && yAxis === "A") return key + ` : ${currency === "naira" ? "₦":"$"}` + val.toLocaleString();

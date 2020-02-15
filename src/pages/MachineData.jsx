@@ -93,16 +93,116 @@ export default class MachineData extends Component {
           total_pkc1.push(datasets[date].PKC1.rm_crushed_in_ton)
         })
 
-        datasetAccumulated = graph_A_B_YAxisDatasets(labels,
-          {
-            label:"PKC1 Crushed",
-            data:total_pkc1,
-          },
-          {
-            label:`P2 Crushed`,
-            data:total_p2,
-          },
-        )
+        // datasetAccumulated = graph_A_B_YAxisDatasets(labels,
+        //   {
+        //     label:"PKC1 Crushed",
+        //     data:total_pkc1,
+        //   },
+        //   {
+        //     label:`P2 Crushed`,
+        //     data:total_p2,
+        //   },
+        // )
+
+        const utilization_rate = [];
+        labels.forEach(date => {
+          utilization_rate.push(datasets[date].utilization_rate)
+          // uptime.push(datasets[date].uptime)
+        })
+
+        datasetAccumulated = {
+          labels,
+          datasets: [
+            {
+              label: `P2 Crushed`,
+              stack: "Stack 0",
+              fill: false,
+              lineTension: 0.1,
+              backgroundColor: "#036bfc",
+              borderColor: "#ffaa1d",
+              borderCapStyle: "butt",
+              borderDash: [],
+              borderDashOffset: 0.0,
+              borderJoinStyle: "miter",
+              pointBorderColor: "#ffaa1d",
+              pointBackgroundColor: "#fff",
+              pointBorderWidth: 1,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: "#ffaa1d",
+              pointHoverBorderColor: "#ffaa1d",
+              pointHoverBorderWidth: 2,
+              pointRadius: 1,
+              pointHitRadius: 10,
+              data: total_p2
+            },
+            {
+              label: `PKC1 Crushed`,
+              stack: "Stack 0",
+              fill: false,
+              lineTension: 0.1,
+              backgroundColor: "#993fb0",
+              borderColor: "#ffaa1d",
+              borderCapStyle: "butt",
+              borderDash: [],
+              borderDashOffset: 0.0,
+              borderJoinStyle: "miter",
+              pointBorderColor: "#ffaa1d",
+              pointBackgroundColor: "#fff",
+              pointBorderWidth: 1,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: "#ffaa1d",
+              pointHoverBorderColor: "#ffaa1d",
+              pointHoverBorderWidth: 2,
+              pointRadius: 1,
+              pointHitRadius: 10,
+              data: total_pkc1
+            },
+            {
+              label: `P2 Uptime`,
+              stack: "Stack 1",
+              fill: false,
+              lineTension: 0.1,
+              backgroundColor: "#ffaa1d",
+              borderColor: "#ffaa1d",
+              borderCapStyle: "butt",
+              borderDash: [],
+              borderDashOffset: 0.0,
+              borderJoinStyle: "miter",
+              pointBorderColor: "#ffaa1d",
+              pointBackgroundColor: "#fff",
+              pointBorderWidth: 1,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: "#ffaa1d",
+              pointHoverBorderColor: "#ffaa1d",
+              pointHoverBorderWidth: 2,
+              pointRadius: 1,
+              pointHitRadius: 10,
+              data: total_pkc1
+            },
+            {
+              label: `PKC1 Uptime`,
+              stack: "Stack 1",
+              fill: false,
+              lineTension: 0.1,
+              backgroundColor: "#ba4a1a",
+              borderColor: "#ffaa1d",
+              borderCapStyle: "butt",
+              borderDash: [],
+              borderDashOffset: 0.0,
+              borderJoinStyle: "miter",
+              pointBorderColor: "#ffaa1d",
+              pointBackgroundColor: "#fff",
+              pointBorderWidth: 1,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: "#ffaa1d",
+              pointHoverBorderColor: "#ffaa1d",
+              pointHoverBorderWidth: 2,
+              pointRadius: 1,
+              pointHitRadius: 10,
+              data: total_pkc1
+            },
+          ]
+        };
       }
       if(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_MAINTENANCE){
       
@@ -369,7 +469,7 @@ export default class MachineData extends Component {
             const yAxis = data.datasets[tooltipItem.datasetIndex].yAxisID;
             const val =
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-            if (val && yAxis === "B") return key + ": " +val.toLocaleString() +" tons";
+            if (val && yAxis === "B") return key + ": " +val.toLocaleString() +" hours";
             if (val && yAxis === "A") return key + ": " +val.toLocaleString() +" tons";
             // if (val && yAxis === "A") return key + ` : ${currency === "naira" ? "₦":"$"}` + val.toLocaleString();
           }
@@ -410,7 +510,7 @@ export default class MachineData extends Component {
               labelString: ""
             },
             ticks: {
-              callback: value => value + " tons",
+              callback: value => value +`${value > 1 ? " hours": "  hour"}`,
               beginAtZero: true,
               stepSize: 2
             }

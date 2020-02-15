@@ -504,19 +504,27 @@ export default class Inventory extends Component {
                 )}
               </div>
               <Row>
-              {currentView === "dailyPurchase" && (
+              {currentView === "dailyPurchase" && currentScreen !== "p2" && (
                
                 <Col lg={3} sm={6}>
                   <StatsCard
                     bigIcon={<i className="pe-7s-up-arrow text-secondary" />}
                     statsText={`${currentScreen === "p2" ? 'Crushing':'Production'} Rate (Ton/hr)`}
-                    statsValue={currentScreen === "p2" ? this.state.avg_crushing_rate_per_hour: this.state.avg_production_rate_per_hour}
-                    statsIconText={`Avg ${currentScreen === "p2" ? 'Crushing':'Production'} Rate (Ton/hr)`}
+                    statsValue={this.state.extras.avg_production_rate_per_hour}
+                    statsIconText={`Avg Production Rate (Ton/hr)`}
                   />
                 </Col>
               )}
               {currentView === "accumulated" &&  currentScreen === "p2" && (
                 <React.Fragment>
+                  <Col lg={3} sm={6}>
+                    <StatsCard
+                      bigIcon={<i className="pe-7s-up-arrow text-secondary" />}
+                      statsText={`Crushing Rate (Ton/hr)`}
+                      statsValue={this.state.extras.avg_crushing_rate_per_hour || 0}
+                      statsIconText={`Avg Crushing Rate (Ton/hr)`}
+                    />
+                  </Col>
                   <Col lg={3} sm={6}>
                     <StatsCard
                       bigIcon={<i className="pe-7s-shield text-info" />}
@@ -556,9 +564,9 @@ export default class Inventory extends Component {
                   <Col lg={3} sm={6}>
                     <StatsCard
                       bigIcon={<i className="pe-7s-graph2 text-danger" />}
-                      statsText="P2 Procurement Rate"
-                      statsValue={this.state.extras.procurement_rate || 0}
-                      statsIconText={`Procurement Date Interval: ${this.state.extras.procurement_date_interval || 0}`}
+                      statsText="Procurement Rate (Ton/day)"
+                      statsValue={`${this.state.extras.procurement_rate || 0}`}
+                      statsIconText={`No of procurement Days: ${this.state.extras.procurement_date_interval || 0}`}
                     />
                   </Col>
                   {/* <Col lg={3} sm={6}>

@@ -28,7 +28,7 @@ export default class Sales extends Component {
     currentDateFilter: "currentWeek",
     graphView: "day",
     salesCyclesAvg: "N/A",
-    currency: "naira",
+    currency: "usd",
     sales:[],
     
   };
@@ -404,7 +404,7 @@ export default class Sales extends Component {
       </div>
       <div className="col-md-2 block">
         <select 
-          value={this.currency}
+          value={currency}
           onChange={this.handleCurrencyChange}
           className="form-control form-control-lg">
          <option value="naira">Naira</option>

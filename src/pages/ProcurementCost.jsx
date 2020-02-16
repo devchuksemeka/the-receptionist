@@ -21,7 +21,7 @@ export default class ProcurementCost extends Component {
     endDate: moment().endOf("week").toDate(),
     currentDateFilter: "currentWeek",
     graphView: "day",
-    currency: "naira",
+    currency: "usd",
   };
 
   async componentDidMount() {
@@ -284,7 +284,7 @@ export default class ProcurementCost extends Component {
               </div>
               <div className="col-md-2 block">
                 <select 
-                  value={this.currency}
+                  value={currency}
                   onChange={this.handleCurrencyChange}
                   className="form-control form-control-lg">
                 <option value="naira">Naira</option>

@@ -36,7 +36,7 @@ export default class Inventory extends Component {
     total_p2_remaining: 0,
     currentDateFilter: "currentWeek",
     graphView: "day",
-    currency: "naira",
+    currency: "usd",
   };
 
   async componentDidMount() {

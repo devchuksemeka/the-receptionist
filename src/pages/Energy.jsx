@@ -87,11 +87,12 @@ export default class Energy extends Component {
       if(this.state.energy_stats_level === CONSTANT.ENERGY_DIESEL_LITRE_AND_AMOUNT_USAGE){
       
         const diesel_litre_used = [];
-        const total_pkc1 = [];
+        const hours_on_gen = [];
         const pkc1_uptimes = [];
         const p2_uptimes = [];
         labels.forEach(date => {
           diesel_litre_used.push(datasets[date].diesel_litre_used)
+          hours_on_gen.push(datasets[date].hours_on_gen)
           // p2_uptimes.push(datasets[date].P2.uptime)
           // total_pkc1.push(datasets[date].PKC1.rm_crushed_in_ton)
           // pkc1_uptimes.push(datasets[date].PKC1.uptime)
@@ -146,29 +147,29 @@ export default class Energy extends Component {
             //   pointHitRadius: 10,
             //   data: total_pkc1
             // },
-            // {
-            //   yAxisID: "B",
-            //   label: `P2 Uptime`,
-            //   stack: "Stack 1",
-            //   fill: false,
-            //   lineTension: 0.1,
-            //   backgroundColor: "#ffaa1d",
-            //   borderColor: "#ffaa1d",
-            //   borderCapStyle: "butt",
-            //   borderDash: [],
-            //   borderDashOffset: 0.0,
-            //   borderJoinStyle: "miter",
-            //   pointBorderColor: "#ffaa1d",
-            //   pointBackgroundColor: "#fff",
-            //   pointBorderWidth: 1,
-            //   pointHoverRadius: 5,
-            //   pointHoverBackgroundColor: "#ffaa1d",
-            //   pointHoverBorderColor: "#ffaa1d",
-            //   pointHoverBorderWidth: 2,
-            //   pointRadius: 1,
-            //   pointHitRadius: 10,
-            //   data: p2_uptimes
-            // },
+            {
+              yAxisID: "B",
+              label: `Hours On Generator`,
+              stack: "Stack 1",
+              fill: false,
+              lineTension: 0.1,
+              backgroundColor: "#ffaa1d",
+              borderColor: "#ffaa1d",
+              borderCapStyle: "butt",
+              borderDash: [],
+              borderDashOffset: 0.0,
+              borderJoinStyle: "miter",
+              pointBorderColor: "#ffaa1d",
+              pointBackgroundColor: "#fff",
+              pointBorderWidth: 1,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: "#ffaa1d",
+              pointHoverBorderColor: "#ffaa1d",
+              pointHoverBorderWidth: 2,
+              pointRadius: 1,
+              pointHitRadius: 10,
+              data: hours_on_gen
+            },
             // {
             //   yAxisID: "B",
             //   label: `PKC1 Uptime`,
@@ -461,7 +462,7 @@ export default class Energy extends Component {
             const val =
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
             // return key + ": " +val.toLocaleString() +" hours";
-            // if (val && yAxis === "B") return key + ": " +val.toLocaleString() +" hours";
+            if (val && yAxis === "B") return key + ": " +val.toLocaleString() +" hours";
             if (val && yAxis === "A") return key + ": " +val.toLocaleString() + ` ${val > 1 ? 'Litres':"Litre"}`;
             // if (val && yAxis === "A") return key + ` : ${currency === "naira" ? "₦":"$"}` + val.toLocaleString();
           }
@@ -494,7 +495,7 @@ export default class Energy extends Component {
           },
           {
             type: "linear",
-            display: false,
+            display: true,
             position: "right",
             id: "B",
             scaleLabel: {

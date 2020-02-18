@@ -15,6 +15,7 @@ export default class Energy extends Component {
     baseURL:process.env.REACT_APP_SERVER_ENDPOINT,
     energy_stats_level:CONSTANT.ENERGY_DIESEL_LITRE_AND_AMOUNT_USAGE,
     machine_raw_material:CONSTANT.MACHINE_P2_RM,
+    page_category:CONSTANT.ENERGY_ANALYSIS,
     machine_data:[],
     extra_tooltip_data:{},
     loading: true,
@@ -399,17 +400,18 @@ export default class Energy extends Component {
     },
     ()=> this.handleSubmit()
     );
-  };
+  }; 
   
-  handleMachineViewChange = e => {
-    const machine = e.target.value;
-    this.setState(
-      {
-        machine
-      },
-      ()=> this.handleSubmit()
+  handlePageCategoryChange = e => {
+    const page_category = e.target.value;
+
+    this.setState({
+      page_category
+    },
+    ()=> this.handleSubmit()
     );
   };
+
 
 
   handleEnergyStatLevelChange = e => {
@@ -772,101 +774,46 @@ export default class Energy extends Component {
               <div className="col-md-2 block">
                 <select 
                   className="form-control form-control-lg"
-                  value={this.state.currentDateFilter}
-                  onChange={this.handleDateFilter}>
-                    <option value="currentWeek">Current Week</option>
-                    <option value="lastWeek">Last Week</option>
-                    <option value="last2Weeks">Last 2 Weeks</option>
-                    <option value="lastMonth">Last Month</option>
-                    <option value="custom">Custom</option>
+                  value={this.state.page_category}
+                  onChange={this.handlePageCategoryChange}>
+                    <option value={CONSTANT.ENERGY_ANALYSIS}>Energy Analysis</option>
+                    <option value={CONSTANT.DIESEL_SUPPLY_LOG}>Diesel Supply Log</option>
                 </select>
               </div>
-              <div className="col-md-2 block">
-                <select 
-                  className="form-control form-control-lg"
-                  value={this.state.graphView}
-                  onChange={this.handleGraphView}>
-                <option value="day">Day</option>
-                  <option value="week">Week</option>
-                  <option value="month">Month</option>
-                </select>
-              </div>
-              {/* <div className="col-md-2 block">
-                <select 
-                  value={currency}
-                  onChange={this.handleCurrencyChange}
-                  className="form-control form-control-lg">
-                <option value="naira">Naira</option>
-                  <option value="usd">US Dollar</option>
-                </select>
-              </div> */}
-              <div className="col-md-2 block">
-              <select className="form-control form-control-lg"
-                  value={this.state.energy_stats_level} onChange={this.handleEnergyStatLevelChange}>
-                  {/* <option value="rm_crushing">RM Crushing</option>
-                  <option value="maintenance">Maintenance</option>
-                  <option value="uptime_and_downtime">Uptime/Downtime</option> */}
-                  <option value={CONSTANT.ENERGY_DIESEL_LITRE_AND_AMOUNT_USAGE}>Diesel Usage</option>
-                  {/* <option value={CONSTANT.MACHINE_DATA_UTILIZATION}>Utilization</option> */}
-                </select>
-              </div>
-              {(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_RM_CRUSHING) &&(
+              {this.state.page_category === CONSTANT.ENERGY_ANALYSIS && (
                 <React.Fragment>
                   <div className="col-md-2 block">
                     <select 
                       className="form-control form-control-lg"
-                      value={this.state.expeller_number}
-                      onChange={this.handleExpellerNumberChange}>
-                    <option value="EX 1">Expeller 1</option>
-                      <option value="EX 2">Expeller 2</option>
-                      <option value="EX 3">Expeller 3</option>
-                      <option value="EX 4">Expeller 4</option>
-                    </select>
-                  </div>
-                </React.Fragment>
-              )}
-              {(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME || 
-                this.state.machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY  || 
-                this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UTILIZATION) &&(
-                <React.Fragment>
-                  <div className="col-md-2 block">
-                    <select 
-                      className="form-control form-control-lg"
-                      value={this.state.shift}
-                      onChange={this.handleShiftChange}>
-                    <option value="1">Shift 1</option>
-                      <option value="2">Shift 2</option>
+                      value={this.state.currentDateFilter}
+                      onChange={this.handleDateFilter}>
+                        <option value="currentWeek">Current Week</option>
+                        <option value="lastWeek">Last Week</option>
+                        <option value="last2Weeks">Last 2 Weeks</option>
+                        <option value="lastMonth">Last Month</option>
+                        <option value="custom">Custom</option>
                     </select>
                   </div>
                   <div className="col-md-2 block">
                     <select 
                       className="form-control form-control-lg"
-                      value={this.state.expeller_number}
-                      onChange={this.handleExpellerNumberChange}>
-                    <option value="EX 1">Expeller 1</option>
-                      <option value="EX 2">Expeller 2</option>
-                      <option value="EX 3">Expeller 3</option>
-                      <option value="EX 4">Expeller 4</option>
+                      value={this.state.graphView}
+                      onChange={this.handleGraphView}>
+                    <option value="day">Day</option>
+                      <option value="week">Week</option>
+                      <option value="month">Month</option>
                     </select>
                   </div>
-                </React.Fragment>
-              )}
-              {(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY || this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UTILIZATION) &&(
-                <React.Fragment>
-                  <div className="col-md-2 block">
-                  <select 
-                    value={machine_raw_material}
-                    onChange={this.handleMachineRawMaterialChange}
-                    className="form-control form-control-lg">
-                  <option value={CONSTANT.MACHINE_P2_RM}>P2</option>
-                  <option value={CONSTANT.MACHINE_PKC1_RM}>PKC1</option>
-                </select>
-              </div>
-                </React.Fragment>
-              )}
-            </div>
 
-            <div className="row" style={{marginBottom:"0.5rem"}}>
+                  <div className="col-md-2 block">
+                    <select className="form-control form-control-lg"
+                      value={this.state.energy_stats_level} onChange={this.handleEnergyStatLevelChange}>
+                      <option value={CONSTANT.ENERGY_DIESEL_LITRE_AND_AMOUNT_USAGE}>Diesel Usage</option>
+                    </select>
+                  </div>
+                </React.Fragment>
+              )}
+              <div className="row" style={{marginBottom:"0.5rem"}}>
               {this.state.currentDateFilter === "custom"  && (<React.Fragment>
                 <div className="col-md-3 block">
                   <div className="form-group row">
@@ -889,8 +836,8 @@ export default class Energy extends Component {
                 </div>
               </React.Fragment> 
               )}
-              
 
+            </div>
             </div>
 
             <Row>

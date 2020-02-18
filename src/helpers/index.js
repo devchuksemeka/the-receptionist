@@ -204,6 +204,10 @@ const CONSTANT = {
   MACHINE_P2_RM: "P2",
   MACHINE_PKC1_RM: "PKC1",
 
+   // ENERGY PAGE CATEGORY
+   ENERGY_ANALYSIS: "energy_analysis",
+   DIESEL_SUPPLY_LOG: "diesel_supply_log",
+
   // energy data stats levels
   ENERGY_DIESEL_LITRE_AND_AMOUNT_USAGE:"litre_and_amount_usage",
 }

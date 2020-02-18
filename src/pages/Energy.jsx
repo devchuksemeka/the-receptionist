@@ -88,8 +88,6 @@ export default class Energy extends Component {
       
         const diesel_litre_used = [];
         const hours_on_gen = [];
-        const pkc1_uptimes = [];
-        const p2_uptimes = [];
         labels.forEach(date => {
           diesel_litre_used.push(datasets[date].diesel_litre_used)
           hours_on_gen.push(datasets[date].hours_on_gen)
@@ -465,7 +463,10 @@ export default class Energy extends Component {
             if (val && yAxis === "B") return key + ": " +val.toLocaleString() +" hours";
             if (val && yAxis === "A") return key + ": " +val.toLocaleString() + ` ${val > 1 ? 'Litres':"Litre"}`;
             // if (val && yAxis === "A") return key + ` : ${currency === "naira" ? "₦":"$"}` + val.toLocaleString();
-          }
+          },
+          afterBody: function(tooltipItem, d) {
+            return `Total P2 Crushed: ${extra_tooltip_data[tooltipItem[0].label].total_p2_crushed} Tons\nTotal PKO Produced: ${extra_tooltip_data[tooltipItem[0].label].total_pko_produced} Tons\nTotal PKC produced: ${extra_tooltip_data[tooltipItem[0].label].total_pkc_produced} Tons`;
+         }
         }
       },
       scales:{

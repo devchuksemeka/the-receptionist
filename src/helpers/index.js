@@ -202,7 +202,10 @@ const CONSTANT = {
 
   // CRUSHING RM
   MACHINE_P2_RM: "P2",
-  MACHINE_PKC1_RM: "PKC1"
+  MACHINE_PKC1_RM: "PKC1",
+
+  // energy data stats levels
+  ENERGY_DIESEL_LITRE_AND_AMOUNT_USAGE:"litre_and_amount_usage",
 }
 
 module.exports= {

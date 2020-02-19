@@ -282,6 +282,18 @@ export default class ProcurementCost extends Component {
                     <option value="custom">Custom</option>
                 </select>
               </div>
+              <div className="col-md-3 block">
+              <select 
+                  className="form-control form-control-lg"
+                  value={this.state.procurement_cost_level}
+                  onChange={this.handleProcurementCostLevelChange}>
+                <option value="supply_analysis">P2 Supply Analysis</option>
+                  <option value="diesel_supply_analysis">Diesel Supply Analyis</option>
+                  {/* <option value="week">Transportation</option>
+                  <option value="month">Offloading</option>
+                  <option value="month">Tolls</option> */}
+                </select>
+              </div>
               <div className="col-md-2 block">
                 <select 
                   value={currency}
@@ -301,18 +313,7 @@ export default class ProcurementCost extends Component {
                   <option value="month">Month</option>
                 </select>
               </div> */}
-              <div className="col-md-3 block">
-              <select 
-                  className="form-control form-control-lg"
-                  value={this.state.procurement_cost_level}
-                  onChange={this.handleProcurementCostLevelChange}>
-                <option value="supply_analysis">Supply Analysis</option>
-                  {/* <option value="week">Payment</option>
-                  <option value="week">Transportation</option>
-                  <option value="month">Offloading</option>
-                  <option value="month">Tolls</option> */}
-                </select>
-              </div>
+              
             </div>
             <div className="row" style={{marginBottom:"0.5rem"}}>
               {this.state.currentDateFilter === "custom"  && (<React.Fragment>

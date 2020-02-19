@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { Grid, Row, Col } from "react-bootstrap";
 import { Card } from "components/Card/Card.jsx";
-import { Line, Bar} from "react-chartjs-2";
+import { Bar} from "react-chartjs-2";
 import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
-import { graph_A_B_YAxisDatasets,CONSTANT } from "../helpers";
+import { CONSTANT } from "../helpers";
 import moment from 'moment'
 
 import axios from 'axios'
@@ -16,7 +16,7 @@ export default class Energy extends Component {
     energy_stats_level:CONSTANT.ENERGY_DIESEL_LITRE_AND_AMOUNT_USAGE,
     machine_raw_material:CONSTANT.MACHINE_P2_RM,
     page_category:CONSTANT.ENERGY_ANALYSIS,
-    machine_data:[],
+    diesel_supply_log_data:[],
     extra_tooltip_data:{},
     loading: true,
     startDate: moment().startOf("week").toDate(),
@@ -29,8 +29,6 @@ export default class Energy extends Component {
   };
 
   async componentDidMount() {
-    // this.getProcurementCost();
-    // this.getMaintenanceActions();
     await this.handleSubmit();
   }
 
@@ -44,6 +42,7 @@ export default class Energy extends Component {
   }
 
   getText = () =>{
+    if(this.state.page_category === CONSTANT.DIESEL_SUPPLY_LOG) return "Diesel Supply Log";
     if(this.state.energy_stats_level === CONSTANT.ENERGY_DIESEL_LITRE_AND_AMOUNT_USAGE) return "Diesel Litre And Amount Usage";
     // if(this.state.machine_stats_level  === CONSTANT.MACHINE_DATA_RM_CRUSHING) return "Raw Material Crushing";
     // if(this.state.machine_stats_level  === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME) return "Uptime/Downtime";
@@ -77,247 +76,144 @@ export default class Energy extends Component {
   handleSubmit = async () => {
     let extra_tooltip_data = {};
     try{
-      const res_data = await axios.get(`
+      if(this.state.page_category === CONSTANT.DIESEL_SUPPLY_LOG){
+        const res_data = await axios.get(`
+        ${this.state.baseURL}/v1/energies/get-diesel-supply-log?${this.getRequestQueryParams()}`)
+
+        let diesel_supply_log_data = res_data.data.data;
+        // console.log(diesel_supply_log_data)
+        this.setState({
+          diesel_supply_log_data
+        },()=>this.setGraphValues())
+      }
+      else{
+        const res_data = await axios.get(`
         ${this.state.baseURL}/v1/energies/diesel-usage/${this.state.energy_stats_level}?${this.getRequestQueryParams()}`)
-      const {datasets,labels} = res_data.data
-      extra_tooltip_data = datasets;
+        const {datasets,labels} = res_data.data
+        extra_tooltip_data = datasets;
 
-      // const result_keys = Object.keys(datasets);
-      let datasetAccumulated = {};
+        // const result_keys = Object.keys(datasets);
+        let datasetAccumulated = {};
 
-      if(this.state.energy_stats_level === CONSTANT.ENERGY_DIESEL_LITRE_AND_AMOUNT_USAGE){
+        if(this.state.energy_stats_level === CONSTANT.ENERGY_DIESEL_LITRE_AND_AMOUNT_USAGE){
+        
+          const diesel_litre_used = [];
+          const hours_on_gen = [];
+          labels.forEach(date => {
+            diesel_litre_used.push(datasets[date].diesel_litre_used)
+            hours_on_gen.push(datasets[date].hours_on_gen)
+            // p2_uptimes.push(datasets[date].P2.uptime)
+            // total_pkc1.push(datasets[date].PKC1.rm_crushed_in_ton)
+            // pkc1_uptimes.push(datasets[date].PKC1.uptime)
+          })
+
+          datasetAccumulated = {
+            labels,
+            datasets: [
+              {
+                yAxisID: "A",
+                label: `Diesel Litre Used`,
+                stack: "Stack 0",
+                fill: false,
+                lineTension: 0.1,
+                backgroundColor: "#036bfc",
+                borderColor: "#ffaa1d",
+                borderCapStyle: "butt",
+                borderDash: [],
+                borderDashOffset: 0.0,
+                borderJoinStyle: "miter",
+                pointBorderColor: "#ffaa1d",
+                pointBackgroundColor: "#fff",
+                pointBorderWidth: 1,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: "#ffaa1d",
+                pointHoverBorderColor: "#ffaa1d",
+                pointHoverBorderWidth: 2,
+                pointRadius: 1,
+                pointHitRadius: 10,
+                data: diesel_litre_used
+              },
+              // {
+              //   yAxisID: "A",
+              //   label: `PKC1 Crushed`,
+              //   stack: "Stack 0",
+              //   fill: false,
+              //   lineTension: 0.1,
+              //   backgroundColor: "#993fb0",
+              //   borderColor: "#ffaa1d",
+              //   borderCapStyle: "butt",
+              //   borderDash: [],
+              //   borderDashOffset: 0.0,
+              //   borderJoinStyle: "miter",
+              //   pointBorderColor: "#ffaa1d",
+              //   pointBackgroundColor: "#fff",
+              //   pointBorderWidth: 1,
+              //   pointHoverRadius: 5,
+              //   pointHoverBackgroundColor: "#ffaa1d",
+              //   pointHoverBorderColor: "#ffaa1d",
+              //   pointHoverBorderWidth: 2,
+              //   pointRadius: 1,
+              //   pointHitRadius: 10,
+              //   data: total_pkc1
+              // },
+              {
+                yAxisID: "B",
+                label: `Hours On Generator`,
+                stack: "Stack 1",
+                fill: false,
+                lineTension: 0.1,
+                backgroundColor: "#ffaa1d",
+                borderColor: "#ffaa1d",
+                borderCapStyle: "butt",
+                borderDash: [],
+                borderDashOffset: 0.0,
+                borderJoinStyle: "miter",
+                pointBorderColor: "#ffaa1d",
+                pointBackgroundColor: "#fff",
+                pointBorderWidth: 1,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: "#ffaa1d",
+                pointHoverBorderColor: "#ffaa1d",
+                pointHoverBorderWidth: 2,
+                pointRadius: 1,
+                pointHitRadius: 10,
+                data: hours_on_gen
+              },
+              // {
+              //   yAxisID: "B",
+              //   label: `PKC1 Uptime`,
+              //   stack: "Stack 1",
+              //   fill: false,
+              //   lineTension: 0.1,
+              //   backgroundColor: "#ba4a1a",
+              //   borderColor: "#ffaa1d",
+              //   borderCapStyle: "butt",
+              //   borderDash: [],
+              //   borderDashOffset: 0.0,
+              //   borderJoinStyle: "miter",
+              //   pointBorderColor: "#ffaa1d",
+              //   pointBackgroundColor: "#fff",
+              //   pointBorderWidth: 1,
+              //   pointHoverRadius: 5,
+              //   pointHoverBackgroundColor: "#ffaa1d",
+              //   pointHoverBorderColor: "#ffaa1d",
+              //   pointHoverBorderWidth: 2,
+              //   pointRadius: 1,
+              //   pointHitRadius: 10,
+              //   data: pkc1_uptimes
+              // },
+            ]
+          };
+        }
       
-        const diesel_litre_used = [];
-        const hours_on_gen = [];
-        labels.forEach(date => {
-          diesel_litre_used.push(datasets[date].diesel_litre_used)
-          hours_on_gen.push(datasets[date].hours_on_gen)
-          // p2_uptimes.push(datasets[date].P2.uptime)
-          // total_pkc1.push(datasets[date].PKC1.rm_crushed_in_ton)
-          // pkc1_uptimes.push(datasets[date].PKC1.uptime)
-        })
-
-        datasetAccumulated = {
-          labels,
-          datasets: [
-            {
-              yAxisID: "A",
-              label: `Diesel Litre Used`,
-              stack: "Stack 0",
-              fill: false,
-              lineTension: 0.1,
-              backgroundColor: "#036bfc",
-              borderColor: "#ffaa1d",
-              borderCapStyle: "butt",
-              borderDash: [],
-              borderDashOffset: 0.0,
-              borderJoinStyle: "miter",
-              pointBorderColor: "#ffaa1d",
-              pointBackgroundColor: "#fff",
-              pointBorderWidth: 1,
-              pointHoverRadius: 5,
-              pointHoverBackgroundColor: "#ffaa1d",
-              pointHoverBorderColor: "#ffaa1d",
-              pointHoverBorderWidth: 2,
-              pointRadius: 1,
-              pointHitRadius: 10,
-              data: diesel_litre_used
-            },
-            // {
-            //   yAxisID: "A",
-            //   label: `PKC1 Crushed`,
-            //   stack: "Stack 0",
-            //   fill: false,
-            //   lineTension: 0.1,
-            //   backgroundColor: "#993fb0",
-            //   borderColor: "#ffaa1d",
-            //   borderCapStyle: "butt",
-            //   borderDash: [],
-            //   borderDashOffset: 0.0,
-            //   borderJoinStyle: "miter",
-            //   pointBorderColor: "#ffaa1d",
-            //   pointBackgroundColor: "#fff",
-            //   pointBorderWidth: 1,
-            //   pointHoverRadius: 5,
-            //   pointHoverBackgroundColor: "#ffaa1d",
-            //   pointHoverBorderColor: "#ffaa1d",
-            //   pointHoverBorderWidth: 2,
-            //   pointRadius: 1,
-            //   pointHitRadius: 10,
-            //   data: total_pkc1
-            // },
-            {
-              yAxisID: "B",
-              label: `Hours On Generator`,
-              stack: "Stack 1",
-              fill: false,
-              lineTension: 0.1,
-              backgroundColor: "#ffaa1d",
-              borderColor: "#ffaa1d",
-              borderCapStyle: "butt",
-              borderDash: [],
-              borderDashOffset: 0.0,
-              borderJoinStyle: "miter",
-              pointBorderColor: "#ffaa1d",
-              pointBackgroundColor: "#fff",
-              pointBorderWidth: 1,
-              pointHoverRadius: 5,
-              pointHoverBackgroundColor: "#ffaa1d",
-              pointHoverBorderColor: "#ffaa1d",
-              pointHoverBorderWidth: 2,
-              pointRadius: 1,
-              pointHitRadius: 10,
-              data: hours_on_gen
-            },
-            // {
-            //   yAxisID: "B",
-            //   label: `PKC1 Uptime`,
-            //   stack: "Stack 1",
-            //   fill: false,
-            //   lineTension: 0.1,
-            //   backgroundColor: "#ba4a1a",
-            //   borderColor: "#ffaa1d",
-            //   borderCapStyle: "butt",
-            //   borderDash: [],
-            //   borderDashOffset: 0.0,
-            //   borderJoinStyle: "miter",
-            //   pointBorderColor: "#ffaa1d",
-            //   pointBackgroundColor: "#fff",
-            //   pointBorderWidth: 1,
-            //   pointHoverRadius: 5,
-            //   pointHoverBackgroundColor: "#ffaa1d",
-            //   pointHoverBorderColor: "#ffaa1d",
-            //   pointHoverBorderWidth: 2,
-            //   pointRadius: 1,
-            //   pointHitRadius: 10,
-            //   data: pkc1_uptimes
-            // },
-          ]
-        };
-      }
-      if(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_MAINTENANCE){
-      
-        const total_maintenance_cost = [];
-        const total_maintenance_duration_in_hours = [];
-        labels.forEach(date => {
-          total_maintenance_cost.push(datasets[date].total_maintenance_cost)
-          total_maintenance_duration_in_hours.push(datasets[date].total_maintenance_duration_in_hours)
-        })
-
-        datasetAccumulated = graph_A_B_YAxisDatasets(labels,
+        this.setState(
           {
-            label:`Maintenance Hours`,
-            data:total_maintenance_duration_in_hours,
+            accumulatedData:datasetAccumulated,
+            extra_tooltip_data
           },
-          {
-            label:"Maintenance Cost",
-            data:total_maintenance_cost,
-          },
+          ()=>this.setGraphValues()
         )
       }
-      if(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME){
-      
-        const uptime = [];
-        const downtime = [];
-        labels.forEach(date => {
-          downtime.push(datasets[date].downtime)
-          uptime.push(datasets[date].uptime)
-        })
-
-        datasetAccumulated = graph_A_B_YAxisDatasets(labels,
-          {
-            label:`${this.state.expeller_number} Uptime`,
-            data:uptime,
-          },
-          {
-            label:`${this.state.expeller_number} Downtime`,
-            data:downtime,
-          },
-        )
-      }
-      if(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY){
-      
-        const crushing_efficiency = [];
-        labels.forEach(date => {
-          crushing_efficiency.push(datasets[date].crushing_efficiency)
-          // uptime.push(datasets[date].uptime)
-        })
-
-        datasetAccumulated = {
-          labels,
-          datasets: [
-            {
-              label: `${this.state.expeller_number} Crushing Efficiency`,
-              stack: "Stack 0",
-              fill: false,
-              lineTension: 0.1,
-              backgroundColor: "#ffaa1d",
-              borderColor: "#ffaa1d",
-              borderCapStyle: "butt",
-              borderDash: [],
-              borderDashOffset: 0.0,
-              borderJoinStyle: "miter",
-              pointBorderColor: "#ffaa1d",
-              pointBackgroundColor: "#fff",
-              pointBorderWidth: 1,
-              pointHoverRadius: 5,
-              pointHoverBackgroundColor: "#ffaa1d",
-              pointHoverBorderColor: "#ffaa1d",
-              pointHoverBorderWidth: 2,
-              pointRadius: 1,
-              pointHitRadius: 10,
-              data: crushing_efficiency
-            }
-          ]
-        };
-      }
-
-      if(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UTILIZATION){
-      
-        const utilization_rate = [];
-        labels.forEach(date => {
-          utilization_rate.push(datasets[date].utilization_rate)
-          // uptime.push(datasets[date].uptime)
-        })
-
-        datasetAccumulated = {
-          labels,
-          datasets: [
-            {
-              label: `${this.state.expeller_number} Utilization Efficiency`,
-              stack: "Stack 0",
-              fill: false,
-              lineTension: 0.1,
-              backgroundColor: "#ffaa1d",
-              borderColor: "#ffaa1d",
-              borderCapStyle: "butt",
-              borderDash: [],
-              borderDashOffset: 0.0,
-              borderJoinStyle: "miter",
-              pointBorderColor: "#ffaa1d",
-              pointBackgroundColor: "#fff",
-              pointBorderWidth: 1,
-              pointHoverRadius: 5,
-              pointHoverBackgroundColor: "#ffaa1d",
-              pointHoverBorderColor: "#ffaa1d",
-              pointHoverBorderWidth: 2,
-              pointRadius: 1,
-              pointHitRadius: 10,
-              data: utilization_rate
-            }
-          ]
-        };
-      }
-
-      console.log(datasetAccumulated)
-
-      this.setState(
-        {
-          accumulatedData:datasetAccumulated,
-          extra_tooltip_data
-        },
-        ()=>this.setGraphValues()
-      )
 
     }catch(err){
       console.log(err)
@@ -447,7 +343,8 @@ export default class Energy extends Component {
       currency,
       energy_stats_level,
       extra_tooltip_data,
-      machine_raw_material
+      page_category,
+      diesel_supply_log_data
     } = this.state;
 
     const diesel_ltr_amount_usage_options = { 
@@ -515,253 +412,18 @@ export default class Energy extends Component {
       }
     };
 
-    const maintenance_options = { 
-      maintainAspectRatio: true, 
-      responsive: true,
-      tooltips : {
-        mode: "label",
-        callbacks: {
-          label: function(tooltipItem, data) {
-            const key = data.datasets[tooltipItem.datasetIndex].label;
-            const yAxis = data.datasets[tooltipItem.datasetIndex].yAxisID;
-            const val = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-            if (val && yAxis === "A") return key + ": " +val.toLocaleString() +" hours";
-            if (val && yAxis === "B") return key + ` : ${currency === "naira" ? "₦":"$"}` + val.toLocaleString();
-          },
-
-          afterBody: function(tooltipItem, d) {
-            return `Equipment: ${extra_tooltip_data[tooltipItem[0].label].equipment}\nTime Of Issue: ${extra_tooltip_data[tooltipItem[0].label].time_of_issue}\nTime Of Completion: ${extra_tooltip_data[tooltipItem[0].label].time_of_completion}\nMaintenance Duration: ${extra_tooltip_data[tooltipItem[0].label].total_maintenance_duration}`;
-         }
-        }
-      },
-      scales:{
-        xAxes:[
-          {
-            scaleLabel: {
-              display: true,
-              labelString: ""
-            }
-          }
-        ],
-        yAxes :[
-          {
-            type: "linear",
-            display: true,
-            position: "left",
-            id: "A",
-            scaleLabel: {
-              display: true,
-              labelString: ""
-            },
-            ticks: {
-              callback: value => value + " hours",
-              beginAtZero: true,
-              stepSize: 2
-            }
-          },
-          {
-            type: "linear",
-            display: true,
-            position: "right",
-            id: "B",
-            scaleLabel: {
-              display: true,
-              labelString: ""
-            },
-            ticks: {
-              callback: value => `${currency === "naira" ? "₦":"$"}` + value.toLocaleString(),
-              beginAtZero: true,
-              stepSize: 5000
-            }
-          }
-        ]
-      }
-    };
-
-    const uptime_and_downtime_options = { 
-      maintainAspectRatio: true, 
-      responsive: true,
-      tooltips : {
-        mode: "label",
-        callbacks: {
-          label: function(tooltipItem, data) {
-            const key = data.datasets[tooltipItem.datasetIndex].label;
-            const yAxis = data.datasets[tooltipItem.datasetIndex].yAxisID;
-            const val =
-              data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-            if (val && yAxis === "B") return key + ": " +val.toLocaleString() +" hours";
-            if (val && yAxis === "A") return key + ": " +val.toLocaleString() +" hours";
-            // if (val && yAxis === "A") return key + ` : ${currency === "naira" ? "₦":"$"}` + val.toLocaleString();
-          }
-        }
-      },
-      scales:{
-        xAxes:[
-          {
-            scaleLabel: {
-              display: true,
-              labelString: ""
-            }
-          }
-        ],
-        yAxes :[
-          {
-            type: "linear",
-            display: true,
-            position: "left",
-            id: "A",
-            scaleLabel: {
-              display: true,
-              labelString: ""
-            },
-            ticks: {
-              callback: value => value + " hours",
-              beginAtZero: true,
-              stepSize: 2
-            }
-          },
-          {
-            type: "linear",
-            display: true,
-            position: "right",
-            id: "B",
-            scaleLabel: {
-              display: true,
-              labelString: ""
-            },
-            ticks: {
-              callback: value => value + " hours",
-              beginAtZero: true,
-              stepSize: 2
-            }
-          }
-        ]
-      }
-    };
-
-    const crushed_efficiency_options = { 
-      maintainAspectRatio: true, 
-      responsive: true,
-      tooltips : {
-        mode: "label",
-        callbacks: {
-          label: function(tooltipItem, data) {
-            const key = data.datasets[tooltipItem.datasetIndex].label;
-            const yAxis = data.datasets[tooltipItem.datasetIndex].yAxisID;
-            const val =
-              data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-            if (val) return key + ": " +val.toLocaleString() +"%";
-           },
-           afterBody: function(tooltipItem, d) {
-            return `Expeller: ${extra_tooltip_data[tooltipItem[0].label].expeller_number}\nRaw Material: ${extra_tooltip_data[tooltipItem[0].label].raw_material}\nShift: ${extra_tooltip_data[tooltipItem[0].label].shift}`;
-         }
-        }
-      },
-      scales:{
-        xAxes:[
-          {
-            scaleLabel: {
-              display: true,
-              labelString: ""
-            }
-          }
-        ],
-        yAxes :[
-          {
-            type: "linear",
-            display: true,
-            position: "left",
-            id: "A",
-            scaleLabel: {
-              display: true,
-              labelString: ""
-            },
-            ticks: {
-              callback: value => value + "%",
-              beginAtZero: true,
-              stepSize: 2
-            }
-          },
-          {
-            type: "linear",
-            display: false,
-            position: "right",
-            id: "B",
-            scaleLabel: {
-              display: true,
-              labelString: ""
-            },
-            ticks: {
-              callback: value => value + "%",
-              beginAtZero: true,
-              stepSize: 2
-            }
-          }
-        ]
-      }
-    };
-
-    const utilization_options = { 
-      maintainAspectRatio: true, 
-      responsive: true,
-      tooltips : {
-        mode: "label",
-        callbacks: {
-          label: function(tooltipItem, data) {
-            const key = data.datasets[tooltipItem.datasetIndex].label;
-            const yAxis = data.datasets[tooltipItem.datasetIndex].yAxisID;
-            const val =
-              data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-            if (val) return key + ": " +val.toLocaleString() +"%";
-           },
-           afterBody: function(tooltipItem, d) {
-            return `Expeller: ${extra_tooltip_data[tooltipItem[0].label].expeller_number}\nRaw Material: ${extra_tooltip_data[tooltipItem[0].label].raw_material}\nShift: ${extra_tooltip_data[tooltipItem[0].label].shift}`;
-         }
-        }
-      },
-      scales:{
-        xAxes:[
-          {
-            scaleLabel: {
-              display: true,
-              labelString: ""
-            }
-          }
-        ],
-        yAxes :[
-          {
-            type: "linear",
-            display: true,
-            position: "left",
-            id: "A",
-            scaleLabel: {
-              display: true,
-              labelString: ""
-            },
-            ticks: {
-              callback: value => value + "%",
-              beginAtZero: true,
-              stepSize: 2
-            }
-          },
-          {
-            type: "linear",
-            display: false,
-            position: "right",
-            id: "B",
-            scaleLabel: {
-              display: true,
-              labelString: ""
-            },
-            ticks: {
-              callback: value => value + "%",
-              beginAtZero: true,
-              stepSize: 2
-            }
-          }
-        ]
-      }
-    };
+    const diesel_supply_log_tbl_row = this.state.diesel_supply_log_data.map((data,index) => {
+      return (
+        <tr key={index}>
+          <td>{++index}</td>
+          <td>{data.supplier}</td>
+          <td>{data.quantity_in_litre}</td>
+          <td>&#8358;{data.price_per_litre}</td>
+          <td>&#8358;{data.amount}</td>
+          <td>{data.date}</td>
+        </tr>
+      )
+    });
 
     if (this.state.loading) {
       return <Loader />;
@@ -780,7 +442,7 @@ export default class Energy extends Component {
                     <option value={CONSTANT.DIESEL_SUPPLY_LOG}>Diesel Supply Log</option>
                 </select>
               </div>
-              {this.state.page_category === CONSTANT.ENERGY_ANALYSIS && (
+              {page_category === CONSTANT.ENERGY_ANALYSIS && (
                 <React.Fragment>
                   <div className="col-md-2 block">
                     <select 
@@ -851,7 +513,7 @@ export default class Energy extends Component {
                   content={
                     <div className="ct-chart" style={{height:"100%",width:"100%"}}>
                       <div>
-                      {energy_stats_level === CONSTANT.ENERGY_DIESEL_LITRE_AND_AMOUNT_USAGE && (
+                      {page_category !== CONSTANT.DIESEL_SUPPLY_LOG && energy_stats_level === CONSTANT.ENERGY_DIESEL_LITRE_AND_AMOUNT_USAGE && (
                         <Bar
                         height={400}
                         width={800}
@@ -859,14 +521,25 @@ export default class Energy extends Component {
                         options={diesel_ltr_amount_usage_options}
                       />
                       )}
-                      {/* {machine_stats_level === CONSTANT.MACHINE_DATA_MAINTENANCE && (
-                        <Bar
-                        height={400}
-                        width={800}
-                        data={this.state.accumulatedData}
-                        options={maintenance_options}
-                      />
-                      )}
+                     {page_category === CONSTANT.DIESEL_SUPPLY_LOG && (
+                        <table className="table table-hover">
+                          <thead>
+                            <tr>
+                              <th scope="col">#</th>
+                              <th scope="col">Supplier</th>
+                              <th scope="col">Quantity (Litre)</th>
+                              <th scope="col">Price (per Litre) (&#8358;)</th>
+                              <th scope="col">Total Amount (&#8358;)</th>
+                              <th scope="col">Supply Date</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {diesel_supply_log_tbl_row}
+                          </tbody>
+                        </table>  
+                      )
+                      }
+                       {/* 
                       {machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME && (
                         <Bar
                         height={400}

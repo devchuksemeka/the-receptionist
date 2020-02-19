@@ -6,6 +6,7 @@ import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
 import { CONSTANT } from "../helpers";
 import moment from 'moment'
+import { StatsCard } from "components/StatsCard/StatsCard.jsx";
 
 import axios from 'axios'
 
@@ -19,6 +20,7 @@ export default class Energy extends Component {
     diesel_supply_log_data:[],
     extra_tooltip_data:{},
     loading: true,
+    extras: {},
     startDate: moment().startOf("week").toDate(),
     endDate: moment().endOf("week").toDate(),
     currentDateFilter: "currentWeek",
@@ -75,15 +77,17 @@ export default class Energy extends Component {
 
   handleSubmit = async () => {
     let extra_tooltip_data = {};
+    let extras = {};
     try{
       if(this.state.page_category === CONSTANT.DIESEL_SUPPLY_LOG){
         const res_data = await axios.get(`
         ${this.state.baseURL}/v1/energies/get-diesel-supply-log?${this.getRequestQueryParams()}`)
 
         let diesel_supply_log_data = res_data.data.data;
+        
         // console.log(diesel_supply_log_data)
         this.setState({
-          diesel_supply_log_data
+          diesel_supply_log_data,
         },()=>this.setGraphValues())
       }
       else{
@@ -91,6 +95,7 @@ export default class Energy extends Component {
         ${this.state.baseURL}/v1/energies/diesel-usage/${this.state.energy_stats_level}?${this.getRequestQueryParams()}`)
         const {datasets,labels} = res_data.data
         extra_tooltip_data = datasets;
+        extras = res_data.data.extras;
 
         // const result_keys = Object.keys(datasets);
         let datasetAccumulated = {};
@@ -209,7 +214,8 @@ export default class Energy extends Component {
         this.setState(
           {
             accumulatedData:datasetAccumulated,
-            extra_tooltip_data
+            extra_tooltip_data,
+            extras
           },
           ()=>this.setGraphValues()
         )
@@ -501,6 +507,28 @@ export default class Energy extends Component {
 
             </div>
             </div>
+            <Row>
+              {page_category === CONSTANT.ENERGY_ANALYSIS && (
+                <React.Fragment>
+                  <Col lg={3} sm={6}>
+                    <StatsCard
+                      bigIcon={<i className="pe-7s-science text-secondary" />}
+                      statsText={`Diesel Consumption (Litre)`}
+                      statsValue={this.state.extras.total_diesel_used || 0}
+                      statsIconText={`Total diesel consumption (Litre)`}
+                    />
+                  </Col>
+                  <Col lg={3} sm={6}>
+                    <StatsCard
+                      bigIcon={<i className="pe-7s-shield text-info" />}
+                      statsText="Hours On Generator"
+                      statsValue={this.state.extras.total_hours_on_gen || 0}
+                      statsIconText={`Total Hours On Generator`}
+                    />
+                  </Col>
+                </React.Fragment>
+              )}
+            </Row> 
 
             <Row>
               <Col md={12} lg={12}>

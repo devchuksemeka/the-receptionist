@@ -191,7 +191,8 @@ const CONSTANT = {
   MAINTENANCE_ACTION_LEVEL:"maintenance_action_level",
 
   // procurement cost levels
-  SUPPLY_ANALYSIS:"supply_analysis",
+  P2_SUPPLY_ANALYSIS:"p2_supply_analysis",
+  DIESEL_SUPPLY_ANALYSIS:"diesel_supply_analysis",
 
   // machine data stats levels
   MACHINE_DATA_RM_CRUSHING:"rm_crushing",
@@ -205,8 +206,8 @@ const CONSTANT = {
   MACHINE_PKC1_RM: "PKC1",
 
    // ENERGY PAGE CATEGORY
-   ENERGY_ANALYSIS: "energy_analysis",
-   DIESEL_SUPPLY_LOG: "diesel_supply_log",
+  ENERGY_ANALYSIS: "energy_analysis",
+  DIESEL_SUPPLY_LOG: "diesel_supply_log",
 
   // energy data stats levels
   ENERGY_DIESEL_LITRE_AND_AMOUNT_USAGE:"litre_and_amount_usage",

@@ -4,7 +4,7 @@ import { Card } from "components/Card/Card.jsx";
 import { Line, Bar} from "react-chartjs-2";
 import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
-import { graph_A_B_YAxisDatasets } from "../helpers";
+import { graph_A_B_YAxisDatasets,CONSTANT } from "../helpers";
 import moment from 'moment'
 
 import axios from 'axios'
@@ -13,7 +13,7 @@ export default class ProcurementCost extends Component {
 
   state = {
     baseURL:process.env.REACT_APP_SERVER_ENDPOINT,
-    procurement_cost_level:"supply_analysis",
+    procurement_cost_level:CONSTANT.P2_SUPPLY_ANALYSIS,
     procurement_cost_data:[],
     
     loading: true,
@@ -78,7 +78,7 @@ export default class ProcurementCost extends Component {
       // const result_keys = Object.keys(datasets);
       let datasetAccumulated = {};
 
-      if(this.state.procurement_cost_level === "supply_analysis"){
+      if(this.state.procurement_cost_level === CONSTANT.P2_SUPPLY_ANALYSIS){
       
         const total_amount = [];
         const total_quantities = [];
@@ -95,6 +95,27 @@ export default class ProcurementCost extends Component {
           },{
             label:"Total Qty Supplied",
             data:total_quantities,
+            color:""
+          },
+        )
+      }
+      if(this.state.procurement_cost_level === CONSTANT.DIESEL_SUPPLY_ANALYSIS){
+      
+        const total_amount = [];
+        const quantity_in_litre = [];
+        labels.forEach(supplier => {
+          total_amount.push(datasets[supplier].total_amount)
+          quantity_in_litre.push(datasets[supplier].quantity_in_litre)
+        })
+
+        datasetAccumulated = graph_A_B_YAxisDatasets(labels,
+          {
+            label:`Total Amount Supplied`,
+            data:total_amount,
+            color:""
+          },{
+            label:"Total Qty Supplied",
+            data:quantity_in_litre,
             color:""
           },
         )
@@ -204,7 +225,7 @@ export default class ProcurementCost extends Component {
   render() {
     const {currency} = this.state;
 
-    const options = { maintainAspectRatio: true, responsive: true,
+    const p2_supply_log_options = { maintainAspectRatio: true, responsive: true,
       tooltips : {
         mode: "label",
         callbacks: {
@@ -262,6 +283,64 @@ export default class ProcurementCost extends Component {
       }
     };
 
+    const diesel_supply_log_options = { maintainAspectRatio: true, responsive: true,
+      tooltips : {
+        mode: "label",
+        callbacks: {
+          label: function(tooltipItem, data) {
+            const key = data.datasets[tooltipItem.datasetIndex].label;
+            const yAxis = data.datasets[tooltipItem.datasetIndex].yAxisID;
+            const val =
+              data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+            if (val && yAxis === "B") return key + ": " +val.toLocaleString() +" litres";
+            if (val && yAxis === "A") return key + ` : ${currency === "naira" ? "₦":"$"}` + val.toLocaleString();
+          }
+        }
+      },
+      scales:{
+        xAxes:[
+          {
+            scaleLabel: {
+              display: true,
+              labelString: ""
+            }
+          }
+        ],
+        yAxes :[
+          {
+            type: "linear",
+            display: true,
+            position: "left",
+            id: "A",
+            scaleLabel: {
+              display: true,
+              labelString: ""
+            },
+            ticks: {
+              callback: value => ` ${currency === "naira" ? "₦":"$"} ` + value.toLocaleString(),
+              beginAtZero: true,
+              stepSize: currency === "naira" ? 300000: 400
+            }
+          },
+          {
+            type: "linear",
+            display: true,
+            position: "right",
+            id: "B",
+            scaleLabel: {
+              display: true,
+              labelString: ""
+            },
+            ticks: {
+              callback: value => value + " litres",
+              beginAtZero: true,
+              stepSize: 300
+            }
+          }
+        ]
+      }
+    };
+
     if (this.state.loading) {
       return <Loader />;
     }
@@ -272,6 +351,18 @@ export default class ProcurementCost extends Component {
             <div className="row" style={{marginBottom:"0.5rem"}}>
               <div className="col-md-3 block">
                 <select 
+                    className="form-control form-control-lg"
+                    value={this.state.procurement_cost_level}
+                    onChange={this.handleProcurementCostLevelChange}>
+                  <option value={CONSTANT.P2_SUPPLY_ANALYSIS}>P2 Supply Analysis</option>
+                    <option value={CONSTANT.DIESEL_SUPPLY_ANALYSIS}>Diesel Supply Analysis</option>
+                    {/* <option value="week">Transportation</option>
+                    <option value="month">Offloading</option>
+                  <option value="month">Tolls</option> */}
+                </select>
+              </div>
+              <div className="col-md-3 block">
+                <select 
                   className="form-control form-control-lg"
                   value={this.state.currentDateFilter}
                   onChange={this.handleDateFilter}>
@@ -280,18 +371,6 @@ export default class ProcurementCost extends Component {
                     <option value="last2Weeks">Last 2 Weeks</option>
                     <option value="lastMonth">Last Month</option>
                     <option value="custom">Custom</option>
-                </select>
-              </div>
-              <div className="col-md-3 block">
-              <select 
-                  className="form-control form-control-lg"
-                  value={this.state.procurement_cost_level}
-                  onChange={this.handleProcurementCostLevelChange}>
-                <option value="supply_analysis">P2 Supply Analysis</option>
-                  <option value="diesel_supply_analysis">Diesel Supply Analyis</option>
-                  {/* <option value="week">Transportation</option>
-                  <option value="month">Offloading</option>
-                  <option value="month">Tolls</option> */}
                 </select>
               </div>
               <div className="col-md-2 block">
@@ -353,12 +432,22 @@ export default class ProcurementCost extends Component {
                   content={
                     <div className="ct-chart" style={{height:"100%",width:"100%"}}>
                       <div>
-                      <Bar
-                        height={400}
-                        width={800}
-                        data={this.state.accumulatedData}
-                        options={options}
-                      />
+                      {this.state.procurement_cost_level === CONSTANT.P2_SUPPLY_ANALYSIS && (
+                         <Bar
+                         height={400}
+                         width={800}
+                         data={this.state.accumulatedData}
+                         options={p2_supply_log_options}
+                       />
+                      )}
+                      {this.state.procurement_cost_level === CONSTANT.DIESEL_SUPPLY_ANALYSIS && (
+                         <Bar
+                         height={400}
+                         width={800}
+                         data={this.state.accumulatedData}
+                         options={diesel_supply_log_options}
+                       />
+                      )}
                       </div>
                     </div>
                   }

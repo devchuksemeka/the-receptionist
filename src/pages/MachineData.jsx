@@ -24,7 +24,7 @@ export default class MachineData extends Component {
     graphView: "day",
     currency: "naira",
     shift: "1",
-    expeller_number: "EX 2",
+    expeller_number: "__ALL__",
   };
 
   async componentDidMount() {
@@ -618,7 +618,7 @@ export default class MachineData extends Component {
           },
           {
             type: "linear",
-            display: true,
+            display: false,
             position: "right",
             id: "B",
             scaleLabel: {
@@ -815,7 +815,8 @@ export default class MachineData extends Component {
                       className="form-control form-control-lg"
                       value={this.state.expeller_number}
                       onChange={this.handleExpellerNumberChange}>
-                    <option value="EX 1">Expeller 1</option>
+                      <option value="__ALL__">All Machines</option>
+                      <option value="EX 1">Expeller 1</option>
                       <option value="EX 2">Expeller 2</option>
                       <option value="EX 3">Expeller 3</option>
                       <option value="EX 4">Expeller 4</option>

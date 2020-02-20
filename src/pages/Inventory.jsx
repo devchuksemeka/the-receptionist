@@ -528,9 +528,9 @@ export default class Inventory extends Component {
                   <Col lg={3} sm={6}>
                     <StatsCard
                       bigIcon={<i className="pe-7s-shield text-info" />}
-                      statsText="All Time Total Crushed (Ton)"
-                      statsValue={this.state.extras.all_time_total_product_crushed || 0}
-                      statsIconText={`Total P2 crushed: ${this.state.extras.total_product_crushed || 0} (Ton)`}
+                      statsText="Total P2 crushed (Ton)"
+                      statsValue={this.state.extras.total_product_crushed || 0}
+                      statsIconText={`All Time Total Crushed : ${this.state.extras.all_time_total_product_crushed || 0}  (Ton)`}
                     />
                   </Col>
                   <Col lg={3} sm={6}>

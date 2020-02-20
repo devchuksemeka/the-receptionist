@@ -211,6 +211,15 @@ const CONSTANT = {
 
   // energy data stats levels
   ENERGY_DIESEL_LITRE_AND_AMOUNT_USAGE:"litre_and_amount_usage",
+
+
+
+  // MACHINE NAME
+  ALL_MACHINES : "__ALL__",
+  MACHINE_1 : "EX 1",
+  MACHINE_2 : "EX 2",
+  MACHINE_3 : "EX 3",
+  MACHINE_4 : "EX 4",
 }
 
 module.exports= {

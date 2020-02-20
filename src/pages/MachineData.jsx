@@ -4,6 +4,7 @@ import { Card } from "components/Card/Card.jsx";
 import { Line, Bar} from "react-chartjs-2";
 import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
+import { StatsCard } from "components/StatsCard/StatsCard.jsx";
 import { graph_A_B_YAxisDatasets,CONSTANT } from "../helpers";
 import moment from 'moment'
 
@@ -17,6 +18,7 @@ export default class MachineData extends Component {
     machine_raw_material:CONSTANT.MACHINE_P2_RM,
     machine_data:[],
     extra_tooltip_data:{},
+    extras:{},
     loading: true,
     startDate: moment().startOf("week").toDate(),
     endDate: moment().endOf("week").toDate(),
@@ -446,7 +448,8 @@ export default class MachineData extends Component {
       currency,
       machine_stats_level,
       extra_tooltip_data,
-      machine_raw_material
+      machine_raw_material,
+      expeller_number,
     } = this.state;
 
     const rm_crushed_options = { 
@@ -813,11 +816,11 @@ export default class MachineData extends Component {
                   className="form-control form-control-lg"
                   value={this.state.expeller_number}
                   onChange={this.handleExpellerNumberChange}>
-                  <option value="__ALL__">All Machines</option>
-                  <option value="EX 1">Expeller 1</option>
-                  <option value="EX 2">Expeller 2</option>
-                  <option value="EX 3">Expeller 3</option>
-                  <option value="EX 4">Expeller 4</option>
+                  <option value={CONSTANT.ALL_MACHINES}>All Machines</option>
+                  <option value={CONSTANT.MACHINE_1}>Expeller 1</option>
+                  <option value={CONSTANT.MACHINE_2}>Expeller 2</option>
+                  <option value={CONSTANT.MACHINE_3}>Expeller 3</option>
+                  <option value={CONSTANT.MACHINE_4}>Expeller 4</option>
                 </select>
               </div>
               {(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME || 
@@ -873,10 +876,49 @@ export default class MachineData extends Component {
                 </div>
               </React.Fragment> 
               )}
-              
-
             </div>
-
+            {machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME && (
+              <React.Fragment>
+                {(expeller_number === CONSTANT.ALL_MACHINES  || expeller_number === CONSTANT.MACHINE_1)  && (
+                <Col lg={3} sm={6}>
+                  <StatsCard
+                    bigIcon={<i className="pe-7s-tools text-primary" />}
+                    statsText={`Machine 1 Uptime (hour)`}
+                    statsValue={this.state.extras.avg_crushing_rate_per_hour || 0}
+                    statsIconText={`Service Alert`}
+                  />
+                </Col>
+                )}
+            {(expeller_number === CONSTANT.ALL_MACHINES  || expeller_number === CONSTANT.MACHINE_2)  && (
+              <Col lg={3} sm={6}>
+                <StatsCard
+                  bigIcon={<i className="pe-7s-tools text-danger" />}
+                  statsText={`Machine 2 Uptime (hour)`}
+                  statsValue={this.state.extras.avg_crushing_rate_per_hour || 0}
+                  statsIconText={`Service Alert`}
+                />
+              </Col>)}
+  
+            {(expeller_number === CONSTANT.ALL_MACHINES  || expeller_number === CONSTANT.MACHINE_3)  && (
+              <Col lg={3} sm={6}>
+                <StatsCard
+                  bigIcon={<i className="pe-7s-tools text-info" />}
+                  statsText={`Machine 3 Uptime (hour)`}
+                  statsValue={this.state.extras.avg_crushing_rate_per_hour || 0}
+                  statsIconText={`Service Alert`}
+                />
+              </Col>)}
+            {(expeller_number === CONSTANT.ALL_MACHINES  || expeller_number === CONSTANT.MACHINE_4)  && (
+              <Col lg={3} sm={6}>
+                <StatsCard
+                  bigIcon={<i className="pe-7s-tools text-warning" />}
+                  statsText={`Machine 4 Uptime (hour)`}
+                  statsValue={this.state.extras.avg_crushing_rate_per_hour || 0}
+                  statsIconText={`Service Alert`}
+                />
+              </Col>)}
+              </React.Fragment>
+            )}
             <Row>
               <Col md={12} lg={12}>
                 <Card

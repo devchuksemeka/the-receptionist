@@ -77,6 +77,7 @@ export default class MachineData extends Component {
 
   handleSubmit = async () => {
     let extra_tooltip_data = {};
+    let extras = {};
     try{
       const res_data = await axios.get(`
         ${this.state.baseURL}/v1/supplies/machine-data/${this.state.machine_stats_level}?${this.getRequestQueryParams()}`)
@@ -311,12 +312,20 @@ export default class MachineData extends Component {
         };
       }
 
-      console.log(datasetAccumulated)
+      const uptime_and_service_alert = await axios.get(`${this.state.baseURL}/v1/machines/get-uptime-and-service-alert?${this.getRequestQueryParams()}`)
+      const machine_health= uptime_and_service_alert.data;
+      extras = {
+        ...extras,
+        ...machine_health
+      }
+
+      // console.log(extras)
 
       this.setState(
         {
           accumulatedData:datasetAccumulated,
-          extra_tooltip_data
+          extra_tooltip_data,
+          extras
         },
         ()=>this.setGraphValues()
       )
@@ -450,6 +459,7 @@ export default class MachineData extends Component {
       extra_tooltip_data,
       machine_raw_material,
       expeller_number,
+      extras
     } = this.state;
 
     const rm_crushed_options = { 
@@ -884,7 +894,7 @@ export default class MachineData extends Component {
                   <StatsCard
                     bigIcon={<i className="pe-7s-tools text-primary" />}
                     statsText={`Machine 1 Uptime (hour)`}
-                    statsValue={this.state.extras.avg_crushing_rate_per_hour || 0}
+                    statsValue={extras.machine_1.uptime || 0}
                     statsIconText={`Service Alert`}
                   />
                 </Col>
@@ -894,7 +904,7 @@ export default class MachineData extends Component {
                 <StatsCard
                   bigIcon={<i className="pe-7s-tools text-danger" />}
                   statsText={`Machine 2 Uptime (hour)`}
-                  statsValue={this.state.extras.avg_crushing_rate_per_hour || 0}
+                  statsValue={extras.machine_2.uptime || 0}
                   statsIconText={`Service Alert`}
                 />
               </Col>)}
@@ -904,7 +914,7 @@ export default class MachineData extends Component {
                 <StatsCard
                   bigIcon={<i className="pe-7s-tools text-info" />}
                   statsText={`Machine 3 Uptime (hour)`}
-                  statsValue={this.state.extras.avg_crushing_rate_per_hour || 0}
+                  statsValue={extras.machine_3.uptime || 0}
                   statsIconText={`Service Alert`}
                 />
               </Col>)}
@@ -913,7 +923,7 @@ export default class MachineData extends Component {
                 <StatsCard
                   bigIcon={<i className="pe-7s-tools text-warning" />}
                   statsText={`Machine 4 Uptime (hour)`}
-                  statsValue={this.state.extras.avg_crushing_rate_per_hour || 0}
+                  statsValue={extras.machine_4.uptime || 0}
                   statsIconText={`Service Alert`}
                 />
               </Col>)}

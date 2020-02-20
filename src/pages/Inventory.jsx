@@ -239,6 +239,7 @@ export default class Inventory extends Component {
         )
       }
     }
+
     this.setState({
       P2Accumulated,
       extras,

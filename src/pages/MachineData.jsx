@@ -226,11 +226,11 @@ export default class MachineData extends Component {
 
         datasetAccumulated = graph_A_B_YAxisDatasets(labels,
           {
-            label:`${this.state.expeller_number} Uptime`,
+            label:`${this.state.expeller_number === "__ALL__" ? "All Machines" : this.state.expeller_number} Uptime`,
             data:uptime,
           },
           {
-            label:`${this.state.expeller_number} Downtime`,
+            label:`${this.state.expeller_number === "__ALL__" ? "All Machines" : this.state.expeller_number} Downtime`,
             data:downtime,
           },
         )
@@ -808,22 +808,18 @@ export default class MachineData extends Component {
                   <option value={CONSTANT.MACHINE_DATA_UTILIZATION}>Utilization</option>
                 </select>
               </div>
-              {(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_RM_CRUSHING) &&(
-                <React.Fragment>
-                  <div className="col-md-2 block">
-                    <select 
-                      className="form-control form-control-lg"
-                      value={this.state.expeller_number}
-                      onChange={this.handleExpellerNumberChange}>
-                      <option value="__ALL__">All Machines</option>
-                      <option value="EX 1">Expeller 1</option>
-                      <option value="EX 2">Expeller 2</option>
-                      <option value="EX 3">Expeller 3</option>
-                      <option value="EX 4">Expeller 4</option>
-                    </select>
-                  </div>
-                </React.Fragment>
-              )}
+              <div className="col-md-2 block">
+                <select 
+                  className="form-control form-control-lg"
+                  value={this.state.expeller_number}
+                  onChange={this.handleExpellerNumberChange}>
+                  <option value="__ALL__">All Machines</option>
+                  <option value="EX 1">Expeller 1</option>
+                  <option value="EX 2">Expeller 2</option>
+                  <option value="EX 3">Expeller 3</option>
+                  <option value="EX 4">Expeller 4</option>
+                </select>
+              </div>
               {(this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME || 
                 this.state.machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY  || 
                 this.state.machine_stats_level === CONSTANT.MACHINE_DATA_UTILIZATION) &&(
@@ -835,17 +831,6 @@ export default class MachineData extends Component {
                       onChange={this.handleShiftChange}>
                     <option value="1">Shift 1</option>
                       <option value="2">Shift 2</option>
-                    </select>
-                  </div>
-                  <div className="col-md-2 block">
-                    <select 
-                      className="form-control form-control-lg"
-                      value={this.state.expeller_number}
-                      onChange={this.handleExpellerNumberChange}>
-                    <option value="EX 1">Expeller 1</option>
-                      <option value="EX 2">Expeller 2</option>
-                      <option value="EX 3">Expeller 3</option>
-                      <option value="EX 4">Expeller 4</option>
                     </select>
                   </div>
                 </React.Fragment>

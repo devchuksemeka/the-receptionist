@@ -152,7 +152,7 @@ export default class MachineData extends Component {
             },
             {
               yAxisID: "B",
-              label: `P2 Uptime`,
+              label: `P2 ${this.state.expeller_number === CONSTANT.ALL_MACHINES ? "All Machine":this.state.expeller_number} Uptime`,
               stack: "Stack 1",
               fill: false,
               lineTension: 0.1,
@@ -175,7 +175,7 @@ export default class MachineData extends Component {
             },
             {
               yAxisID: "B",
-              label: `PKC1 Uptime`,
+              label: `PKC1 ${this.state.expeller_number === CONSTANT.ALL_MACHINES ? "All Machine":this.state.expeller_number} Uptime`,
               stack: "Stack 1",
               fill: false,
               lineTension: 0.1,

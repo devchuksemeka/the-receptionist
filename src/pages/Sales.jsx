@@ -447,14 +447,14 @@ export default class Sales extends Component {
       )}
     </div>
     <Row> 
-      <Col lg={3} sm={6}>
+      {/* <Col lg={3} sm={6}>
         <StatsCard
           bigIcon={<i className="pe-7s-magnet text-warning" />}
           statsText="Average Sales Circle"
           statsValue={salesCyclesAvg || 0}
           statsIconText={`Average Sales Circle`}
         />
-      </Col>
+      </Col> */}
       {currentView === "dailySales" && (
           <React.Fragment>
             <Col lg={3} sm={6}>

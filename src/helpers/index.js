@@ -227,7 +227,11 @@ const CONSTANT = {
    MACHINE_HEALTH_GOOD:"good",
    MACHINE_HEALTH_OK:"ok",
    MACHINE_HEALTH_BAD:"bad",
-   MACHINE_HEALTH_VERY_BAD:"very_bad"
+   MACHINE_HEALTH_VERY_BAD:"very_bad",
+
+   // MACHINE FILTER HEALTH LEVEL
+   MACHINE_SERVICE_HEALTH:"machine_service_health",
+   MACHINE_OVERHAUL_HEALTH:"machine_overhaul_health",
 }
 
 module.exports= {

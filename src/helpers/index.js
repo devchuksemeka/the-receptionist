@@ -220,6 +220,14 @@ const CONSTANT = {
   MACHINE_2 : "EX 2",
   MACHINE_3 : "EX 3",
   MACHINE_4 : "EX 4",
+
+
+   // MACHINE HEALTH STATUS
+   MACHINE_HEALTH_VERY_GOOD:"very_good",
+   MACHINE_HEALTH_GOOD:"good",
+   MACHINE_HEALTH_OK:"ok",
+   MACHINE_HEALTH_BAD:"bad",
+   MACHINE_HEALTH_VERY_BAD:"very_bad"
 }
 
 module.exports= {

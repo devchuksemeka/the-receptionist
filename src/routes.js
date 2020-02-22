@@ -22,20 +22,6 @@ const dashboardRoutes = [
     layout: "/admin"
   },
   {
-    path: "/machine-data",
-    name: "Machine Data",
-    icon: "pe-7s-target",
-    component: MachineData,
-    layout: "/admin"
-  },
-  {
-    path: "/procurement-cost",
-    name: "Procurement Analysis",
-    icon: "pe-7s-junk",
-    component: ProcurementCost,
-    layout: "/admin"
-  },
-  {
     path: "/sales",
     name: "Sales",
     icon: "pe-7s-cash",
@@ -47,6 +33,21 @@ const dashboardRoutes = [
     name: "Maintenance",
     icon: "pe-7s-settings",
     component: Maintenance,
+    layout: "/admin"
+  },
+
+  {
+    path: "/machine-data",
+    name: "Machine Data",
+    icon: "pe-7s-target",
+    component: MachineData,
+    layout: "/admin"
+  },
+  {
+    path: "/procurements",
+    name: "Procurements",
+    icon: "pe-7s-junk",
+    component: ProcurementCost,
     layout: "/admin"
   },
   {

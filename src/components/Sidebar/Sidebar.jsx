@@ -54,7 +54,7 @@ class Sidebar extends Component {
             to="#"
             className="simple-text logo-normal"
           >
-            Releaf FOT
+            Releaf OAT
           </NavLink>
         </div>
         <div className="sidebar-wrapper">

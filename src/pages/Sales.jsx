@@ -290,6 +290,8 @@ export default class Sales extends Component {
             stacked: true,
             ticks: {
               callback: value => `${currency === "naira" ? "₦":"$"}` + value.toLocaleString(),
+              beginAtZero: true,
+              stepSize: currency === "naira" ? 20000:5000
             }
           }
         ]
@@ -513,8 +515,7 @@ export default class Sales extends Component {
     </Row>
   </Grid>
 </div>
-      </React.Fragment>
-      
+    </React.Fragment>
     );
   }
   

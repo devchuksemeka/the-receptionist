@@ -267,9 +267,10 @@ export default class Energy extends Component {
   };
 
   handleEndDateChange = e => {
-    const date = e.target.value;
+    let date = e.target.value;
+    date = moment(date).endOf("day").toDate()
     this.setState({
-      endDate: new Date(date)
+      endDate: date
     });
   };
 
@@ -313,8 +314,6 @@ export default class Energy extends Component {
     ()=> this.handleSubmit()
     );
   };
-
-
 
   handleEnergyStatLevelChange = e => {
     const energy_stats_level = e.target.value;

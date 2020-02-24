@@ -378,9 +378,10 @@ export default class MachineData extends Component {
   };
 
   handleEndDateChange = e => {
-    const date = e.target.value;
+    let date = e.target.value;
+    date = moment(date).endOf("day").toDate()
     this.setState({
-      endDate: new Date(date)
+      endDate: date
     });
   };
 

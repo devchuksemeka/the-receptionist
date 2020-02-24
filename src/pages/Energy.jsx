@@ -4,7 +4,7 @@ import { Card } from "components/Card/Card.jsx";
 import { Bar} from "react-chartjs-2";
 import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
-import { CONSTANT } from "../helpers";
+import { CONSTANT,graph_A_B_YAxisDatasets } from "../helpers";
 import moment from 'moment'
 import { StatsCard } from "components/StatsCard/StatsCard.jsx";
 
@@ -46,6 +46,7 @@ export default class Energy extends Component {
   getText = () =>{
     if(this.state.page_category === CONSTANT.DIESEL_SUPPLY_LOG) return "Diesel Supply Log";
     if(this.state.energy_stats_level === CONSTANT.ENERGY_DIESEL_LITRE_AND_AMOUNT_USAGE) return "Diesel Litre And Amount Usage";
+    if(this.state.energy_stats_level === CONSTANT.ENERGY_GENERATOR_MAINTENANCE_ANALYSIS) return "Generator Maintenance";
     // if(this.state.machine_stats_level  === CONSTANT.MACHINE_DATA_RM_CRUSHING) return "Raw Material Crushing";
     // if(this.state.machine_stats_level  === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME) return "Uptime/Downtime";
     // if(this.state.machine_stats_level  === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY) return "Crushing Efficiency";
@@ -92,7 +93,7 @@ export default class Energy extends Component {
       }
       else{
         const res_data = await axios.get(`
-        ${this.state.baseURL}/v1/energies/diesel-usage/${this.state.energy_stats_level}?${this.getRequestQueryParams()}`)
+        ${this.state.baseURL}/v1/energies/energy-analysis/${this.state.energy_stats_level}?${this.getRequestQueryParams()}`)
         const {datasets,labels} = res_data.data
         extra_tooltip_data = datasets;
         extras = res_data.data.extras;
@@ -107,9 +108,6 @@ export default class Energy extends Component {
           labels.forEach(date => {
             diesel_litre_used.push(datasets[date].diesel_litre_used)
             hours_on_gen.push(datasets[date].hours_on_gen)
-            // p2_uptimes.push(datasets[date].P2.uptime)
-            // total_pkc1.push(datasets[date].PKC1.rm_crushed_in_ton)
-            // pkc1_uptimes.push(datasets[date].PKC1.uptime)
           })
 
           datasetAccumulated = {
@@ -209,6 +207,26 @@ export default class Energy extends Component {
               // },
             ]
           };
+        }
+        if(this.state.energy_stats_level === CONSTANT.ENERGY_GENERATOR_MAINTENANCE_ANALYSIS){
+          
+          const total_maintenance_cost = [];
+          const total_maintenance_duration_in_hours = [];
+          labels.forEach(date => {
+            total_maintenance_cost.push(datasets[date].total_maintenance_cost)
+            total_maintenance_duration_in_hours.push(datasets[date].total_maintenance_duration_in_hours)
+          })
+  
+          datasetAccumulated = graph_A_B_YAxisDatasets(labels,
+            {
+              label:`Maintenance Hours`,
+              data:total_maintenance_duration_in_hours,
+            },
+            {
+              label:"Maintenance Cost",
+              data:total_maintenance_cost,
+            },
+          )
         }
       
         this.setState(
@@ -417,6 +435,69 @@ export default class Energy extends Component {
       }
     };
 
+    const generator_maintenance_options = { 
+      maintainAspectRatio: true, 
+      responsive: true,
+      tooltips : {
+        mode: "label",
+        callbacks: {
+          label: function(tooltipItem, data) {
+            const key = data.datasets[tooltipItem.datasetIndex].label;
+            const yAxis = data.datasets[tooltipItem.datasetIndex].yAxisID;
+            const val = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+            if (val && yAxis === "A") return key + ": " +val.toLocaleString() +" hours";
+            if (val && yAxis === "B") return key + ` : ${currency === "naira" ? "₦":"$"}` + val.toLocaleString();
+          },
+
+          afterBody: function(tooltipItem, d) {
+            return `Equipment: ${extra_tooltip_data[tooltipItem[0].label].equipment}\nTime Of Issue: ${extra_tooltip_data[tooltipItem[0].label].time_of_issue}\nTime Of Completion: ${extra_tooltip_data[tooltipItem[0].label].time_of_completion}\nMaintenance Duration: ${extra_tooltip_data[tooltipItem[0].label].total_maintenance_duration}`;
+         }
+        }
+      },
+      scales:{
+        xAxes:[
+          {
+            scaleLabel: {
+              display: true,
+              labelString: ""
+            }
+          }
+        ],
+        yAxes :[
+          {
+            type: "linear",
+            display: true,
+            position: "left",
+            id: "A",
+            scaleLabel: {
+              display: true,
+              labelString: ""
+            },
+            ticks: {
+              callback: value => value + " hours",
+              beginAtZero: true,
+              stepSize: 2
+            }
+          },
+          {
+            type: "linear",
+            display: true,
+            position: "right",
+            id: "B",
+            scaleLabel: {
+              display: true,
+              labelString: ""
+            },
+            ticks: {
+              callback: value => `${currency === "naira" ? "₦":"$"}` + value.toLocaleString(),
+              beginAtZero: true,
+              stepSize: 5000
+            }
+          }
+        ]
+      }
+    };
+
     const diesel_supply_log_tbl_row = this.state.diesel_supply_log_data.map((data,index) => {
       return (
         <tr key={index}>
@@ -476,10 +557,13 @@ export default class Energy extends Component {
                     <select className="form-control form-control-lg"
                       value={this.state.energy_stats_level} onChange={this.handleEnergyStatLevelChange}>
                       <option value={CONSTANT.ENERGY_DIESEL_LITRE_AND_AMOUNT_USAGE}>Diesel Usage</option>
+                      <option value={CONSTANT.ENERGY_GENERATOR_MAINTENANCE_ANALYSIS}>Generator Servicing</option>
                     </select>
                   </div>
                 </React.Fragment>
               )}
+            </div>
+            <Row>
               <div className="row" style={{marginBottom:"0.5rem"}}>
               {this.state.currentDateFilter === "custom"  && (<React.Fragment>
                 <div className="col-md-3 block">
@@ -504,27 +588,31 @@ export default class Energy extends Component {
               </React.Fragment> 
               )}
 
-            </div>
-            </div>
+              </div>
+            </Row>
             <Row>
               {page_category === CONSTANT.ENERGY_ANALYSIS && (
                 <React.Fragment>
-                  <Col lg={3} sm={6}>
-                    <StatsCard
-                      bigIcon={<i className="pe-7s-science text-secondary" />}
-                      statsText={`Diesel Consumption (Litre)`}
-                      statsValue={this.state.extras.total_diesel_used || 0}
-                      statsIconText={`Total diesel consumption (Litre)`}
-                    />
-                  </Col>
-                  <Col lg={3} sm={6}>
-                    <StatsCard
-                      bigIcon={<i className="pe-7s-shield text-info" />}
-                      statsText="Hours On Generator"
-                      statsValue={this.state.extras.total_hours_on_gen || 0}
-                      statsIconText={`Total Hours On Generator`}
-                    />
-                  </Col>
+                  {energy_stats_level === CONSTANT.ENERGY_DIESEL_LITRE_AND_AMOUNT_USAGE && (
+                    <>
+                    <Col lg={3} sm={6}>
+                      <StatsCard
+                        bigIcon={<i className="pe-7s-science text-secondary" />}
+                        statsText={`Diesel Consumption (Litre)`}
+                        statsValue={this.state.extras.total_diesel_used || 0}
+                        statsIconText={`Total diesel consumption (Litre)`}
+                      />
+                    </Col>
+                    <Col lg={3} sm={6}>
+                      <StatsCard
+                        bigIcon={<i className="pe-7s-shield text-info" />}
+                        statsText="Hours On Generator"
+                        statsValue={this.state.extras.total_hours_on_gen || 0}
+                        statsIconText={`Total Hours On Generator`}
+                      />
+                    </Col>
+                    </>
+                  )}
                 </React.Fragment>
               )}
             </Row> 
@@ -540,13 +628,25 @@ export default class Energy extends Component {
                   content={
                     <div className="ct-chart" style={{height:"100%",width:"100%"}}>
                       <div>
-                      {page_category !== CONSTANT.DIESEL_SUPPLY_LOG && energy_stats_level === CONSTANT.ENERGY_DIESEL_LITRE_AND_AMOUNT_USAGE && (
-                        <Bar
-                        height={400}
-                        width={800}
-                        data={this.state.accumulatedData}
-                        options={diesel_ltr_amount_usage_options}
-                      />
+                      {page_category !== CONSTANT.DIESEL_SUPPLY_LOG && (
+                        <>
+                          {energy_stats_level === CONSTANT.ENERGY_DIESEL_LITRE_AND_AMOUNT_USAGE && (
+                            <Bar
+                              height={400}
+                              width={800}
+                              data={this.state.accumulatedData}
+                              options={diesel_ltr_amount_usage_options}
+                            />
+                          )}
+                          {energy_stats_level === CONSTANT.ENERGY_GENERATOR_MAINTENANCE_ANALYSIS && (
+                            <Bar
+                              height={400}
+                              width={800}
+                              data={this.state.accumulatedData}
+                              options={generator_maintenance_options}
+                            />
+                          )}
+                        </>
                       )}
                      {page_category === CONSTANT.DIESEL_SUPPLY_LOG && (
                         <table className="table table-hover">
@@ -566,31 +666,6 @@ export default class Energy extends Component {
                         </table>  
                       )
                       }
-                       {/* 
-                      {machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME && (
-                        <Bar
-                        height={400}
-                        width={800}
-                        data={this.state.accumulatedData}
-                        options={uptime_and_downtime_options}
-                      />
-                      )}
-                      {machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY && (
-                        <Bar
-                        height={400}
-                        width={800}
-                        data={this.state.accumulatedData}
-                        options={crushed_efficiency_options}
-                      />
-                      )}
-                      {machine_stats_level === CONSTANT.MACHINE_DATA_UTILIZATION && (
-                        <Bar
-                        height={400}
-                        width={800}
-                        data={this.state.accumulatedData}
-                        options={utilization_options}
-                      />
-                      )} */}
                       </div>
                     </div>
                   }

@@ -210,7 +210,8 @@ const CONSTANT = {
   DIESEL_SUPPLY_LOG: "diesel_supply_log",
 
   // energy data stats levels
-  ENERGY_DIESEL_LITRE_AND_AMOUNT_USAGE:"litre_and_amount_usage",
+  ENERGY_DIESEL_LITRE_AND_AMOUNT_USAGE:"diesel_litre_and_amount_usage",
+  ENERGY_GENERATOR_MAINTENANCE_ANALYSIS:"generator_maintenance_tracker_analysis",
 
 
 

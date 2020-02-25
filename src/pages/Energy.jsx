@@ -450,7 +450,7 @@ export default class Energy extends Component {
           },
 
           afterBody: function(tooltipItem, d) {
-            return `Equipment: ${extra_tooltip_data[tooltipItem[0].label].equipment}\nTime Of Issue: ${extra_tooltip_data[tooltipItem[0].label].time_of_issue}\nTime Of Completion: ${extra_tooltip_data[tooltipItem[0].label].time_of_completion}\nMaintenance Duration: ${extra_tooltip_data[tooltipItem[0].label].total_maintenance_duration}`;
+            return `\nEquipment: ${extra_tooltip_data[tooltipItem[0].label].equipment}\nAction Type: ${extra_tooltip_data[tooltipItem[0].label].maintenance_action}\nReporter: ${extra_tooltip_data[tooltipItem[0].label].reporter}\nAuthor: ${extra_tooltip_data[tooltipItem[0].label].author}\nResponsibility Party: ${extra_tooltip_data[tooltipItem[0].label].responsibilty_party}\n\nTime Of Issue: ${extra_tooltip_data[tooltipItem[0].label].time_of_issue}\nTime Of Completion: ${extra_tooltip_data[tooltipItem[0].label].time_of_completion}\nMaintenance Duration: ${extra_tooltip_data[tooltipItem[0].label].total_maintenance_duration}`;
          }
         }
       },
@@ -609,6 +609,26 @@ export default class Energy extends Component {
                         statsText="Hours On Generator"
                         statsValue={this.state.extras.total_hours_on_gen || 0}
                         statsIconText={`Total Hours On Generator`}
+                      />
+                    </Col>
+                    </>
+                  )}
+                  {energy_stats_level === CONSTANT.ENERGY_GENERATOR_MAINTENANCE_ANALYSIS && (
+                    <>
+                    <Col lg={3} sm={6}>
+                      <StatsCard
+                        bigIcon={<i className="pe-7s-science text-secondary" />}
+                        statsText={`Maintenance Duration `}
+                        statsValue={`${this.state.extras.total_maintenance_duration || ""}`}
+                        statsIconText={`Total Maintenance Duration (Hours)`}
+                      />
+                    </Col>
+                    <Col lg={3} sm={6}>
+                      <StatsCard
+                        bigIcon={<i className="pe-7s-shield text-info" />}
+                        statsText="Maintenance Cost"
+                        statsValue={this.state.extras.total_maintenance_cost || 0}
+                        statsIconText={`Total Maintenance Cost`}
                       />
                     </Col>
                     </>

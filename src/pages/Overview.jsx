@@ -181,7 +181,8 @@ class Overview extends Component {
   getTotalDownTime = async ()=>{
     try{
       const total_downtime_res = await axios.get(`${this.state.baseURL}/v1/overview/total-downtime?${this.getRequestQueryParams()}`)
-      const {total_downtime,target_setting} = total_downtime_res.data
+      let {total_downtime,target_setting,downtime_hours} = total_downtime_res.data
+      target_setting.downtime_hours = downtime_hours;
 
       this.setState({
         total_downtime,
@@ -513,7 +514,7 @@ class Overview extends Component {
                 statsText="Downtime"
                 statsValue={`${this.state.total_downtime}%`}
                 statsIcon={<i className={getProgressiveLabelStatIcon(this.state.downtime_computation.percentage,this.state.downtime_computation.status)} />}
-                statsIconText={<span className={getProgressiveLabelStatTextColor(this.state.downtime_computation.percentage,this.state.downtime_computation.status)} style={{fontWeight:"bold"}}>{this.state.downtime_computation.percentage}% {toTitleCase(this.state.downtime_computation.status || "")} target</span>}
+                statsIconText={<span className={getProgressiveLabelStatTextColor(this.state.downtime_computation.percentage,this.state.downtime_computation.status)} style={{fontWeight:"bold"}}>{this.state.downtime_computation.downtime_hours || 0} Downtime hours</span>}
                   progressLabel={<i className={getProgressiveLabelStatIcon(this.state.downtime_computation.percentage,this.state.downtime_computation.status)}></i>}
               />
             </Col>

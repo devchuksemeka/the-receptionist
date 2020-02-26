@@ -503,7 +503,7 @@ class Overview extends Component {
                 bigIcon={<i className="fa fa-wrench text-primary" />}
                 statsText="Utilization Rate"
                 statsValue={`${this.state.total_utilization_rate}%`}
-                statsIcon={<i className={getProgressiveLabelStatIcon(this.state.utilization_rate_computation.percentage,this.state.utilization_rate_computation.status)} />}
+                // statsIcon={<i className={getProgressiveLabelStatIcon(this.state.utilization_rate_computation.percentage,this.state.utilization_rate_computation.status)} />}
                 statsIconText={<span className={getProgressiveLabelStatTextColor(this.state.utilization_rate_computation.percentage,this.state.utilization_rate_computation.status)} style={{fontWeight:"bold"}}>{this.state.utilization_rate_computation.percentage}% {toTitleCase(this.state.utilization_rate_computation.status || "")} target</span>}
                 progressLabel={<i className={getProgressiveLabelStatIcon(this.state.utilization_rate_computation.percentage,this.state.utilization_rate_computation.status)}></i>}
               />
@@ -513,9 +513,9 @@ class Overview extends Component {
                 bigIcon={<i className="pe-7s-graph1 text-danger" />}
                 statsText="Downtime"
                 statsValue={`${this.state.total_downtime}%`}
-                statsIcon={<i className={getProgressiveLabelStatIcon(this.state.downtime_computation.percentage,this.state.downtime_computation.status)} />}
-                statsIconText={<span className={getProgressiveLabelStatTextColor(this.state.downtime_computation.percentage,this.state.downtime_computation.status)} style={{fontWeight:"bold"}}>{this.state.downtime_computation.downtime_hours || 0} Downtime hours</span>}
-                  progressLabel={<i className={getProgressiveLabelStatIcon(this.state.downtime_computation.percentage,this.state.downtime_computation.status)}></i>}
+                // statsIcon={<i className={getProgressiveLabelStatIcon(this.state.downtime_computation.percentage,this.state.downtime_computation.status)} />}
+                statsIconText={<span className={getProgressiveLabelStatTextColor(this.state.downtime_computation.percentage,this.state.downtime_computation.status)} style={{fontWeight:"bold"}}>Downtime: {this.state.downtime_computation.downtime_hours || 0} hours</span>}
+                progressLabel={<i className={getProgressiveLabelStatIcon(this.state.downtime_computation.percentage,this.state.downtime_computation.status)}></i>}
               />
             </Col>
             <Col lg={3} sm={6}>
@@ -523,7 +523,7 @@ class Overview extends Component {
                 bigIcon={<i className="pe-7s-note2 text-info" />}
                 statsText="Gross Margin"
                 statsValue={`${this.state.gross_margin}%`}
-                statsIcon={<i className={getProgressiveLabelStatIcon(this.state.gross_margin_computation.percentage,this.state.gross_margin_computation.status)} />}
+                // statsIcon={<i className={getProgressiveLabelStatIcon(this.state.gross_margin_computation.percentage,this.state.gross_margin_computation.status)} />}
                 statsIconText={<span className={getProgressiveLabelStatTextColor(this.state.gross_margin_computation.percentage,this.state.gross_margin_computation.status)} style={{fontWeight:"bold"}}>{this.state.gross_margin_computation.percentage}% {toTitleCase(this.state.gross_margin_computation.status || "")} target</span>}
                 progressLabel={<i className={getProgressiveLabelStatIcon(this.state.gross_margin_computation.percentage,this.state.gross_margin_computation.status)}></i>}
               />
@@ -533,7 +533,7 @@ class Overview extends Component {
                 bigIcon={<i className="pe-7s-up-arrow text-secondary" />}
                 statsText="Annual Run Rate"
                 statsValue={this.state.annual_run_rate}
-                statsIcon={<i className={getProgressiveLabelStatIcon(this.state.arr_computation.percentage,this.state.arr_computation.status)} />}
+                // statsIcon={<i className={getProgressiveLabelStatIcon(this.state.arr_computation.percentage,this.state.arr_computation.status)} />}
                 statsIconText={`ARR`}
                 // statsIconText={<span className={getProgressiveLabelStatTextColor(this.state.arr_computation.percentage,this.state.arr_computation.status)} style={{fontWeight:"bold"}}>{toMoneyFormat(this.state.arr_computation.percentage || 0)} {toTitleCase(this.state.arr_computation.status || "")} target</span>}
                 // progressLabel={<i className={getProgressiveLabelStatIcon(this.state.arr_computation.percentage,this.state.arr_computation.status)}></i>}

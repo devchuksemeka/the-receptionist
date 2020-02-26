@@ -277,7 +277,10 @@ export default class Sales extends Component {
             const val =
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
             if (val) return key + ` : ${currency === "naira" ? "₦":"$"}` + val.toLocaleString();
-          }
+          },
+        //   afterBody: function(tooltipItem, d) {
+        //     return `\Last PKO Sales Date: ${extra_tooltip_data[tooltipItem[0].label].equipment}\n`;
+        //  }
         }
       },
       scales: {

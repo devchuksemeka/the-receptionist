@@ -29,7 +29,7 @@ const toMoneyFormatDynamic = (number,currency) =>{
     currency,
   });
 
-  return formatter.format(number)
+  return formatter.format(number || 0)
 
 }
 

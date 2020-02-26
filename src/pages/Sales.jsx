@@ -18,6 +18,7 @@ export default class Sales extends Component {
     currentView: "dailySales",
     PkoData: {},
     extras:{},
+    extra_tooltip_data:{},
     PkcData: {},
     dataWarehouse:{},
     P2ApiData: {},
@@ -82,10 +83,13 @@ export default class Sales extends Component {
     let accumulatedData = {};
     let dataWarehouse = {};
     let extras = {};
+    let extra_tooltip_data = {};
     
     if(this.state.currentView === "accumulated"){
       const combined_sale_res = await axios.get(`${this.state.baseURL}/v1/sales/combined-sales?${this.getRequestQueryParams()}`)
       const {datasets,labels} = combined_sale_res.data;
+      extras = combined_sale_res.data.extras;
+      extra_tooltip_data = datasets;
   
       const pkoAccumulated = [];
       const pkcAccumulated = [];
@@ -198,7 +202,8 @@ export default class Sales extends Component {
       accumulatedData,
       salesCyclesAvg:10,
       dataWarehouse,
-      extras
+      extras,
+      extra_tooltip_data
     });
   };
 
@@ -265,7 +270,9 @@ export default class Sales extends Component {
       currentDateFilter,
       graphView,
       salesCyclesAvg,
-      currency
+      currency,
+      extra_tooltip_data,
+      extras
     } = this.state;
 
     const stackedBarOptions = {
@@ -273,14 +280,15 @@ export default class Sales extends Component {
         mode: "label",
         callbacks: {
           label: function(tooltipItem, data) {
+         
             const key = data.datasets[tooltipItem.datasetIndex].label;
             const val =
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
             if (val) return key + ` : ${currency === "naira" ? "₦":"$"}` + val.toLocaleString();
           },
-        //   afterBody: function(tooltipItem, d) {
-        //     return `\Last PKO Sales Date: ${extra_tooltip_data[tooltipItem[0].label].equipment}\n`;
-        //  }
+          afterBody: function(tooltipItem, d) {
+            return `\nPKO Last Sales At: ${extra_tooltip_data[tooltipItem[0].label].crushed_payload.last_pko_sales_date}\n`;
+         }
         }
       },
       scales: {
@@ -479,6 +487,43 @@ export default class Sales extends Component {
                 statsIconText={`Total ${currentScreen.toUpperCase()} Sold Price`}
               />
             </Col>
+          </React.Fragment>
+      )}
+      {currentView === "accumulated" && (
+          <React.Fragment>
+            <Col lg={3} sm={6}>
+              <StatsCard
+                bigIcon={<i className="pe-7s-bookmarks text-info" />}
+                statsText={`Total P2 Crushed Value`}
+                statsValue={toMoneyFormatDynamic(extras.total_p2_crushed_value,currency === "naira"? "NGN":"USD") || 0}
+                statsIconText={<span>P2 Crushed Qty: <strong> {this.state.extras.total_p2_crushed || 0}Ton</strong></span>}
+              />
+            </Col>
+            <Col lg={3} sm={6}>
+              <StatsCard
+                bigIcon={<i className="pe-7s-bookmarks text-info" />}
+                statsText={`Total PKO Sold`}
+                statsValue={toMoneyFormatDynamic(extras.total_pko_sold_price,currency === "naira"? "NGN":"USD") || 0}
+                statsIconText={<span>Total PKO Sold Qty: <strong> {this.state.extras.total_pko_qty_sold || 0}Ton</strong></span>}
+              />
+            </Col>
+            <Col lg={3} sm={6}>
+              <StatsCard
+                bigIcon={<i className="pe-7s-bookmarks text-info" />}
+                statsText={`Total PKC Sold`}
+                statsValue={toMoneyFormatDynamic(extras.total_pkc_sold_price,currency === "naira"? "NGN":"USD") || 0}
+                statsIconText={<span>Total PKC Sold Qty: <strong> {this.state.extras.total_pkc_qty_sold || 0}Ton</strong></span>}
+              />
+            </Col>
+            <Col lg={3} sm={6}>
+              <StatsCard
+                bigIcon={<i className="pe-7s-bookmarks text-info" />}
+                statsText={`Total Sold Value`}
+                statsValue={toMoneyFormatDynamic(extras.total_sold_price,currency === "naira"? "NGN":"USD") || 0}
+              statsIconText={<span>Total Sold Qty: <strong> {this.state.extras.total_qty_sold || 0}Ton</strong></span>}
+              />
+            </Col>
+            
           </React.Fragment>
       )}
     </Row> 

@@ -856,7 +856,7 @@ export default class MachineData extends Component {
                   className="form-control form-control-lg"
                   value={this.state.expeller_number}
                   onChange={this.handleExpellerNumberChange}>
-                  <option value={CONSTANT.ALL_MACHINES}>All Machines</option>
+                  <option value={CONSTANT.ALL_MACHINES}>All Expellers</option>
                   <option value={CONSTANT.MACHINE_1}>Expeller 1</option>
                   <option value={CONSTANT.MACHINE_2}>Expeller 2</option>
                   <option value={CONSTANT.MACHINE_3}>Expeller 3</option>
@@ -923,7 +923,7 @@ export default class MachineData extends Component {
                 <Col lg={3} sm={6}>
                   <StatsCard
                     bigIcon={<i className="pe-7s-tools text-primary" />}
-                    statsText={`Machine 1 Uptime (hour)`}
+                    statsText={`Expeller 1 Uptime (hour)`}
                     statsValue={extras.machine_1.uptime || 0}
                     statsIconText={<span className={getProgressiveLabelStatTextColor(extras.machine_1.service.health.status)} style={{fontWeight:"bold"}}>{`Machine 1 Service Health: ${extras.machine_1.service.health.status_text} `}</span>}
                   />
@@ -933,7 +933,7 @@ export default class MachineData extends Component {
               <Col lg={3} sm={6}>
                 <StatsCard
                   bigIcon={<i className="pe-7s-tools text-danger" />}
-                  statsText={`Machine 2 Uptime (hour)`}
+                  statsText={`Expeller 2 Uptime (hour)`}
                   statsValue={extras.machine_2.uptime || 0}
                   statsIconText={<span className={getProgressiveLabelStatTextColor(extras.machine_2.service.health.status)} style={{fontWeight:"bold"}}>{`Machine 2 Service Health: ${extras.machine_2.service.health.status_text} `}</span>}
                 />
@@ -943,7 +943,7 @@ export default class MachineData extends Component {
               <Col lg={3} sm={6}>
                 <StatsCard
                   bigIcon={<i className="pe-7s-tools text-info" />}
-                  statsText={`Machine 3 Uptime (hour)`}
+                  statsText={`Expeller 3 Uptime (hour)`}
                   statsValue={extras.machine_3.uptime || 0}
                   statsIconText={<span className={getProgressiveLabelStatTextColor(extras.machine_3.service.health.status)} style={{fontWeight:"bold"}}>{`Machine 3 Service Health: ${extras.machine_3.service.health.status_text} `}</span>}
                 />
@@ -952,7 +952,7 @@ export default class MachineData extends Component {
               <Col lg={3} sm={6}>
                 <StatsCard
                   bigIcon={<i className="pe-7s-tools text-warning" />}
-                  statsText={`Machine 4 Uptime (hour)`}
+                  statsText={`Expeller 4 Uptime (hour)`}
                   statsValue={extras.machine_4.uptime || 0}
                   statsIconText={<span className={getProgressiveLabelStatTextColor(extras.machine_4.service.health.status)} style={{fontWeight:"bold"}}>{`Machine 4 Service Health: ${extras.machine_4.service.health.status_text} `}</span>}
                 />

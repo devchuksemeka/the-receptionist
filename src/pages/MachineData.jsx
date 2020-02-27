@@ -84,6 +84,7 @@ export default class MachineData extends Component {
         ${this.state.baseURL}/v1/supplies/machine-data/${this.state.machine_stats_level}?${this.getRequestQueryParams()}`)
       const {datasets,labels} = res_data.data
       extra_tooltip_data = datasets;
+      extras = res_data.data.extras;
 
       // const result_keys = Object.keys(datasets);
       let datasetAccumulated = {};
@@ -921,6 +922,60 @@ export default class MachineData extends Component {
               </React.Fragment> 
               )}
             </div>
+            {machine_stats_level === CONSTANT.MACHINE_DATA_RM_CRUSHING && (
+              <>
+               {(expeller_number === CONSTANT.ALL_MACHINES)  && (
+                  <Col lg={3} sm={6}>
+                    <StatsCard
+                      bigIcon={<i className="pe-7s-tools text-primary" />}
+                      statsText={`All Expeller Crushing Time`}
+                      statsValue={extras.expeller_rm_crush_duration || 0}
+                      statsIconText={`All Expeller RM Crushed: ${ extras.expeller_rm_crush_qty|| 0}Ton `}
+                    />
+                  </Col>
+                )}
+                {(expeller_number === CONSTANT.MACHINE_1)  && (
+                  <Col lg={3} sm={6}>
+                    <StatsCard
+                      bigIcon={<i className="pe-7s-tools text-primary" />}
+                      statsText={`Expeller 1 Crushing Time`}
+                      statsValue={extras.expeller_rm_crush_duration || 0}
+                      statsIconText={`Expeller 1 RM Crushed: ${ extras.expeller_rm_crush_qty|| 0}Ton `}
+                    />
+                  </Col>
+                )}
+                {(expeller_number === CONSTANT.MACHINE_2)  && (
+                  <Col lg={3} sm={6}>
+                    <StatsCard
+                      bigIcon={<i className="pe-7s-tools text-primary" />}
+                      statsText={`Expeller 2 Crushing Time`}
+                      statsValue={extras.expeller_rm_crush_duration || 0}
+                      statsIconText={`Expeller 2 RM Crushed: ${ extras.expeller_rm_crush_qty|| 0}Ton `}
+                    />
+                  </Col>
+                )}
+                {(expeller_number === CONSTANT.MACHINE_3)  && (
+                  <Col lg={3} sm={6}>
+                    <StatsCard
+                      bigIcon={<i className="pe-7s-tools text-primary" />}
+                      statsText={`Expeller 3 Crushing Time`}
+                      statsValue={extras.expeller_rm_crush_duration || 0}
+                      statsIconText={`Expeller 3 RM Crushed: ${ extras.expeller_rm_crush_qty|| 0}Ton `}
+                    />
+                  </Col>
+                )}
+                {(expeller_number === CONSTANT.MACHINE_4)  && (
+                  <Col lg={3} sm={6}>
+                    <StatsCard
+                      bigIcon={<i className="pe-7s-tools text-primary" />}
+                      statsText={`Expeller 4 Crushing Time`}
+                      statsValue={extras.expeller_rm_crush_duration || 0}
+                      statsIconText={`Expeller 4 RM Crushed: ${ extras.expeller_rm_crush_qty|| 0}Ton `}
+                    />
+                  </Col>
+                )}
+              </>
+            )}
             {machine_stats_level === CONSTANT.MACHINE_DATA_MAINTENANCE && (
               <>
               {machine_health_level === CONSTANT.MACHINE_SERVICE_HEALTH && (
@@ -971,7 +1026,7 @@ export default class MachineData extends Component {
                 <Col lg={3} sm={6}>
                   <StatsCard
                     bigIcon={<i className="pe-7s-tools text-primary" />}
-                    statsText={`Machine 1 Uptime (hour)`}
+                    statsText={`Expeller 1 Uptime (hour)`}
                     statsValue={extras.machine_1.uptime || 0}
                     statsIconText={<span className={getProgressiveLabelStatTextColor(extras.machine_1.overhaul.health.status)} style={{fontWeight:"bold"}}>{`Machine 1 Overhaul Health: ${extras.machine_1.overhaul.health.status_text} `}</span>}
                   />
@@ -981,7 +1036,7 @@ export default class MachineData extends Component {
               <Col lg={3} sm={6}>
                 <StatsCard
                   bigIcon={<i className="pe-7s-tools text-danger" />}
-                  statsText={`Machine 2 Uptime (hour)`}
+                  statsText={`Expeller 2 Uptime (hour)`}
                   statsValue={extras.machine_2.uptime || 0}
                   statsIconText={<span className={getProgressiveLabelStatTextColor(extras.machine_2.overhaul.health.status)} style={{fontWeight:"bold"}}>{`Machine 2 Overhaul Health: ${extras.machine_2.overhaul.health.status_text} `}</span>}
                 />
@@ -991,7 +1046,7 @@ export default class MachineData extends Component {
               <Col lg={3} sm={6}>
                 <StatsCard
                   bigIcon={<i className="pe-7s-tools text-info" />}
-                  statsText={`Machine 3 Uptime (hour)`}
+                  statsText={`Expeller 3 Uptime (hour)`}
                   statsValue={extras.machine_3.uptime || 0}
                   statsIconText={<span className={getProgressiveLabelStatTextColor(extras.machine_3.overhaul.health.status)} style={{fontWeight:"bold"}}>{`Machine 3 Overhaul Health: ${extras.machine_3.overhaul.health.status_text} `}</span>}
                 />
@@ -1000,7 +1055,7 @@ export default class MachineData extends Component {
               <Col lg={3} sm={6}>
                 <StatsCard
                   bigIcon={<i className="pe-7s-tools text-warning" />}
-                  statsText={`Machine 4 Uptime (hour)`}
+                  statsText={`Expeller 4 Uptime (hour)`}
                   statsValue={extras.machine_4.uptime || 0}
                   statsIconText={<span className={getProgressiveLabelStatTextColor(extras.machine_4.overhaul.health.status)} style={{fontWeight:"bold"}}>{`Machine 4 Overhaul Health: ${extras.machine_4.overhaul.health.status_text} `}</span>}
                 />

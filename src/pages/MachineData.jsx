@@ -10,6 +10,7 @@ import moment from 'moment'
 
 import axios from 'axios'
 
+
 export default class MachineData extends Component {
 
   state = {
@@ -153,7 +154,7 @@ export default class MachineData extends Component {
             },
             {
               yAxisID: "B",
-              label: `P2 ${this.state.expeller_number === CONSTANT.ALL_MACHINES ? "All Machine":this.state.expeller_number} Uptime`,
+              label: `P2 ${this.state.expeller_number === CONSTANT.ALL_MACHINES ? "All Expellers":this.state.expeller_number} Uptime`,
               stack: "Stack 1",
               fill: false,
               lineTension: 0.1,
@@ -176,7 +177,7 @@ export default class MachineData extends Component {
             },
             {
               yAxisID: "B",
-              label: `PKC1 ${this.state.expeller_number === CONSTANT.ALL_MACHINES ? "All Machine":this.state.expeller_number} Uptime`,
+              label: `PKC1 ${this.state.expeller_number === CONSTANT.ALL_MACHINES ? "All Expellers":this.state.expeller_number} Uptime`,
               stack: "Stack 1",
               fill: false,
               lineTension: 0.1,
@@ -231,11 +232,11 @@ export default class MachineData extends Component {
 
         datasetAccumulated = graph_A_B_YAxisDatasets(labels,
           {
-            label:`${this.state.expeller_number === "__ALL__" ? "All Machines" : this.state.expeller_number} Uptime`,
+            label:`${this.state.expeller_number === "__ALL__" ? "All Expellers" : this.state.expeller_number} Uptime`,
             data:uptime,
           },
           {
-            label:`${this.state.expeller_number === "__ALL__" ? "All Machines" : this.state.expeller_number} Downtime`,
+            label:`${this.state.expeller_number === "__ALL__" ? "All Expellers" : this.state.expeller_number} Downtime`,
             data:downtime,
           },
         )
@@ -253,7 +254,7 @@ export default class MachineData extends Component {
           labels,
           datasets: [
             {
-              label: `${this.state.expeller_number} Crushing Efficiency`,
+              label: `${this.state.expeller_number === "__ALL__" ? "All Expellers" : this.state.expeller_number} Crushing Efficiency`,
               stack: "Stack 0",
               fill: false,
               lineTension: 0.1,
@@ -290,7 +291,7 @@ export default class MachineData extends Component {
           labels,
           datasets: [
             {
-              label: `${this.state.expeller_number} Utilization Efficiency`,
+              label: `${this.state.expeller_number === "__ALL__" ? "All Expellers" : this.state.expeller_number} Utilization Efficiency`,
               stack: "Stack 0",
               fill: false,
               lineTension: 0.1,
@@ -684,7 +685,8 @@ export default class MachineData extends Component {
             if (val) return key + ": " +val.toLocaleString() +"%";
            },
            afterBody: function(tooltipItem, d) {
-            return `Expeller: ${extra_tooltip_data[tooltipItem[0].label].expeller_number}\nRaw Material: ${extra_tooltip_data[tooltipItem[0].label].raw_material}\nShift: ${extra_tooltip_data[tooltipItem[0].label].shift}`;
+            
+            return `Expeller: ${expeller_number === "__ALL__" ? "All Expellers" :extra_tooltip_data[tooltipItem[0].label].expeller_number}\nRaw Material: ${extra_tooltip_data[tooltipItem[0].label].raw_material}\nShift: ${extra_tooltip_data[tooltipItem[0].label].shift}`;
          }
         }
       },
@@ -746,7 +748,7 @@ export default class MachineData extends Component {
             if (val) return key + ": " +val.toLocaleString() +"%";
            },
            afterBody: function(tooltipItem, d) {
-            return `Expeller: ${extra_tooltip_data[tooltipItem[0].label].expeller_number}\nRaw Material: ${extra_tooltip_data[tooltipItem[0].label].raw_material}\nShift: ${extra_tooltip_data[tooltipItem[0].label].shift}`;
+            return `Expeller: ${expeller_number === "__ALL__" ? "All Expellers" :extra_tooltip_data[tooltipItem[0].label].expeller_number}\nRaw Material: ${extra_tooltip_data[tooltipItem[0].label].raw_material}\nShift: ${extra_tooltip_data[tooltipItem[0].label].shift}`;
          }
         }
       },

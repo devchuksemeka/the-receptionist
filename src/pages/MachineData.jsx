@@ -14,7 +14,7 @@ export default class MachineData extends Component {
 
   state = {
     baseURL:process.env.REACT_APP_SERVER_ENDPOINT,
-    machine_stats_level:CONSTANT.MACHINE_DATA_RM_CRUSHING,
+    machine_stats_level:CONSTANT.MACHINE_DATA_MAINTENANCE,
     machine_raw_material:CONSTANT.MACHINE_P2_RM,
     machine_health_level:CONSTANT.MACHINE_SERVICE_HEALTH,
     machine_data:[],
@@ -833,14 +833,7 @@ export default class MachineData extends Component {
                   <option value="usd">US Dollar</option>
                 </select>
               </div> */}
-              <div className="col-md-2 block">
-                <select className="form-control form-control-lg"
-                  value={this.state.machine_health_level} onChange={this.handleMachineHealthLevelChange}
-                  >
-                  <option value={CONSTANT.MACHINE_SERVICE_HEALTH}>Machine Service Health</option>
-                  <option value={CONSTANT.MACHINE_OVERHAUL_HEALTH}>Machine Overhaul Health</option>
-                </select>
-              </div>
+              
               <div className="col-md-2 block">
               <select className="form-control form-control-lg"
                   value={this.state.machine_stats_level} onChange={this.handleMachineStatsChange}>
@@ -851,6 +844,16 @@ export default class MachineData extends Component {
                   <option value={CONSTANT.MACHINE_DATA_UTILIZATION}>Utilization</option>
                 </select>
               </div>
+              {machine_stats_level === CONSTANT.MACHINE_DATA_MAINTENANCE && (
+                <div className="col-md-2 block">
+                <select className="form-control form-control-lg"
+                  value={this.state.machine_health_level} onChange={this.handleMachineHealthLevelChange}
+                  >
+                  <option value={CONSTANT.MACHINE_SERVICE_HEALTH}>Machine Service Health</option>
+                  <option value={CONSTANT.MACHINE_OVERHAUL_HEALTH}>Machine Overhaul Health</option>
+                </select>
+              </div>
+              )}
               <div className="col-md-2 block">
                 <select 
                   className="form-control form-control-lg"
@@ -872,7 +875,8 @@ export default class MachineData extends Component {
                       className="form-control form-control-lg"
                       value={this.state.shift}
                       onChange={this.handleShiftChange}>
-                    <option value="1">Shift 1</option>
+                      {/* <option value="ALL">All Shifts</option> */}
+                      <option value="1">Shift 1</option>
                       <option value="2">Shift 2</option>
                     </select>
                   </div>
@@ -917,7 +921,9 @@ export default class MachineData extends Component {
               </React.Fragment> 
               )}
             </div>
-            {machine_health_level === CONSTANT.MACHINE_SERVICE_HEALTH && (
+            {machine_stats_level === CONSTANT.MACHINE_DATA_MAINTENANCE && (
+              <>
+              {machine_health_level === CONSTANT.MACHINE_SERVICE_HEALTH && (
               <React.Fragment>
                 {(expeller_number === CONSTANT.ALL_MACHINES  || expeller_number === CONSTANT.MACHINE_1)  && (
                 <Col lg={3} sm={6}>
@@ -1001,6 +1007,9 @@ export default class MachineData extends Component {
               </Col>)}
               </React.Fragment>
             )}
+              </>
+            )}
+            
             <Row>
               <Col md={12} lg={12}>
                 <Card

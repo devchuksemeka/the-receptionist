@@ -154,8 +154,6 @@ export default class Users extends Component {
       users
     } = this.state;
 
-   
-
     const users_list = users.map((data,index) => {
       return (
         <tr key={index}>

@@ -5,6 +5,7 @@ import Sales from "pages/Sales";
 import ProcurementCost from "pages/ProcurementCost";
 import MachineData from "pages/MachineData";
 import Energy from "pages/Energy";
+import Users from "pages/Users";
 
 const dashboardRoutes = [
   {
@@ -55,6 +56,13 @@ const dashboardRoutes = [
     name: "Energy",
     icon: "pe-7s-timer",
     component: Energy,
+    layout: "/admin"
+  },
+  {
+    path: "/users",
+    name: "Users",
+    icon: "pe-7s-users",
+    component: Users,
     layout: "/admin"
   },
 ];

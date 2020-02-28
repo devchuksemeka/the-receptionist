@@ -437,6 +437,15 @@ export default class MachineData extends Component {
     );
   };
 
+  getMachineDataUptimeDowntimeLabelName = (expeller_number) =>{
+    if(expeller_number === CONSTANT.MACHINE_1) return "Expeller 1";
+    if(expeller_number === CONSTANT.MACHINE_2) return "Expeller 2";
+    if(expeller_number === CONSTANT.MACHINE_3) return "Expeller 3";
+    if(expeller_number === CONSTANT.MACHINE_4) return "Expeller 4";
+    if(expeller_number === CONSTANT.ALL_MACHINES) return "All Expellers";
+    return "";
+  };
+
 
   handleMachineStatsChange = e => {
     const machine_stats_level = e.target.value;
@@ -1071,106 +1080,42 @@ export default class MachineData extends Component {
             )}
             {machine_stats_level === CONSTANT.MACHINE_DATA_UPTIME_AND_DOWNTIME && (
               <>
-               {(expeller_number === CONSTANT.ALL_MACHINES)  && (
-                 <>
-                  <Col lg={3} sm={6}>
-                    <StatsCard
-                      bigIcon={<i className="pe-7s-tools text-primary" />}
-                      statsText={`All Expeller UpTime`}
+                <Col lg={3} sm={6}>
+                  <StatsCard
+                      bigIcon={<i className="pe-7s-tools text-success" />}
+                      statsText={`${this.getMachineDataUptimeDowntimeLabelName(expeller_number)} UpTime`}
                       statsValue={extras.expeller_uptime_duration || "0 Hour"}
-                      statsIconText={`All Expeller Uptime`}
+                      statsIconText={`${this.getMachineDataUptimeDowntimeLabelName(expeller_number)} Uptime`}
                     />
-                  </Col>
-                  <Col lg={3} sm={6}>
-                    <StatsCard
-                      bigIcon={<i className="pe-7s-tools text-primary" />}
-                      statsText={`All Expeller DownTime`}
-                      statsValue={extras.expeller_downtime_duration || "0 Hour"}
-                      statsIconText={`All Expeller DownTime`}
+                </Col>
+                <Col lg={3} sm={6}>
+                  <StatsCard
+                    bigIcon={<i className="pe-7s-tools text-danger" />}
+                    statsText={`${this.getMachineDataUptimeDowntimeLabelName(expeller_number)} DownTime`}
+                    statsValue={extras.expeller_downtime_duration || "0 Hour"}
+                    statsIconText={`${this.getMachineDataUptimeDowntimeLabelName(expeller_number)} DownTime`}
+                  />
+                </Col>
+              </>
+            )}
+            {machine_stats_level === CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY && (
+              <>
+                <Col lg={3} sm={6}>
+                  <StatsCard
+                      bigIcon={<i className="pe-7s-tools text-success" />}
+                      statsText={`${this.getMachineDataUptimeDowntimeLabelName(expeller_number)} Avg Efficiency`}
+                      statsValue={`${extras.avg_expeller_efficiency || 0}%`}
+                      statsIconText={`${this.getMachineDataUptimeDowntimeLabelName(expeller_number)} Total Efficiency: ${extras.expeller_efficiency || 0}%`}
                     />
-                  </Col>
-                  </>
-                )}
-                {(expeller_number === CONSTANT.MACHINE_1)  && (
-                  <>
-                  <Col lg={3} sm={6}>
-                    <StatsCard
-                      bigIcon={<i className="pe-7s-tools text-primary" />}
-                      statsText={`Expeller 1 UpTime`}
-                      statsValue={extras.expeller_uptime_duration || 0}
-                      statsIconText={`Expeller 1 Downtime`}
-                    />
-                  </Col>
-                  <Col lg={3} sm={6}>
-                    <StatsCard
-                      bigIcon={<i className="pe-7s-tools text-primary" />}
-                      statsText={`Expeller 1 DownTime`}
-                      statsValue={extras.expeller_downtime_duration || 0}
-                      statsIconText={`Expeller 1 Downtime`}
-                    />
-                  </Col>
-                  </>
-                )}
-                {(expeller_number === CONSTANT.MACHINE_2)  && (
-                   <>
-                   <Col lg={3} sm={6}>
-                     <StatsCard
-                       bigIcon={<i className="pe-7s-tools text-primary" />}
-                       statsText={`Expeller 2 UpTime`}
-                       statsValue={extras.expeller_uptime_duration || 0}
-                       statsIconText={`Expeller 2 Downtime`}
-                     />
-                   </Col>
-                   <Col lg={3} sm={6}>
-                     <StatsCard
-                       bigIcon={<i className="pe-7s-tools text-primary" />}
-                       statsText={`Expeller 2 DownTime`}
-                       statsValue={extras.expeller_downtime_duration || 0}
-                       statsIconText={`Expeller 2 Downtime`}
-                     />
-                   </Col>
-                   </>
-                )}
-                {(expeller_number === CONSTANT.MACHINE_3)  && (
-                  <>
-                  <Col lg={3} sm={6}>
-                    <StatsCard
-                      bigIcon={<i className="pe-7s-tools text-primary" />}
-                      statsText={`Expeller 3  UpTime`}
-                      statsValue={extras.expeller_uptime_duration || 0}
-                      statsIconText={`Expeller 3 Downtime`}
-                    />
-                  </Col>
-                  <Col lg={3} sm={6}>
-                    <StatsCard
-                      bigIcon={<i className="pe-7s-tools text-primary" />}
-                      statsText={`Expeller 3 DownTime`}
-                      statsValue={extras.expeller_downtime_duration || 0}
-                      statsIconText={`Expeller 3 Downtime`}
-                    />
-                  </Col>
-                  </>
-                )}
-                {(expeller_number === CONSTANT.MACHINE_4)  && (
-                  <>
-                  <Col lg={3} sm={6}>
-                    <StatsCard
-                      bigIcon={<i className="pe-7s-tools text-primary" />}
-                      statsText={`Expeller 4 Crushing Time`}
-                      statsValue={extras.expeller_uptime_duration || 0}
-                      statsIconText={`Expeller 4 Downtime`}
-                    />
-                  </Col>
-                  <Col lg={3} sm={6}>
-                    <StatsCard
-                      bigIcon={<i className="pe-7s-tools text-primary" />}
-                      statsText={`Expeller 4 DownTime`}
-                      statsValue={extras.expeller_downtime_duration || 0}
-                      statsIconText={`Expeller 4 Downtime`}
-                    />
-                  </Col>
-                  </>
-                )}
+                </Col>
+                {/* <Col lg={3} sm={6}>
+                  <StatsCard
+                    bigIcon={<i className="pe-7s-tools text-danger" />}
+                    statsText={`${this.getMachineDataUptimeDowntimeLabelName(expeller_number)} DownTime`}
+                    statsValue={extras.expeller_downtime_duration || "0 Hour"}
+                    statsIconText={`${this.getMachineDataUptimeDowntimeLabelName(expeller_number)} DownTime`}
+                  />
+                </Col> */}
               </>
             )}
             

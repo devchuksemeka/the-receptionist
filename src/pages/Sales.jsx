@@ -402,6 +402,7 @@ export default class Sales extends Component {
         >
           <option value="pko">PKO</option>
           <option value="pkc">PKC</option>
+          <option value="pksl">PKSL</option>
         </select>
       </div>
       )}

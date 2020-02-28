@@ -1108,17 +1108,20 @@ export default class MachineData extends Component {
                       statsIconText={`${this.getMachineDataUptimeDowntimeLabelName(expeller_number)} Total Efficiency: ${extras.expeller_efficiency || 0}%`}
                     />
                 </Col>
-                {/* <Col lg={3} sm={6}>
-                  <StatsCard
-                    bigIcon={<i className="pe-7s-tools text-danger" />}
-                    statsText={`${this.getMachineDataUptimeDowntimeLabelName(expeller_number)} DownTime`}
-                    statsValue={extras.expeller_downtime_duration || "0 Hour"}
-                    statsIconText={`${this.getMachineDataUptimeDowntimeLabelName(expeller_number)} DownTime`}
-                  />
-                </Col> */}
               </>
             )}
-            
+            {machine_stats_level === CONSTANT.MACHINE_DATA_UTILIZATION && (
+              <>
+                <Col lg={3} sm={6}>
+                  <StatsCard
+                      bigIcon={<i className="pe-7s-tools text-success" />}
+                      statsText={`${this.getMachineDataUptimeDowntimeLabelName(expeller_number)} Avg Utilization`}
+                      statsValue={`${extras.avg_utilization_rate || 0}%`}
+                      statsIconText={`${this.getMachineDataUptimeDowntimeLabelName(expeller_number)} Total Utilization: ${extras.total_utilization_rate || 0}%`}
+                    />
+                </Col>
+              </>
+            )}
             <Row>
               <Col md={12} lg={12}>
                 <Card

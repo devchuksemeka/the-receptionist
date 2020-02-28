@@ -27,7 +27,7 @@ export default class MachineData extends Component {
     currentDateFilter: "currentWeek",
     graphView: "day",
     currency: "naira",
-    shift: "1",
+    shift: "0",
     expeller_number: "__ALL__",
   };
 
@@ -474,6 +474,7 @@ export default class MachineData extends Component {
       machine_raw_material,
       expeller_number,
       machine_health_level,
+      shift,
       extras
     } = this.state;
 
@@ -686,7 +687,7 @@ export default class MachineData extends Component {
            },
            afterBody: function(tooltipItem, d) {
             
-            return `Expeller: ${expeller_number === "__ALL__" ? "All Expellers" :extra_tooltip_data[tooltipItem[0].label].expeller_number}\nRaw Material: ${extra_tooltip_data[tooltipItem[0].label].raw_material}\nShift: ${extra_tooltip_data[tooltipItem[0].label].shift}`;
+            return `Expeller: ${expeller_number === "__ALL__" ? "All Expellers" :extra_tooltip_data[tooltipItem[0].label].expeller_number}\nRaw Material: ${extra_tooltip_data[tooltipItem[0].label].raw_material}\nShift: ${shift === "0" ? "All Shifts" :extra_tooltip_data[tooltipItem[0].label].shift}`;
          }
         }
       },
@@ -748,7 +749,7 @@ export default class MachineData extends Component {
             if (val) return key + ": " +val.toLocaleString() +"%";
            },
            afterBody: function(tooltipItem, d) {
-            return `Expeller: ${expeller_number === "__ALL__" ? "All Expellers" :extra_tooltip_data[tooltipItem[0].label].expeller_number}\nRaw Material: ${extra_tooltip_data[tooltipItem[0].label].raw_material}\nShift: ${extra_tooltip_data[tooltipItem[0].label].shift}`;
+            return `Expeller: ${expeller_number === "__ALL__" ? "All Expellers" :extra_tooltip_data[tooltipItem[0].label].expeller_number}\nRaw Material: ${extra_tooltip_data[tooltipItem[0].label].raw_material}\nShift: ${shift === "0" ? "All Shifts" :extra_tooltip_data[tooltipItem[0].label].shift}`;
          }
         }
       },
@@ -878,7 +879,7 @@ export default class MachineData extends Component {
                       className="form-control form-control-lg"
                       value={this.state.shift}
                       onChange={this.handleShiftChange}>
-                      {/* <option value="ALL">All Shifts</option> */}
+                      <option value="0">All Shifts</option>
                       <option value="1">Shift 1</option>
                       <option value="2">Shift 2</option>
                     </select>

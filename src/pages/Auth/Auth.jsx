@@ -11,6 +11,10 @@ export default class Auth extends Component{
         error:{
             message:null
         },
+        alert:{
+            type:null,
+            message:null
+        },
         loading:false,
         baseURL:process.env.REACT_APP_SERVER_ENDPOINT
     }
@@ -38,6 +42,10 @@ export default class Auth extends Component{
         }
         this.setState({
             error:{
+                message:null
+            },
+            alert:{
+                type:null,
                 message:null
             },
             loading:true
@@ -104,14 +112,19 @@ export default class Auth extends Component{
                 }
                 try {
                     const response = await axios.post(`${this.state.baseURL}/v1/user/signup`, formData);
+                    let res = response.data
                     this.setState({
-                        loading:false
+                        loading:false,
+                        alert:{
+                            type:"success",
+                            message:res.message
+                        }
                     });
-                    this.context.login(
-                        response.data.authToken,
-                        response.data.role,
-                    )
-                    this.props.history.push("/overview")
+                    // this.context.login(
+                    //     response.data.authToken,
+                    //     response.data.role,
+                    // )
+                    // this.props.history.push("/overview")
                   } catch (error) {
                       if(!error.response) return;
                     this.setState({
@@ -172,11 +185,11 @@ export default class Auth extends Component{
                             </div>
                         {!this.state.isLogin && (
                         <div className="form-group col-md-8 col-xs-10">
-                            <label htmlFor="exampleInputPassword1">Password</label>
+                            <label htmlFor="exampleInputPassword1">Confirm Password</label>
                             <input 
-                                type="password" 
-                                className="form-control" 
-                                id="exampleInputPassword1" 
+                                type="password"
+                                className="form-control"
+                                id="exampleInputPassword1"
                                 ref={this.verifyPasswordEL}
                                 placeholder="Confirm Password"></input>
                         </div>
@@ -187,6 +200,15 @@ export default class Auth extends Component{
                                 className="form-text text-muted"
                                 style={{color:"red"}}>
                                    {this.state.error.message}
+                            </small>
+                        </div>
+                        )}
+                        {this.state.alert.type && this.state.alert.type === "success" &&  (<div className="form-group col-md-8 col-xs-10">
+                            <small 
+                                id="emailHelp" 
+                                className="form-text text-muted"
+                                style={{color:"green"}}>
+                                   {this.state.alert.message}
                             </small>
                         </div>
                         )}

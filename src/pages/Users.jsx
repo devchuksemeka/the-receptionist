@@ -27,15 +27,6 @@ export default class Users extends Component {
     await this.handleSubmit();
   }
 
-
-
-  setCurrentScreen = e => {
-    const currentScreen = e.target.value;
-    this.setState({
-      currentScreen
-    });
-  }
-
   getText = () =>{
     if(this.state.page_category === CONSTANT.DIESEL_SUPPLY_LOG) return "Diesel Supply Log";
     if(this.state.energy_stats_level === CONSTANT.ENERGY_DIESEL_LITRE_AND_AMOUNT_USAGE) return "Diesel Litre And Amount Usage";
@@ -46,21 +37,6 @@ export default class Users extends Component {
     return "";
   }
 
-  getStartDate = () =>{
-    const start_date = this.state.startDate.toISOString();
-    return start_date;
-  }
-
-  getEndDate = () =>{
-    const end_date = this.state.endDate.toISOString();
-    return end_date;
-  }
-
-  getGraphView = () => {
-    let view = this.state.graphView;
-    return view
-  }
-
   getRequestQueryParams = () =>{
     let query = `graphView=${this.getGraphView()}&startDate=${this.getStartDate()}&endDate=${this.getEndDate()}&currency=${this.state.currency}&generator=${this.state.generator}`;
     return query;
@@ -68,12 +44,59 @@ export default class Users extends Component {
 
   toTitleCase = (str) => str.split(" ").map(item=>item.substring(0,1).toUpperCase()+item.substring(1)).join(" ")
 
+  approveUserHandler = async (data) =>{
+    const confirm_status = window.confirm("You are about to approve user.\nDo you want to continue")
+    if(confirm_status){
+      try{
+        this.setState({
+          loading:true
+        })
+        const res_data = await axios.put(`${this.state.baseURL}/v1/users/update-account-approval/${data._id}`,{
+          status:"APPROVED"
+        })
+
+        this.setState({
+          loading:false
+        },()=>{
+          alert("Approved successfully")
+        })
+      }catch(err){
+        console.log(err)
+      }
+    }else{
+      alert("Cancelled");
+    }
+    
+  };
+
+  disapproveUserHandler = async (data) =>{
+    const confirm_status = window.confirm("You are about to disapprove user.\nDo you want to continue")
+    if(confirm_status){
+      try{
+        this.setState({
+          loading:true
+        })
+        const res_data = await axios.put(`${this.state.baseURL}/v1/users/update-account-approval/${data._id}`,{
+          status:"DISAPPROVED"
+        })
+
+        this.setState({
+          // users,
+          loading:false
+        })
+      }catch(err){
+        console.log(err)
+      }
+    }else{
+      alert("Cancelled");
+    }
+    
+  }
 
   handleSubmit = async () => {
     try{
      
         const res_data = await axios.get(`${this.state.baseURL}/v1/users/list`)
-        // ${this.state.baseURL}/v1/users/list?${this.getRequestQueryParams()}`)
 
         let users = res_data.data.data;
         console.log(res_data)
@@ -81,73 +104,14 @@ export default class Users extends Component {
         // console.log(diesel_supply_log_data)
         this.setState({
           users,
-        },()=>this.setGraphValues())
+          loading:false
+        })
       
     }catch(err){
       console.log(err)
     }
     
   };
-
-  setGraphValues = () => {
-    this.setState({
-      loading: false
-    });
-  };
-
-  handleStartDateChange = e => {
-    const date = e.target.value;
-    this.setState({
-      startDate: new Date(date)
-    });
-  };
-  handleExpellerNumberChange = e => {
-    const expeller_number = e.target.value;
-    this.setState({
-      expeller_number
-    },
-    () => this.handleSubmit());
-  };
-
-  handleCurrencyChange = e => {
-    const currency = e.target.value;
-    this.setState(
-      {
-        currency
-      },
-      () => this.handleSubmit()
-    );
-  };
-  handleShiftChange = e => {
-    const shift = e.target.value;
-    this.setState(
-      {
-        shift
-      },
-      () => this.handleSubmit()
-    );
-  };
-
-  handleEndDateChange = e => {
-    let date = e.target.value;
-    date = moment(date).endOf("day").toDate()
-    this.setState({
-      endDate: date
-    });
-  };
-
-  handleGraphView = e => {
-    const graphView = e.target.value;
-    this.setState(
-      {
-        graphView
-      },
-      () => this.handleSubmit()
-    );
-  };
-
-
-  
 
   render() {
     const {
@@ -158,9 +122,26 @@ export default class Users extends Component {
       return (
         <tr key={index}>
           <td>{++index}</td>
-          {/* <td>{data.role}</td> */}
           <td>{data.email}</td>
+          <td>{data.role}</td>
+          <td>{data.approval_status}</td>
           <td>{data.created_at}</td>
+          <td>
+            <div className="row">
+              {data.approval_status !== "APPROVED" && (
+                <div className="col-md-4">
+                  <button className="btn btn-success btn-sm" onClick={() => this.approveUserHandler(data)}>Approve</button>
+                </div>
+              )}
+              {data.approval_status !== "DISAPPROVED" && (
+                <div className="col-md-4">
+                  <button className="btn btn-warning btn-sm" onClick={() => this.disapproveUserHandler(data)}>Disapprove</button>
+                </div>
+              )}
+              
+              
+            </div>
+          </td>
         </tr>
       )
     });
@@ -187,9 +168,11 @@ export default class Users extends Component {
                           <thead>
                             <tr>
                               <th scope="col">#</th>
-                              {/* <th scope="col">Role</th> */}
                               <th scope="col">Email</th>
+                              <th scope="col">Role</th>
+                              <th scope="col">Approval Status</th>
                               <th scope="col">Date Created</th>
+                              <th scope="col">Actions</th>
                             </tr>
                           </thead>
                           <tbody>

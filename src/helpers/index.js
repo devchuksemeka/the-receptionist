@@ -224,11 +224,9 @@ const CONSTANT = {
 
 
    // MACHINE HEALTH STATUS
-   MACHINE_HEALTH_VERY_GOOD:"very_good",
-   MACHINE_HEALTH_GOOD:"good",
-   MACHINE_HEALTH_OK:"ok",
-   MACHINE_HEALTH_BAD:"bad",
-   MACHINE_HEALTH_VERY_BAD:"very_bad",
+  MACHINE_HEALTH_GOOD:"on_track",
+  MACHINE_HEALTH_OK:"due_soon",
+  MACHINE_HEALTH_BAD:"behind",
 
    // MACHINE FILTER HEALTH LEVEL
    MACHINE_SERVICE_HEALTH:"machine_service_health",

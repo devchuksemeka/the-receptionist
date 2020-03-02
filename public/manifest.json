@@ -1,15 +1,15 @@
 {
-  "short_name": "LBDR",
-  "name": "Light Bootstrap Dashboard React by Creative Tim",
+  "short_name": "Releaf OAT",
+  "name": "Operation Analysis Tool: By releaf.ng",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "src": "favicon.png",
+      "sizes": "16x16 24x24 32x32 64x64 76x76 96x96 128x128 144x144 152x152 192x192 384x384 512x512",
+      "type": "image/png"
     }
   ],
-  "start_url": ".",
+  "start_url": "./index.html",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#db4938",
+  "background_color": "#fdfdfd"
 }

@@ -18,7 +18,7 @@ workbox.routing.registerRoute(
 )
 
 workbox.routing.registerRoute(
-    new RegExp("https://fot-client.herokuapp.com/api/v1"),
+    new RegExp("https://fot-server.herokuapp.com"),
     workbox.strategies.staleWhileRevalidate()
 )
 

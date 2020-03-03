@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Grid, Row, Col } from "react-bootstrap";
 import { Card } from "components/Card/Card.jsx";
-import { Line, Bar} from "react-chartjs-2";
+import { Bar} from "react-chartjs-2";
 import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
 import { graph_A_B_YAxisDatasets,CONSTANT } from "../helpers";

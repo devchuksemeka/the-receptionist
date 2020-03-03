@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Grid, Row, Col } from "react-bootstrap";
 import { Card } from "components/Card/Card.jsx";
-import { Line, Bar} from "react-chartjs-2";
+import { Bar} from "react-chartjs-2";
 import Loader from "../common/Loader";
 import { getDateFilter } from "../common";
 import { StatsCard } from "components/StatsCard/StatsCard.jsx";
@@ -687,7 +687,6 @@ export default class MachineData extends Component {
         callbacks: {
           label: function(tooltipItem, data) {
             const key = data.datasets[tooltipItem.datasetIndex].label;
-            const yAxis = data.datasets[tooltipItem.datasetIndex].yAxisID;
             const val =
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
             if (val) return key + ": " +val.toLocaleString() +"%";
@@ -750,7 +749,6 @@ export default class MachineData extends Component {
         callbacks: {
           label: function(tooltipItem, data) {
             const key = data.datasets[tooltipItem.datasetIndex].label;
-            const yAxis = data.datasets[tooltipItem.datasetIndex].yAxisID;
             const val =
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
             if (val) return key + ": " +val.toLocaleString() +"%";

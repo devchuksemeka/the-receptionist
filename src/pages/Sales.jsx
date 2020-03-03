@@ -28,7 +28,6 @@ export default class Sales extends Component {
     endDate: moment().endOf("week").toDate(),
     currentDateFilter: "currentWeek",
     graphView: "day",
-    salesCyclesAvg: "N/A",
     currency: "usd",
     sales:[],
     
@@ -200,7 +199,6 @@ export default class Sales extends Component {
     this.setState({
       loading: false,
       accumulatedData,
-      salesCyclesAvg:10,
       dataWarehouse,
       extras,
       extra_tooltip_data
@@ -269,7 +267,6 @@ export default class Sales extends Component {
       accumulatedData,
       currentDateFilter,
       graphView,
-      salesCyclesAvg,
       currency,
       extra_tooltip_data,
       extras

@@ -51,7 +51,10 @@ export default class Users extends Component {
         this.setState({
           loading:true
         })
-        const res_data = await axios.put(`${this.state.baseURL}/v1/users/update-account-approval/${data._id}`,{
+        // const res_data = await axios.put(`${this.state.baseURL}/v1/users/update-account-approval/${data._id}`,{
+        //   status:"APPROVED"
+        // })
+        await axios.put(`${this.state.baseURL}/v1/users/update-account-approval/${data._id}`,{
           status:"APPROVED"
         })
 
@@ -76,7 +79,10 @@ export default class Users extends Component {
         this.setState({
           loading:true
         })
-        const res_data = await axios.put(`${this.state.baseURL}/v1/users/update-account-approval/${data._id}`,{
+        // const res_data = await axios.put(`${this.state.baseURL}/v1/users/update-account-approval/${data._id}`,{
+        //   status:"DISAPPROVED"
+        // })
+        await axios.put(`${this.state.baseURL}/v1/users/update-account-approval/${data._id}`,{
           status:"DISAPPROVED"
         })
 

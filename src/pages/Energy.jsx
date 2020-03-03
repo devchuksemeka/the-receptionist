@@ -367,7 +367,6 @@ export default class Energy extends Component {
       energy_stats_level,
       extra_tooltip_data,
       page_category,
-      diesel_supply_log_data
     } = this.state;
 
     const diesel_ltr_amount_usage_options = { 

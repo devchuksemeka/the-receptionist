@@ -22,10 +22,10 @@ workbox.routing.registerRoute(
     workbox.strategies.staleWhileRevalidate()
 )
 
-workbox.routing.registerRoute(
-  new RegExp("http://localhost:5000/api/v1"),
-  workbox.strategies.staleWhileRevalidate()
-)
+// workbox.routing.registerRoute(
+//   new RegExp("http://localhost:5000/api/v1"),
+//   workbox.strategies.staleWhileRevalidate()
+// )
 
 /*
 workbox.routing.registerRoute(

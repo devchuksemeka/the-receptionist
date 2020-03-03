@@ -462,16 +462,17 @@ export default class Sales extends Component {
       )}
     </div>
     <Row> 
-      {/* <Col lg={3} sm={6}>
-        <StatsCard
-          bigIcon={<i className="pe-7s-magnet text-warning" />}
-          statsText="Average Sales Circle"
-          statsValue={salesCyclesAvg || 0}
-          statsIconText={`Average Sales Circle`}
-        />
-      </Col> */}
+      
       {currentView === "dailySales" && (
           <React.Fragment>
+            <Col lg={3} sm={6}>
+              <StatsCard
+                bigIcon={<i className="pe-7s-magnet text-warning" />}
+                statsText="Average Sales Circle"
+                statsValue={extras.avg_sales_cycle || 0}
+                statsIconText={`Average Sales Circle`}
+              />
+            </Col>
             <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-bookmarks text-info" />}
@@ -491,7 +492,31 @@ export default class Sales extends Component {
           </React.Fragment>
       )}
       {currentView === "accumulated" && (
-          <React.Fragment>
+          <>
+            <Col lg={3} sm={6}>
+              <StatsCard
+                bigIcon={<i className="pe-7s-bookmarks text-info" />}
+                statsText={`Total PKO Sale`}
+                statsValue={toMoneyFormatDynamic(extras.total_pko_sold_price,currency === "naira"? "NGN":"USD") || 0}
+                statsIconText={<span>Total PKO Sale Qty: <strong> {this.state.extras.total_pko_qty_sold || 0}Ton</strong></span>}
+              />
+            </Col>
+            <Col lg={3} sm={6}>
+              <StatsCard
+                bigIcon={<i className="pe-7s-bookmarks text-info" />}
+                statsText={`Total PKC Sale`}
+                statsValue={toMoneyFormatDynamic(extras.total_pkc_sold_price,currency === "naira"? "NGN":"USD") || 0}
+                statsIconText={<span>Total PKC Sale Qty: <strong> {this.state.extras.total_pkc_qty_sold || 0}Ton</strong></span>}
+              />
+            </Col>
+            <Col lg={3} sm={6}>
+              <StatsCard
+                bigIcon={<i className="pe-7s-bookmarks text-info" />}
+                statsText={`Total Sold Value`}
+                statsValue={toMoneyFormatDynamic(extras.total_sold_price,currency === "naira"? "NGN":"USD") || 0}
+              statsIconText={<span>Total Sale Qty: <strong> {this.state.extras.total_qty_sold || 0}Ton</strong></span>}
+              />
+            </Col>
             <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-bookmarks text-info" />}
@@ -500,32 +525,7 @@ export default class Sales extends Component {
                 statsIconText={<span>P2 Crushed Qty: <strong> {this.state.extras.total_p2_crushed || 0}Ton</strong></span>}
               />
             </Col>
-            <Col lg={3} sm={6}>
-              <StatsCard
-                bigIcon={<i className="pe-7s-bookmarks text-info" />}
-                statsText={`Total PKO Sold`}
-                statsValue={toMoneyFormatDynamic(extras.total_pko_sold_price,currency === "naira"? "NGN":"USD") || 0}
-                statsIconText={<span>Total PKO Sold Qty: <strong> {this.state.extras.total_pko_qty_sold || 0}Ton</strong></span>}
-              />
-            </Col>
-            <Col lg={3} sm={6}>
-              <StatsCard
-                bigIcon={<i className="pe-7s-bookmarks text-info" />}
-                statsText={`Total PKC Sold`}
-                statsValue={toMoneyFormatDynamic(extras.total_pkc_sold_price,currency === "naira"? "NGN":"USD") || 0}
-                statsIconText={<span>Total PKC Sold Qty: <strong> {this.state.extras.total_pkc_qty_sold || 0}Ton</strong></span>}
-              />
-            </Col>
-            <Col lg={3} sm={6}>
-              <StatsCard
-                bigIcon={<i className="pe-7s-bookmarks text-info" />}
-                statsText={`Total Sold Value`}
-                statsValue={toMoneyFormatDynamic(extras.total_sold_price,currency === "naira"? "NGN":"USD") || 0}
-              statsIconText={<span>Total Sold Qty: <strong> {this.state.extras.total_qty_sold || 0}Ton</strong></span>}
-              />
-            </Col>
-            
-          </React.Fragment>
+          </>
       )}
     </Row> 
     <Row>

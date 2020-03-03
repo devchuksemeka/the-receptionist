@@ -70,8 +70,7 @@ export default class Auth extends Component{
                     });
 
                     this.context.login(
-                        response.data.authToken,
-                        response.data.role,
+                        response.data.data
                     )
                     this.props.history.push("/overview")
 

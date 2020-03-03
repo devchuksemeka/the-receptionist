@@ -1,10 +1,36 @@
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 
+const auth_data = () =>{
+  const store = localStorage.getItem("oat_store")
+  console.log(store)
+  if (store) return JSON.parse(store);
+  return null;
+}
+
+export const getToken = () => {
+  const auth = auth_data();
+  if(auth) return auth.token;
+  return null;
+};
+
+export const getRole = () => {
+  const auth = auth_data();
+  if(auth) return auth.role;
+  return null;
+};
+export const getPermissions = () => {
+  const auth = auth_data();
+  if(auth) return auth.permissions;
+  return [];
+};
+
 export const isAuthenticated = () => {
   let isAuthenticated = false;
-  const token = localStorage.getItem("authToken");
-  if (token) {
+  const auth = auth_data();
+  let token ="";
+  if (auth) {
+    token = auth.token;
     const decoded = jwtDecode(token);
     if (Date.now() >= decoded.exp * 1000) {
       localStorage.removeItem("authToken");
@@ -19,7 +45,8 @@ export const isAuthenticated = () => {
 
 export const setAuthHeaderToken = () => {
   try {
-    const idToken = localStorage.getItem("authToken");
+    const auth = auth_data();
+    const idToken = auth.token;
     axios.defaults.headers.common["Authorization"] = `Bearer ${idToken}`;
   } catch (err) {
     delete axios.defaults.headers.common.Authorization;

@@ -12,6 +12,8 @@ import {toTitleCase,toMoneyFormatDynamic} from '../helpers/index'
 import { Card } from "components/Card/Card.jsx";
 import { StatsCard } from "components/StatsCard/StatsCard.jsx";
 import moment from 'moment'
+import AuthContext from '../context/AuthContext'
+import logo from "assets/img/reactlogo.png";
 
 
 class Overview extends Component {
@@ -458,256 +460,277 @@ class Overview extends Component {
       }
     };
     return (
-      <div className="content">
-        <Grid fluid>
-          <div className="row" style={{marginBottom:"0.5rem"}}>
-            <div className="col-md-3 block">
-              <select 
-                className="form-control form-control-lg"
-                value={this.state.currentDateFilter}
-                onChange={this.handleDateFilter}>
-                  <option value="currentWeek">Current Week</option>
-                  <option value="lastWeek">Last Week</option>
-                  <option value="last2Weeks">Last 2 Weeks</option>
-                  <option value="lastMonth">Last Month</option>
-                  <option value="custom">Custom</option>
-              </select>
-            </div>
-            {this.state.currentDateFilter === "custom"  && (<React.Fragment>
-              <div className="col-md-3 block">
-                <div className="form-group row">
-                  <label htmlFor="custom_date_from" className="col-sm-2 col-form-label">From</label>
-                  <div className="col-sm-10">
-                    <input type="date" onChange={this.handleStartDateChange} className="form-control" id="custom_date_from"></input>
+      <AuthContext.Consumer>
+        {context => (
+          <>
+          {context.permissions.includes("view_overview") && (
+            <div className="content">
+              <Grid fluid>
+                <div className="row" style={{marginBottom:"0.5rem"}}>
+                  <div className="col-md-3 block">
+                    <select 
+                      className="form-control form-control-lg"
+                      value={this.state.currentDateFilter}
+                      onChange={this.handleDateFilter}>
+                        <option value="currentWeek">Current Week</option>
+                        <option value="lastWeek">Last Week</option>
+                        <option value="last2Weeks">Last 2 Weeks</option>
+                        <option value="lastMonth">Last Month</option>
+                        <option value="custom">Custom</option>
+                    </select>
                   </div>
+                  {this.state.currentDateFilter === "custom"  && (<React.Fragment>
+                    <div className="col-md-3 block">
+                      <div className="form-group row">
+                        <label htmlFor="custom_date_from" className="col-sm-2 col-form-label">From</label>
+                        <div className="col-sm-10">
+                          <input type="date" onChange={this.handleStartDateChange} className="form-control" id="custom_date_from"></input>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-3 block">
+                      <div className="form-group row">
+                        <label htmlFor="custom_date_to" className="col-sm-2 col-form-label">To</label>
+                        <div className="col-sm-10">
+                          <input type="date" onChange={this.handleEndDateChange} className="form-control" id="custom_date_to"></input>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-2">
+                      <button className="btn btn-primary" onClick={this.handleSubmit}>Go</button>
+                    </div>
+                  </React.Fragment> 
+                  )}
                 </div>
-              </div>
-              <div className="col-md-3 block">
-                <div className="form-group row">
-                  <label htmlFor="custom_date_to" className="col-sm-2 col-form-label">To</label>
-                  <div className="col-sm-10">
-                    <input type="date" onChange={this.handleEndDateChange} className="form-control" id="custom_date_to"></input>
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-2">
-                <button className="btn btn-primary" onClick={this.handleSubmit}>Go</button>
-              </div>
-            </React.Fragment> 
-            )}
-          </div>
-        
-          <Row>
-            <Col lg={3} sm={6}>
-              <StatsCard
-                bigIcon={<i className="fa fa-wrench text-primary" />}
-                statsText="Utilization Rate"
-                statsValue={`${this.state.total_utilization_rate}%`}
-                // statsIcon={<i className={getProgressiveLabelStatIcon(this.state.utilization_rate_computation.percentage,this.state.utilization_rate_computation.status)} />}
-                statsIconText={<span className={getProgressiveLabelStatTextColor(this.state.utilization_rate_computation.percentage,this.state.utilization_rate_computation.status)} style={{fontWeight:"bold"}}>{this.state.utilization_rate_computation.percentage}% {toTitleCase(this.state.utilization_rate_computation.status || "")} target</span>}
-                progressLabel={<i className={getProgressiveLabelStatIcon(this.state.utilization_rate_computation.percentage,this.state.utilization_rate_computation.status)}></i>}
-              />
-            </Col>
-            <Col lg={3} sm={6}>
-              <StatsCard
-                bigIcon={<i className="pe-7s-graph1 text-danger" />}
-                statsText="Downtime"
-                statsValue={`${this.state.total_downtime}%`}
-                // statsIcon={<i className={getProgressiveLabelStatIcon(this.state.downtime_computation.percentage,this.state.downtime_computation.status)} />}
-                statsIconText={<span className={getProgressiveLabelStatTextColor(this.state.downtime_computation.percentage,this.state.downtime_computation.status)} style={{fontWeight:"bold"}}>Downtime: {this.state.downtime_computation.downtime_hours || 0} hours</span>}
-                progressLabel={<i className={getProgressiveLabelStatIcon(this.state.downtime_computation.percentage,this.state.downtime_computation.status)}></i>}
-              />
-            </Col>
-            <Col lg={3} sm={6}>
-              <StatsCard
-                bigIcon={<i className="pe-7s-note2 text-info" />}
-                statsText="Gross Margin"
-                statsValue={`${this.state.gross_margin}%`}
-                // statsIcon={<i className={getProgressiveLabelStatIcon(this.state.gross_margin_computation.percentage,this.state.gross_margin_computation.status)} />}
-                statsIconText={<span className={getProgressiveLabelStatTextColor(this.state.gross_margin_computation.percentage,this.state.gross_margin_computation.status)} style={{fontWeight:"bold"}}>{this.state.gross_margin_computation.percentage}% {toTitleCase(this.state.gross_margin_computation.status || "")} target</span>}
-                progressLabel={<i className={getProgressiveLabelStatIcon(this.state.gross_margin_computation.percentage,this.state.gross_margin_computation.status)}></i>}
-              />
-            </Col>
-            <Col lg={3} sm={6}>
-              <StatsCard
-                bigIcon={<i className="pe-7s-up-arrow text-secondary" />}
-                statsText="Annual Run Rate"
-                statsValue={this.state.annual_run_rate}
-                // statsIcon={<i className={getProgressiveLabelStatIcon(this.state.arr_computation.percentage,this.state.arr_computation.status)} />}
-                statsIconText={`ARR`}
-                // statsIconText={<span className={getProgressiveLabelStatTextColor(this.state.arr_computation.percentage,this.state.arr_computation.status)} style={{fontWeight:"bold"}}>{toMoneyFormat(this.state.arr_computation.percentage || 0)} {toTitleCase(this.state.arr_computation.status || "")} target</span>}
-                // progressLabel={<i className={getProgressiveLabelStatIcon(this.state.arr_computation.percentage,this.state.arr_computation.status)}></i>}
               
-              />
-            </Col>
-          </Row>
-          <Row>
-            <Col lg={9} md={12} sm={12}>
-              <div className="row" style={{marginBottom:"0.5rem"}}>
-                <div className="col-md-3 block pull-right">
-                <select 
-                    value={currency}
-                    onChange={this.handleCurrencyChange}
-                    className="form-control form-control-lg">
-                    <option value="naira">Nigeria Naira (NGN)</option>
-                    <option value="usd">US Dollar (USD)</option>
-                  </select>
-                  
-                </div>
-              </div>
-              <Card
-                statsIcon="fa fa-history"
-                id="chartHours"
-                title="Production Inventory Revenue"
-                category="Accumulated Production Inventory Revenue"
-                stats="Inventory Revenue Chart"
-                content={
-                  <div className="ct-chart" style={{height:"100%",width:"100%"}}>
-                    <Line
-                      height={500}
-                      width={800}
-                      data={this.state.revenue_data}
-                      options={options}
+                <Row>
+                  <Col lg={3} sm={6}>
+                    <StatsCard
+                      bigIcon={<i className="fa fa-wrench text-primary" />}
+                      statsText="Utilization Rate"
+                      statsValue={`${this.state.total_utilization_rate}%`}
+                      // statsIcon={<i className={getProgressiveLabelStatIcon(this.state.utilization_rate_computation.percentage,this.state.utilization_rate_computation.status)} />}
+                      statsIconText={<span className={getProgressiveLabelStatTextColor(this.state.utilization_rate_computation.percentage,this.state.utilization_rate_computation.status)} style={{fontWeight:"bold"}}>{this.state.utilization_rate_computation.percentage}% {toTitleCase(this.state.utilization_rate_computation.status || "")} target</span>}
+                      progressLabel={<i className={getProgressiveLabelStatIcon(this.state.utilization_rate_computation.percentage,this.state.utilization_rate_computation.status)}></i>}
                     />
+                  </Col>
+                  <Col lg={3} sm={6}>
+                    <StatsCard
+                      bigIcon={<i className="pe-7s-graph1 text-danger" />}
+                      statsText="Downtime"
+                      statsValue={`${this.state.total_downtime}%`}
+                      // statsIcon={<i className={getProgressiveLabelStatIcon(this.state.downtime_computation.percentage,this.state.downtime_computation.status)} />}
+                      statsIconText={<span className={getProgressiveLabelStatTextColor(this.state.downtime_computation.percentage,this.state.downtime_computation.status)} style={{fontWeight:"bold"}}>Downtime: {this.state.downtime_computation.downtime_hours || 0} hours</span>}
+                      progressLabel={<i className={getProgressiveLabelStatIcon(this.state.downtime_computation.percentage,this.state.downtime_computation.status)}></i>}
+                    />
+                  </Col>
+                  <Col lg={3} sm={6}>
+                    <StatsCard
+                      bigIcon={<i className="pe-7s-note2 text-info" />}
+                      statsText="Gross Margin"
+                      statsValue={`${this.state.gross_margin}%`}
+                      // statsIcon={<i className={getProgressiveLabelStatIcon(this.state.gross_margin_computation.percentage,this.state.gross_margin_computation.status)} />}
+                      statsIconText={<span className={getProgressiveLabelStatTextColor(this.state.gross_margin_computation.percentage,this.state.gross_margin_computation.status)} style={{fontWeight:"bold"}}>{this.state.gross_margin_computation.percentage}% {toTitleCase(this.state.gross_margin_computation.status || "")} target</span>}
+                      progressLabel={<i className={getProgressiveLabelStatIcon(this.state.gross_margin_computation.percentage,this.state.gross_margin_computation.status)}></i>}
+                    />
+                  </Col>
+                  <Col lg={3} sm={6}>
+                    <StatsCard
+                      bigIcon={<i className="pe-7s-up-arrow text-secondary" />}
+                      statsText="Annual Run Rate"
+                      statsValue={this.state.annual_run_rate}
+                      // statsIcon={<i className={getProgressiveLabelStatIcon(this.state.arr_computation.percentage,this.state.arr_computation.status)} />}
+                      statsIconText={`ARR`}
+                      // statsIconText={<span className={getProgressiveLabelStatTextColor(this.state.arr_computation.percentage,this.state.arr_computation.status)} style={{fontWeight:"bold"}}>{toMoneyFormat(this.state.arr_computation.percentage || 0)} {toTitleCase(this.state.arr_computation.status || "")} target</span>}
+                      // progressLabel={<i className={getProgressiveLabelStatIcon(this.state.arr_computation.percentage,this.state.arr_computation.status)}></i>}
+                    
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col lg={9} md={12} sm={12}>
+                    <div className="row" style={{marginBottom:"0.5rem"}}>
+                      <div className="col-md-3 block pull-right">
+                      <select 
+                          value={currency}
+                          onChange={this.handleCurrencyChange}
+                          className="form-control form-control-lg">
+                          <option value="naira">Nigeria Naira (NGN)</option>
+                          <option value="usd">US Dollar (USD)</option>
+                        </select>
+                        
+                      </div>
+                    </div>
+                    <Card
+                      statsIcon="fa fa-history"
+                      id="chartHours"
+                      title="Production Inventory Revenue"
+                      category="Accumulated Production Inventory Revenue"
+                      stats="Inventory Revenue Chart"
+                      content={
+                        <div className="ct-chart" style={{height:"100%",width:"100%"}}>
+                          <Line
+                            height={500}
+                            width={800}
+                            data={this.state.revenue_data}
+                            options={options}
+                          />
+                        </div>
+                      }
+                    />
+                  </Col>
+                  <Col lg={3} md={12} sm={12}>
+                    <Row>
+                      <Col lg={12} md={4} sm={6}>
+                        <StatsCard
+                          bigIcon={<i className="pe-7s-attention text-primary" />}
+                          statsText="Extraction rate (%)"
+                          statsValue={this.state.extraction_rate || 0}
+                          statsIcon={<i className="fa fa-refresh" />}
+                          statsIconText={`Extraction rate percentage`}
+                        />
+                      </Col>
+                      <Col lg={12} md={4} sm={6}>
+                        <StatsCard
+                          bigIcon={<i className="pe-7s-paper-plane text-info" />}
+                          statsText="PKO Produced (Tons)"
+                          statsValue={this.state.pko_product_sales.pko_total_left}
+                          statsIcon={<i className="pe-7s-server" />}
+                          statsIconText={`PKO Sold ${this.state.pko_product_sales.pko_total_sales} (tons)`}
+                        />
+                      </Col>
+                      <Col lg={12} md={4} sm={6}>
+                        <StatsCard
+                          bigIcon={<i className="pe-7s-star text-danger" />}
+                          statsText="PKC Produced (Tons)"
+                          statsValue={this.state.pkc_product_sales.pkc_total_left}
+                          statsIcon={<i className="fa fa-clock-o" />}
+                          statsIconText={`PKC Sold ${this.state.pkc_product_sales.pkc_total_sales} (tons)`}
+                        />
+                      </Col>
+                      <Col lg={12} md={4} sm={6} >
+                        <StatsCard
+                          bigIcon={<i className="pe-7s-attention text-warning" />}
+                          statsText="P2 Crushed (Tons)"
+                          statsValue={this.state.p2_product.p2_total_crushed}
+                          statsIcon={<i className="pe-7s-server" />}
+                          statsIconText={`P2 Purchased ${this.state.p2_product.p2_total_purchased} (tons)`}
+                        />
+                      </Col>
+                      {/* <Col lg={12} sm={12}>
+                        <StatsCard
+                          bigIcon={<i className="pe-7s-refresh-cloud text-warning" />}
+                          statsText="PKSL Sold (Tons)"
+                          statsValue={this.state.pksl_all_time_sale}
+                          statsIcon={<i className="fa fa-refresh" />}
+                          statsIconText="PKSL Sales"
+                        />
+                      </Col> */}
+                    </Row>
+                  </Col>
+                </Row>
+      
+                <Row>
+                <Col md={8}>
+                    <Card
+                      title="Production Targets"
+                      content={
+                        <form onSubmit={this.handleUpdateTarget} >
+                          <div className="form-group">
+                            <div className="col-md-6 col-xs-12">
+                              <label htmlFor="utilization_rate">Utilization Rate (%) | <strong>Current Value: {this.state.target_setting.utilization_rate}%</strong></label>
+                              <input 
+                                type="number" 
+                                className="form-control" 
+                                id="utilization_rate" 
+                                ref={this.utitlizationRateEl}
+                                placeholder="Utilization Rate"
+                                >
+                              </input>
+                            </div>
+                            <div className="col-md-6 col-xs-12">
+                              <label htmlFor="downtime">Downtime (%) | <strong>Current Value: {this.state.target_setting.downtime}%</strong></label>
+                              <input 
+                                type="number" 
+                                className="form-control" 
+                                id="downtime" 
+                                ref={this.downtimeEl}
+                                placeholder="Downtime"
+                                >
+                              </input>
+                            </div>
+                          </div>
+                          <div className="form-group">
+                            <div className="col-md-6 col-xs-12">
+                              <label htmlFor="gross_margin">Gross Margin (%) | <strong>Current Value: {this.state.target_setting.gross_margin}%</strong></label>
+                              <input 
+                                type="number" 
+                                className="form-control" 
+                                id="gross_margin" 
+                                ref={this.grossMarginEL}
+                                placeholder="Gross Margin"
+                                >
+                              </input>
+                            </div>
+                            {/* <div className="col-md-6 col-xs-12">
+                              <label htmlFor="pko">PKO (tons) | <strong>Current Value: {this.state.target_setting.pko} (tons)</strong></label>
+                              <input 
+                                type="number" 
+                                className="form-control" 
+                                id="pko" 
+                                ref={this.pkoEL}
+                                placeholder="PKO"
+                                >
+                              </input>
+                            </div> */}
+                            <div className="col-md-6 col-xs-12">
+                              <label htmlFor="arr">Annual Run Rate (Naira) | <strong>Current Value: {this.state.target_setting.arr || 0} (naira)</strong></label>
+                              <input 
+                                type="number" 
+                                className="form-control" 
+                                id="arr" 
+                                ref={this.arrEL}
+                                placeholder="Annual Run Rate"
+                                >
+                              </input>
+                            </div>
+                          </div>
+                          <div className="form-group">
+                            <div className="col-md-6 col-xs-12 pull-right">
+                            {!this.state.target_loading && (<Button bsStyle="info" pullRight fill type="submit">
+                                Update Targets
+                              </Button>)}
+                              {this.state.target_loading && (<Button bsStyle="info" pullRight fill >
+                                Updating .....
+                              </Button>)}
+                            </div>
+                            
+                          </div>
+                          <div className="clearfix" />
+                        </form>
+                      }
+                    />
+                  </Col>
+                </Row>
+              </Grid>
+            </div>
+          )}
+          {!context.permissions.includes("view_overview") && (
+            <div className="content"> 
+              <Grid fluid>
+                <div className="row" style={{marginBottom:"0.5rem"}}>
+                  <div className="col-md-12 block text-center">
+                    <img src={logo} alt="logo_image" style={{height:"500px"}}/>
+                    <h2>Welcome to <strong>RELEAF OAT</strong></h2>
                   </div>
-                }
-              />
-            </Col>
-            <Col lg={3} md={12} sm={12}>
-              <Row>
-                <Col lg={12} md={4} sm={6}>
-                  <StatsCard
-                    bigIcon={<i className="pe-7s-attention text-primary" />}
-                    statsText="Extraction rate (%)"
-                    statsValue={this.state.extraction_rate || 0}
-                    statsIcon={<i className="fa fa-refresh" />}
-                    statsIconText={`Extraction rate percentage`}
-                  />
-                </Col>
-                <Col lg={12} md={4} sm={6}>
-                  <StatsCard
-                    bigIcon={<i className="pe-7s-paper-plane text-info" />}
-                    statsText="PKO Produced (Tons)"
-                    statsValue={this.state.pko_product_sales.pko_total_left}
-                    statsIcon={<i className="pe-7s-server" />}
-                    statsIconText={`PKO Sold ${this.state.pko_product_sales.pko_total_sales} (tons)`}
-                  />
-                </Col>
-                <Col lg={12} md={4} sm={6}>
-                  <StatsCard
-                    bigIcon={<i className="pe-7s-star text-danger" />}
-                    statsText="PKC Produced (Tons)"
-                    statsValue={this.state.pkc_product_sales.pkc_total_left}
-                    statsIcon={<i className="fa fa-clock-o" />}
-                    statsIconText={`PKC Sold ${this.state.pkc_product_sales.pkc_total_sales} (tons)`}
-                  />
-                </Col>
-                <Col lg={12} md={4} sm={6} >
-                  <StatsCard
-                    bigIcon={<i className="pe-7s-attention text-warning" />}
-                    statsText="P2 Crushed (Tons)"
-                    statsValue={this.state.p2_product.p2_total_crushed}
-                    statsIcon={<i className="pe-7s-server" />}
-                    statsIconText={`P2 Purchased ${this.state.p2_product.p2_total_purchased} (tons)`}
-                  />
-                </Col>
-                {/* <Col lg={12} sm={12}>
-                  <StatsCard
-                    bigIcon={<i className="pe-7s-refresh-cloud text-warning" />}
-                    statsText="PKSL Sold (Tons)"
-                    statsValue={this.state.pksl_all_time_sale}
-                    statsIcon={<i className="fa fa-refresh" />}
-                    statsIconText="PKSL Sales"
-                  />
-                </Col> */}
-              </Row>
-            </Col>
-          </Row>
-
-          <Row>
-          <Col md={8}>
-              <Card
-                title="Production Targets"
-                content={
-                  <form onSubmit={this.handleUpdateTarget} >
-                    <div className="form-group">
-                      <div className="col-md-6 col-xs-12">
-                        <label htmlFor="utilization_rate">Utilization Rate (%) | <strong>Current Value: {this.state.target_setting.utilization_rate}%</strong></label>
-                        <input 
-                          type="number" 
-                          className="form-control" 
-                          id="utilization_rate" 
-                          ref={this.utitlizationRateEl}
-                          placeholder="Utilization Rate"
-                          >
-                        </input>
-                      </div>
-                      <div className="col-md-6 col-xs-12">
-                        <label htmlFor="downtime">Downtime (%) | <strong>Current Value: {this.state.target_setting.downtime}%</strong></label>
-                        <input 
-                          type="number" 
-                          className="form-control" 
-                          id="downtime" 
-                          ref={this.downtimeEl}
-                          placeholder="Downtime"
-                          >
-                        </input>
-                      </div>
-                    </div>
-                    <div className="form-group">
-                      <div className="col-md-6 col-xs-12">
-                        <label htmlFor="gross_margin">Gross Margin (%) | <strong>Current Value: {this.state.target_setting.gross_margin}%</strong></label>
-                        <input 
-                          type="number" 
-                          className="form-control" 
-                          id="gross_margin" 
-                          ref={this.grossMarginEL}
-                          placeholder="Gross Margin"
-                          >
-                        </input>
-                      </div>
-                      {/* <div className="col-md-6 col-xs-12">
-                        <label htmlFor="pko">PKO (tons) | <strong>Current Value: {this.state.target_setting.pko} (tons)</strong></label>
-                        <input 
-                          type="number" 
-                          className="form-control" 
-                          id="pko" 
-                          ref={this.pkoEL}
-                          placeholder="PKO"
-                          >
-                        </input>
-                      </div> */}
-                      <div className="col-md-6 col-xs-12">
-                        <label htmlFor="arr">Annual Run Rate (Naira) | <strong>Current Value: {this.state.target_setting.arr || 0} (naira)</strong></label>
-                        <input 
-                          type="number" 
-                          className="form-control" 
-                          id="arr" 
-                          ref={this.arrEL}
-                          placeholder="Annual Run Rate"
-                          >
-                        </input>
-                      </div>
-                    </div>
-                    <div className="form-group">
-                      <div className="col-md-6 col-xs-12 pull-right">
-                      {!this.state.target_loading && (<Button bsStyle="info" pullRight fill type="submit">
-                          Update Targets
-                        </Button>)}
-                        {this.state.target_loading && (<Button bsStyle="info" pullRight fill >
-                          Updating .....
-                        </Button>)}
-                      </div>
-                      
-                    </div>
-                    <div className="clearfix" />
-                  </form>
-                }
-              />
-            </Col>
-          </Row>
-        </Grid>
-      </div>
+                </div>
+              </Grid>
+            </div>
+          )}
+          </>
+        )}
+      </AuthContext.Consumer>
+      
     );
   }
 }

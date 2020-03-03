@@ -6,20 +6,23 @@ import AdminLayout from "layouts/Admin.jsx";
 import AuthContext from './context/AuthContext'
 import AuthPage from './pages/Auth/Auth'
 
-import { setAuthHeaderToken,isAuthenticated } from "./helpers/auth";
+import { setAuthHeaderToken,isAuthenticated,getToken,getPermissions,getRole } from "./helpers/auth";
 
 class App extends Component {
   state={
-    token:null,
-    role:null,
+    token:getToken(),
+    role:getRole(),
+    permissions:getPermissions(),
     isAuth:isAuthenticated()
   }
-  login = (token,role) => {
-    localStorage.setItem("authToken",token);
+  login = (data) => {
+    let {permissions,role,token} = data
+    localStorage.setItem("oat_store",JSON.stringify(data));
     setAuthHeaderToken();
     this.setState({
        token,
        role,
+       permissions,
        isAuth:true
      })
   }
@@ -28,9 +31,10 @@ class App extends Component {
     this.setState({
       token:null,
       role:null,
+      permissions:[],
       isAuth:false
     })
-    localStorage.removeItem("authToken");
+    localStorage.removeItem("oat_store");
   }
   render(){
     return (
@@ -39,6 +43,7 @@ class App extends Component {
           <AuthContext.Provider value={{
             token:this.state.token,
             role:this.state.role,
+            permissions:this.state.permissions,
             login:this.login,
             logout:this.logout,
             isAuth:this.state.isAuth

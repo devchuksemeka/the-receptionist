@@ -13,28 +13,32 @@ const dashboardRoutes = [
     name: "Overview",
     icon: "pe-7s-graph",
     component: Overview,
-    layout: "/admin"
+    layout: "/admin",
+    permissions:["view_overview"]
   },
   {
     path: "/inventory",
     name: "Inventory",
     icon: "pe-7s-note2",
     component: Inventory,
-    layout: "/admin"
+    layout: "/admin",
+    permissions:["view_inventory","view_inventory_with_widgets","view_inventory_with_graph"]
   },
   {
     path: "/sales",
     name: "Sales",
     icon: "pe-7s-cash",
     component: Sales,
-    layout: "/admin"
+    layout: "/admin",
+    permissions:["view_sales"]
   },
   {
     path: "/maintenance",
     name: "Maintenance",
     icon: "pe-7s-settings",
     component: Maintenance,
-    layout: "/admin"
+    layout: "/admin",
+    permissions:["view_maintenance"]
   },
 
   {
@@ -42,28 +46,32 @@ const dashboardRoutes = [
     name: "Machine Data",
     icon: "pe-7s-target",
     component: MachineData,
-    layout: "/admin"
+    layout: "/admin",
+    permissions:["view_machine_data"]
   },
   {
     path: "/procurements",
     name: "Procurements",
     icon: "pe-7s-junk",
     component: ProcurementCost,
-    layout: "/admin"
+    layout: "/admin",
+    permissions:["view_procurements","view_procurements_with_widgets","view_procurements_with_graph"]
   },
   {
     path: "/energy",
     name: "Energy",
     icon: "pe-7s-timer",
     component: Energy,
-    layout: "/admin"
+    layout: "/admin",
+    permissions:["view_energy"]
   },
   {
     path: "/users",
     name: "Users",
     icon: "pe-7s-users",
     component: Users,
-    layout: "/admin"
+    layout: "/admin",
+    permissions:["view_users"]
   },
 ];
 

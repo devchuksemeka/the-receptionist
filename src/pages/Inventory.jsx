@@ -515,7 +515,7 @@ export default class Inventory extends Component {
                  )}
                </div>
                <Row>
-                  {context.permissions.includes("view_inventory_widgets") && (
+                  {context.permissions.includes("view_inventory_with_widgets") && (
                     <>
                       {currentView === "dailyPurchase" && currentScreen !== "p2" && (
                         <Col lg={3} sm={6}>
@@ -615,7 +615,7 @@ export default class Inventory extends Component {
                   )}
                </Row>   
                <Row>
-               {context.permissions.includes("view_inventory_graph") && (
+               {context.permissions.includes("view_inventory_with_graph") && (
                  
                  <Col md={12} lg={12}>
                    <Card

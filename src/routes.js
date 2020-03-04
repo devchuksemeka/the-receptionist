@@ -55,7 +55,7 @@ const dashboardRoutes = [
     icon: "pe-7s-junk",
     component: ProcurementCost,
     layout: "/admin",
-    permissions:["view_procurements","view_procurements_with_widgets","view_procurements_with_graph"]
+    permissions:["view_procurements"]
   },
   {
     path: "/energy",

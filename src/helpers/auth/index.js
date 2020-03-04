@@ -3,7 +3,6 @@ import jwtDecode from "jwt-decode";
 
 const auth_data = () =>{
   const store = localStorage.getItem("oat_store")
-  console.log(store)
   if (store) return JSON.parse(store);
   return null;
 }

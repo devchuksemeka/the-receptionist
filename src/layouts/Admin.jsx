@@ -131,7 +131,7 @@ class Admin extends Component {
       title: <span data-notify="icon" className="pe-7s-gift" />,
       message: (
         <div>
-          Welcome to <b>RELEAF Dashboard Portal</b>
+          Welcome to <b>RELEAF OAT</b>
         </div>
       ),
       level: level,

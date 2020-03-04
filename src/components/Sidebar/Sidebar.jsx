@@ -45,18 +45,12 @@ class Sidebar extends Component {
               null
             )}
             <div className="logo">
-              <NavLink
-                to="#"
-                className="simple-text logo-mini"
-              >
+              <NavLink to="#" className="simple-text logo-mini" >
                 <div className="logo-img">
                   <img src={logo} alt="logo_image" />
                 </div>
               </NavLink>
-              <NavLink
-                to="#"
-                className="simple-text logo-normal"
-              >
+              <NavLink to="/overview" className="simple-text logo-normal" >
                 Releaf OAT
               </NavLink>
             </div>

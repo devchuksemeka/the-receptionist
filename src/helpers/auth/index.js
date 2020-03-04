@@ -18,6 +18,7 @@ export const getRole = () => {
   if(auth) return auth.role;
   return null;
 };
+
 export const getPermissions = () => {
   const auth = auth_data();
   if(auth) return auth.permissions;

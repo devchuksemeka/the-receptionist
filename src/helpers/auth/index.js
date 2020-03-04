@@ -16,7 +16,7 @@ export const getToken = () => {
 export const getRole = () => {
   const auth = auth_data();
   if(auth) return auth.role;
-  return null;
+  return "";
 };
 
 export const getPermissions = () => {

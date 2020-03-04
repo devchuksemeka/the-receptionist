@@ -850,7 +850,7 @@ export default class MachineData extends Component {
                   <option value="maintenance">Maintenance</option>
                   <option value="uptime_and_downtime">Uptime/Downtime</option>
                   <option value={CONSTANT.MACHINE_DATA_CRUSHING_EFFICIENCY}>Crushing Efficiency</option>
-                  <option value={CONSTANT.MACHINE_DATA_UTILIZATION}>Utilization</option>
+                  <option value={CONSTANT.MACHINE_DATA_UTILIZATION}>Utilization Rate</option>
                 </select>
               </div>
               {machine_stats_level === CONSTANT.MACHINE_DATA_MAINTENANCE && (
@@ -1099,7 +1099,7 @@ export default class MachineData extends Component {
                       bigIcon={<i className="pe-7s-tools text-success" />}
                       statsText={`${this.getMachineDataUptimeDowntimeLabelName(expeller_number)} Avg Efficiency`}
                       statsValue={`${extras.avg_expeller_efficiency || 0}%`}
-                      statsIconText={`${this.getMachineDataUptimeDowntimeLabelName(expeller_number)} Total Efficiency: ${extras.expeller_efficiency || 0}%`}
+                      statsIconText={`${this.getMachineDataUptimeDowntimeLabelName(expeller_number)} Avg Total Efficiency`}
                     />
                 </Col>
               </>
@@ -1111,7 +1111,7 @@ export default class MachineData extends Component {
                       bigIcon={<i className="pe-7s-tools text-success" />}
                       statsText={`${this.getMachineDataUptimeDowntimeLabelName(expeller_number)} Avg Utilization`}
                       statsValue={`${extras.avg_utilization_rate || 0}%`}
-                      statsIconText={`${this.getMachineDataUptimeDowntimeLabelName(expeller_number)} Total Utilization: ${extras.total_utilization_rate || 0}%`}
+                      statsIconText={`${this.getMachineDataUptimeDowntimeLabelName(expeller_number)} Avg Total Utilization`}
                     />
                 </Col>
               </>

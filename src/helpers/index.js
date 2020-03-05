@@ -202,6 +202,7 @@ const CONSTANT = {
   MACHINE_DATA_UTILIZATION:"utilization",
 
   // CRUSHING RM
+  MACHINE_ALL_RM: "__ALL__",
   MACHINE_P2_RM: "P2",
   MACHINE_PKC1_RM: "PKC1",
 

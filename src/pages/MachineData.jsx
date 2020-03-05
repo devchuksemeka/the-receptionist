@@ -16,7 +16,7 @@ export default class MachineData extends Component {
   state = {
     baseURL:process.env.REACT_APP_SERVER_ENDPOINT,
     machine_stats_level:CONSTANT.MACHINE_DATA_MAINTENANCE,
-    machine_raw_material:CONSTANT.MACHINE_P2_RM,
+    machine_raw_material:CONSTANT.MACHINE_ALL_RM,
     machine_health_level:CONSTANT.MACHINE_SERVICE_HEALTH,
     machine_data:[],
     extra_tooltip_data:{},
@@ -898,6 +898,7 @@ export default class MachineData extends Component {
                     value={machine_raw_material}
                     onChange={this.handleMachineRawMaterialChange}
                     className="form-control form-control-lg">
+                  <option value={CONSTANT.MACHINE_ALL_RM}>All RM</option>
                   <option value={CONSTANT.MACHINE_P2_RM}>P2</option>
                   <option value={CONSTANT.MACHINE_PKC1_RM}>PKC1</option>
                 </select>

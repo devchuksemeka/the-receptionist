@@ -473,17 +473,17 @@ export default class Sales extends Component {
             <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-bookmarks text-info" />}
-                statsText={`Total ${currentScreen.toUpperCase()} Sold (Ton)`}
+                statsText={`Total ${currentScreen.toUpperCase()} Sale (Ton)`}
                 statsValue={this.state.extras.total_product_sold || 0}
-                statsIconText={`Total ${currentScreen.toUpperCase()} Quantity Sold (Ton)`}
+                statsIconText={`Total ${currentScreen.toUpperCase()} Quantity Sale (Ton)`}
               />
             </Col>
             <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-bell text-danger" />}
-                statsText={`Total ${currentScreen.toUpperCase()} Sold Price`}
+                statsText={`Total ${currentScreen.toUpperCase()} Sale Price`}
                 statsValue={toMoneyFormatDynamic(this.state.extras.total_product_sold_price,this.state.currency === "naira"? "NGN":"USD") || 0}
-                statsIconText={`Total ${currentScreen.toUpperCase()} Sold Price`}
+                statsIconText={`Total ${currentScreen.toUpperCase()} Sale Price`}
               />
             </Col>
           </React.Fragment>
@@ -509,7 +509,7 @@ export default class Sales extends Component {
             <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-bookmarks text-info" />}
-                statsText={`Total Sold Value`}
+                statsText={`Total Sale Value`}
                 statsValue={toMoneyFormatDynamic(extras.total_sold_price,currency === "naira"? "NGN":"USD") || 0}
               statsIconText={<span>Total Sale Qty: <strong> {this.state.extras.total_qty_sold || 0}Ton</strong></span>}
               />

@@ -1,2 +1,2 @@
-# FOTFrontend
-Visualization for FOT
+# The Receptionist
+Check In System

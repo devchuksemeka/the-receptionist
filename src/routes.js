@@ -6,8 +6,24 @@ import ProcurementCost from "pages/ProcurementCost";
 import MachineData from "pages/MachineData";
 import Energy from "pages/Energy";
 import Users from "pages/Users";
+import Landing from "pages/Default/Landing";
+import CheckIn from "pages/Default/Visitor/CheckIn";
 
 const dashboardRoutes = [
+  {
+    path: "/",
+    name: "Home",
+    icon: "pe-7s-graph",
+    component: Landing,
+    layout: "/",
+  },
+  {
+    path: "/visitors/check-in",
+    name: "Visitors Check In",
+    icon: "pe-7s-graph",
+    component: CheckIn,
+    layout: "/",
+  },
   {
     path: "/overview",
     name: "Overview",

@@ -1,11 +1,13 @@
 import React, { Component } from "react";
-import { NavItem, Nav, 
-  NavDropdown, 
+import { 
+  // NavItem, 
+  Nav, 
+  // NavDropdown, 
   // MenuItem 
 } from "react-bootstrap";
 import AuthContext from '../../context/AuthContext';
 import axios from "axios"
-import {toTitleCase} from '../../helpers'
+// import {toTitleCase} from '../../helpers'
 
 class AdminNavbarLinks extends Component {
   state={
@@ -56,23 +58,7 @@ class AdminNavbarLinks extends Component {
               <p className="hidden-lg hidden-md">Search</p>
             </NavItem> */}
           </Nav>
-          <Nav pullRight>
-            
-            <NavDropdown
-              eventKey={2}
-              title={`Hi ${context.role === "ASSESSMENT_ACCT" ?"Test Account": toTitleCase(context.role.toLowerCase())}`}
-              id="basic-nav-dropdown-right"
-            >
-              {/* <NavItem onClick={this.context.logout} eventKey={3}>Profile</NavItem> */}
-              {/* <NavItem onClick={this.context.logout} eventKey={3}>Settings</NavItem> */}
-              {/* <MenuItem divider /> */}
-              <NavItem onClick={this.updateRecordFromSheet} eventKey={3}>
-                Update Records
-              </NavItem>
-              <NavItem onClick={this.context.logout} eventKey={3}>Log out</NavItem>
-            </NavDropdown>
-          </Nav>
-        </div>
+                  </div>
         )}
       </AuthContext.Consumer>
       

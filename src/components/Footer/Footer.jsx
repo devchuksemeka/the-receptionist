@@ -7,6 +7,21 @@ class Footer extends Component {
     return (
       <footer className="footer">
         <Grid fluid>
+          <p className="copyright pull-left">
+            &copy; {new Date().getFullYear()}{" "}
+            <NavLink
+              to="#">
+              Client Name
+            </NavLink>
+            &nbsp; All Right Reserved.
+          </p>
+          <p className="copyright pull-right">
+            Powered By &nbsp;
+            <NavLink
+              to="#">
+              Sleek Tech Services (STS)
+            </NavLink>
+          </p>
           {/* <nav className="pull-left">
             <ul>
               <li>
@@ -23,14 +38,7 @@ class Footer extends Component {
               </li>
             </ul>
           </nav> */}
-          <p className="copyright pull-right">
-            &copy; {new Date().getFullYear()}{" "}
-            <NavLink
-              to="#">
-              Releaf FOT
-            </NavLink>
-            &nbsp; All Right Reserved.
-          </p>
+          
         </Grid>
       </footer>
     );
